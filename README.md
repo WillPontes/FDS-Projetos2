@@ -8,6 +8,8 @@ O _Taggy_ é uma solução de pagamento automático (Tag) que vai além da conve
 - [Público-Alvo (Personas)](#público-alvo-personas)
 - [Estrutura do Projeto](#estrutura-do-projeto)
 - [User Stories](#user-stories)
+- [Backlog (Trello)](#backlog-trello)
+- [Evidências (prints)](#evidências-prints)
 - [Equipe](#equipe)
 
 ---
@@ -41,6 +43,8 @@ O projeto está dividido em 5 pilares estratégicos:
 
 ## 📋 User Stories
 
+Versão detalhada (Card, Conversation e Confirmation): [docs/user-stories.md](docs/user-stories.md).
+
 ### 🟢 Prioridade Alta: Inteligência e Impacto
 
 - _[US01-AL] Tradução Lúdica de Impacto:_ Metáforas visuais para impacto ambiental.
@@ -59,6 +63,26 @@ O projeto está dividido em 5 pilares estratégicos:
 - _[US08-BA] Barra de Progresso de Metas Semanais:_ Gamificação para retenção do usuário.
 - _[US09-BA] Calculadora de Payback Operacional:_ Demonstrativo de quando a economia paga a mensalidade.
 - _[US10-BA] Certificado Anual de Impacto ESG:_ Documento oficial para marketing institucional.
+
+---
+
+## 📋 Backlog (Trello)
+
+O backlog do projeto está organizado no quadro da equipe na disciplina, com cartões alinhados às user stories e prioridades. Acompanhe o estado das tarefas em: [Trello – cesar-projetos-2](https://trello.com/b/alfFb7dV/cesar-projetos-2).
+
+## 📸 Evidências
+
+Capturas de tela solicitadas para comprovar o backlog e a organização do trabalho no Trello. Os arquivos originais ficam em [`docs/images/`](docs/images/). No GitHub (e na maioria dos previews de Markdown), as figuras abaixo aparecem **embutidas** no README — basta que `docs/images/*.png` esteja versionado no repositório.
+
+_Backlog no Trello:_
+
+<p align="center">
+  <img src="docs/images/backlog-01.png" alt="Backlog no Trello – visão 1 do quadro" width="920" />
+</p>
+
+<p align="center">
+  <img src="docs/images/backlog-02.png" alt="Backlog no Trello – visão 2 do quadro" width="920" />
+</p>
 
 ---
 
