@@ -86,9 +86,9 @@ _Backlog no Trello:_
 | _Afonso Araujo_   | Desenvolvedor Back-End  | ahma@cesar.school  |
 | _Igor Phillipe_   | Desenvolvedor FullStack | ipara@cesar.school |
 | _Williams Pontes_ | Product Owner           | jwlp@cesar.school  |
-| _Jean Augusto_    | Desenvolvedor Back-End  | jwlp@cesar.school  |
-| _Lucas Gabriel_   | Desenvolvedor FullStack | jwlp@cesar.school  |
-| _Kellwen Costa_   | Desenvolvedor Back-End  | jwlp@cesar.school  |
+| _Jean Augusto_    | Desenvolvedor Back-End  | jasm2@cesar.school |
+| _Lucas Gabriel_   | Desenvolvedor FullStack | lgcs2@cesar.school |
+| _Kellwen Costa_   | Desenvolvedor Back-End  | kilc@cesar.school  |
 
 ---
 
