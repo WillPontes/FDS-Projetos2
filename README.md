@@ -93,9 +93,12 @@ _Backlog no Trello:_
 
 | Nome              | Papel                   | E-mail             |
 | :---------------- | :---------------------- | :----------------- |
-| _Afonso Araujo_   | Analista de Automações  | ahma@cesar.school  |
+| _Afonso Araujo_   | Desenvolvedor Back-End  | ahma@cesar.school  |
 | _Igor Phillipe_   | Desenvolvedor FullStack | ipara@cesar.school |
-| _Williams Pontes_ | Desenvolvedor Back-End  | jwlp@cesar.school  |
+| _Williams Pontes_ | Product Owner           | jwlp@cesar.school  |
+| _Jean Augusto_    | Desenvolvedor Back-End  | jwlp@cesar.school  |
+| _Lucas Gabriel_   | Desenvolvedor FullStack | jwlp@cesar.school  |
+| _Kellwen Costa_   | Desenvolvedor Back-End  | jwlp@cesar.school  |
 
 ---
 
