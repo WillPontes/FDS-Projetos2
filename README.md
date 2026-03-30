@@ -41,7 +41,7 @@ Versão detalhada (Card, Conversation e Confirmation): [docs/user-stories.md](do
 - _[US02] Conversor de Combustível em Carbono:_ Cálculo técnico baseado no GHG Protocol.
 - _[US03] Cálculo de Economia de Papel Térmico:_ Mensuração de resíduos físicos evitados.
 - _[US04] Dashboard Comparativo "Com vs. Sem Taggy":_ Análise de ROI financeiro e ambiental.
-- _[US04] Gestão de Inventário de Frota:_ Gerenciamento de tags cadastradas.
+- _[US05] Gestão de Inventário de Frota:_ Gerenciamento de tags cadastradas.
 
 ### 🟡 Prioridade Média: Rotina e Experiência
 
