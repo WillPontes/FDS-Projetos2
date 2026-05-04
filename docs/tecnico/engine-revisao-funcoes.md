@@ -57,7 +57,7 @@ Código de referência completo: [engine-calculo.md §6](engine-calculo.md#6-có
 
 | Função / Método    | Resumo                                                                                                             | Responsável | Revisado por |
 | ------------------ | ------------------------------------------------------------------------------------------------------------------ | ----------- | ------------ |
-| `handle_tag_event` | Recebe o webhook, resolve veículo, carrega specs e delega para `CalcEngine.process_transaction`. Não faz cálculos. | —           | —            |
+| `handle_tag_event` | Recebe o webhook, resolve veículo, carrega specs e delega para `CalcEngine.process_transaction`. Não faz cálculos. | Kellwen    | —            |
 
 ---
 
