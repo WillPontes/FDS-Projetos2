@@ -15,10 +15,10 @@ Código de referência completo: [engine-calculo.md §6](engine-calculo.md#6-có
 
 | Função / Método                       | Resumo                                                                                                                                      | Responsável | Revisado por |
 | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ------------ |
-| `convert_to_co2`                      | Normaliza qualquer entrada (litros, tickets, água) para kg CO₂e (pivô de conversão).                                                        | —           | —            |
-| `convert_from_co2`                    | Converte kg CO₂e para unidade simbólica: árvores, km, hambúrgueres etc. (pivô inverso).                                                     | —           | —            |
-| `calculate_emissions_from_fuel`       | `liters × emission_factors[fuel_type]` → kg CO₂e. Fallback 2.15 se tipo desconhecido.                                                       | —           | —            |
-| `calculate_avoided_idle_fuel`         | `time_saved_sec × idle_rates[category]` → litros não queimados em marcha lenta.                                                             | —           | —            |
+| `convert_to_co2`                      | Normaliza qualquer entrada (litros, tickets, água) para kg CO₂e (pivô de conversão).                                                        | Afonso      | —            |
+| `convert_from_co2`                    | Converte kg CO₂e para unidade simbólica: árvores, km, hambúrgueres etc. (pivô inverso).                                                     | Afonso      | —            |
+| `calculate_emissions_from_fuel`       | `liters × emission_factors[fuel_type]` → kg CO₂e. Fallback 2.15 se tipo desconhecido.                                                       | Afonso      | —            |
+| `calculate_avoided_idle_fuel`         | `time_saved_sec × idle_rates[category]` → litros não queimados em marcha lenta.                                                             | Afonso      | —            |
 | `calculate_avoided_acceleration_fuel` | Retorna `accel_surge[category]` — volume fixo evitado ao não fazer parada na cabine.                                                        | —           | —            |
 | `calculate_paper_and_water_savings`   | Se `is_digital=True`: retorna CO₂e, água e tickets evitados por um ticket digital. Se `False`: zeros.                                       | —           | —            |
 | `resolve_fuel_price_brl_per_liter`    | Resolve R$/L por UF com 4 níveis de fallback. Retorna `(preço, uf_aplicada)`.                                                               | —           | —            |
