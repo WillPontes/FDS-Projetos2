@@ -19,16 +19,16 @@ Código de referência completo: [engine-calculo.md §6](engine-calculo.md#6-có
 | `convert_from_co2`                    | Converte kg CO₂e para unidade simbólica: árvores, km, hambúrgueres etc. (pivô inverso).                                                     | Afonso      | —            |
 | `calculate_emissions_from_fuel`       | `liters × emission_factors[fuel_type]` → kg CO₂e. Fallback 2.15 se tipo desconhecido.                                                       | Afonso      | —            |
 | `calculate_avoided_idle_fuel`         | `time_saved_sec × idle_rates[category]` → litros não queimados em marcha lenta.                                                             | Afonso      | —            |
-| `calculate_avoided_acceleration_fuel` | Retorna `accel_surge[category]` — volume fixo evitado ao não fazer parada na cabine.                                                        | —           | —            |
-| `calculate_paper_and_water_savings`   | Se `is_digital=True`: retorna CO₂e, água e tickets evitados por um ticket digital. Se `False`: zeros.                                       | —           | —            |
-| `resolve_fuel_price_brl_per_liter`    | Resolve R$/L por UF com 4 níveis de fallback. Retorna `(preço, uf_aplicada)`.                                                               | —           | —            |
-| `calculate_financial_savings`         | Soma `idle_brl + accel_brl + brake_brl + maint` → economia financeira detalhada em R$.                                                      | —           | —            |
-| `build_comparison`                    | Compara custo sem tag (baseline completo + parada) vs. com tag (tempo real, sem parada) e calcula deltas.                                   | —           | —            |
-| `get_ludic_metrics`                   | Métricas legado (retrocompatível): árvores, cargas de celular, filtros de café a partir de `ludic_factors`.                                 | —           | —            |
-| `get_ludic_metrics_by_axis`           | Gera ≥ 3 metáforas por eixo (carbon / water / paper) a partir de `specs["ludic_metaphors"]`.                                                | —           | —            |
-| `calculate_payback_snapshot`          | `net_brl = accumulated - fee × months`; status `"tag_paga"` ou `"em_payback"`. `@staticmethod`.                                             | —           | —            |
-| `process_transaction`                 | Orquestra todos os cálculos acima e monta o payload final (environmental, financial, comparison, storytelling, metadata, payback opcional). | —           | —            |
-| `_default_ludic_metaphors`            | Função standalone. Retorna metáforas padrão por eixo quando `specs["ludic_metaphors"]` está ausente.                                        | —           | —            |
+| `calculate_avoided_acceleration_fuel` | Retorna `accel_surge[category]` — volume fixo evitado ao não fazer parada na cabine.                                                        | Williams    | —            |
+| `calculate_paper_and_water_savings`   | Se `is_digital=True`: retorna CO₂e, água e tickets evitados por um ticket digital. Se `False`: zeros.                                       | Williams    | —            |
+| `resolve_fuel_price_brl_per_liter`    | Resolve R$/L por UF com 4 níveis de fallback. Retorna `(preço, uf_aplicada)`.                                                               | Williams    | —            |
+| `calculate_financial_savings`         | Soma `idle_brl + accel_brl + brake_brl + maint` → economia financeira detalhada em R$.                                                      | Williams    | —            |
+| `build_comparison`                    | Compara custo sem tag (baseline completo + parada) vs. com tag (tempo real, sem parada) e calcula deltas.                                   | Williams    | —            |
+| `get_ludic_metrics`                   | Métricas legado (retrocompatível): árvores, cargas de celular, filtros de café a partir de `ludic_factors`.                                 | Williams    | —            |
+| `get_ludic_metrics_by_axis`           | Gera ≥ 3 metáforas por eixo (carbon / water / paper) a partir de `specs["ludic_metaphors"]`.                                                | Williams    | —            |
+| `calculate_payback_snapshot`          | `net_brl = accumulated - fee × months`; status `"tag_paga"` ou `"em_payback"`. `@staticmethod`.                                             | Williams    | —            |
+| `process_transaction`                 | Orquestra todos os cálculos acima e monta o payload final (environmental, financial, comparison, storytelling, metadata, payback opcional). | Williams    | —            |
+| `_default_ludic_metaphors`            | Função standalone. Retorna metáforas padrão por eixo quando `specs["ludic_metaphors"]` está ausente.                                        | Williams    | —            |
 
 ---
 
