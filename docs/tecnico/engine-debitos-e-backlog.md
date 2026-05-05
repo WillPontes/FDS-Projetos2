@@ -36,6 +36,7 @@ Localização: [engine-calculo.md — Bloco 2 `VehicleDatabase`](engine-calculo.
 |------|-----------|
 | Headers Serpro | `headers={}` placeholder — preencher **Authorization** e cabeçalhos exigidos pelo estaleiro Serpro quando integrar de verdade. |
 | OpenAPI | Alinhar nomes de campos ao schema oficial (`consultarVeiculoPorPlaca`): peso → categoria, campo de combustível, etc. |
+| VehicleDatabase | Ajeitar a função `get_complete_vehicle_data`, pois, no final está retornando um veiculo que não existe. A função deve retornar uma `informação verdadeira` ou `Error`. |
 
 ---
 
