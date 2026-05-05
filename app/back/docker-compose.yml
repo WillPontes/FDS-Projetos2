@@ -28,12 +28,14 @@ services:
     env_file:
       - .env
     environment:
-      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      GOOGLE_APPLICATION_CREDENTIALS: /app/credentials.json
     depends_on:
       db:
         condition: service_healthy
     volumes:
       - ./src:/app/src
+      - ./credentials.json:/app/credentials.json
     command: >
       uv run uvicorn src.main:app
       --host 0.0.0.0 --port 8000 --reload

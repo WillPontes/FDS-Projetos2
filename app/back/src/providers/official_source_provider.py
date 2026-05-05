@@ -57,29 +57,114 @@ def _fallback_technical_specs() -> Dict[str, Any]:
 class OfficialSourceProvider:
     """
     Fornece technical_specs à CalcEngine.
-    Preços: carregados e persistidos a partir de consultas ao BigQuery sobre FUEL_PRICES_BQ_TABLE (job agendado).
+
+    Fluxo:
+    1. tenta buscar os dados técnicos no PostgreSQL;
+    2. se encontrar, retorna os dados do banco;
+    3. se não encontrar, usa o fallback;
+    4. salva o fallback no banco;
+    5. retorna os dados.
+
+    Preços: futuramente serão carregados e persistidos a partir de consultas ao BigQuery
+    sobre FUEL_PRICES_BQ_TABLE.
     """
 
     def __init__(self, db: Any):
         self.db = db
 
-    def sync_all_sources(self) -> None:
-        self._sync_fuel_prices_from_bq()
-        self._sync_ghg_factors_mcti()
+    async def sync_all_sources(self) -> None:
+        await self._sync_fuel_prices_from_bq()
+        await self._sync_ghg_factors_mcti()
 
-    def _sync_fuel_prices_from_bq(self) -> None:
+    async def _sync_fuel_prices_from_bq(self) -> None:
         """
-        Popula self.db com fuel_prices_by_uf + fuel_prices_meta a partir de FUEL_PRICES_BQ_TABLE.
-        TODO: implementar cliente BigQuery com query de agrupamento de preços por UF.
+        Busca preços recentes de combustíveis na Base dos Dados / BigQuery
+        e salva no PostgreSQL usando o repository.
         """
-        pass
 
-    def _sync_ghg_factors_mcti(self) -> None:
+        from datetime import date
+
+        from google.cloud import bigquery
+
+        client = bigquery.Client()
+
+        query = f"""
+            WITH latest_date AS (
+            SELECT MAX(data_coleta) AS max_data
+            FROM `{FUEL_PRICES_BQ_TABLE}.microdados`
+            )
+            SELECT
+            sigla_uf,
+            CASE
+                WHEN UPPER(produto) LIKE '%GASOLINA%' THEN 'gasolina_c'
+                WHEN UPPER(produto) LIKE '%ETANOL%' THEN 'etanol'
+                WHEN UPPER(produto) LIKE '%DIESEL%' AND UPPER(produto) LIKE '%S%10%' THEN 'diesel_s10'
+            END AS produto_padronizado,
+            AVG(preco_venda) AS preco_medio
+            FROM `{FUEL_PRICES_BQ_TABLE}.microdados`, latest_date
+            WHERE
+            data_coleta >= DATE_SUB(max_data, INTERVAL 30 DAY)
+            AND preco_venda IS NOT NULL
+            AND sigla_uf IS NOT NULL
+            AND (
+                UPPER(produto) LIKE '%GASOLINA%'
+                OR UPPER(produto) LIKE '%ETANOL%'
+                OR (UPPER(produto) LIKE '%DIESEL%' AND UPPER(produto) LIKE '%S%10%')
+            )
+            GROUP BY sigla_uf, produto_padronizado
+        """
+
+        rows = client.query(query).result()
+
+        fuel_prices_by_uf = {}
+
+        for row in rows:
+            uf = row.sigla_uf
+            produto = row.produto_padronizado
+
+            if produto is None:
+                continue
+
+            if row.preco_medio is None:
+                continue
+
+            preco = round(float(row.preco_medio), 2)
+
+            if uf not in fuel_prices_by_uf:
+                fuel_prices_by_uf[uf] = {}
+
+            fuel_prices_by_uf[uf][produto] = preco
+
+        current_specs = await self.db.get_current_technical_specs()
+
+        if not current_specs:
+            current_specs = _fallback_technical_specs()
+
+        current_specs["fuel_prices_by_uf"] = fuel_prices_by_uf
+        current_specs["fuel_prices_meta"] = {
+            "as_of": str(date.today()),
+            "aggregation": "average_by_uf_last_30_days_from_latest_available_date",
+            "source": "basedosdados:br_anp_precos_combustiveis.microdados",
+            "default_uf": "SP",
+        }
+
+        if "SP" in fuel_prices_by_uf:
+            current_specs["fuel_prices"] = fuel_prices_by_uf["SP"]
+
+        await self.db.save_technical_specs(current_specs)
+
+    async def _sync_ghg_factors_mcti(self) -> None:
         """Placeholder para fatores oficiais MCTI / GHG Protocol."""
         pass
 
-    def get_all_specs(self) -> Dict[str, Any]:
-        specs = self.db.get_current_technical_specs()
+    async def get_all_specs(self) -> Dict[str, Any]:
+        specs = await self.db.get_current_technical_specs()
+
         if specs:
             return specs
-        return _fallback_technical_specs()
+
+        fallback_specs = _fallback_technical_specs()
+
+        await self.db.save_technical_specs(fallback_specs)
+
+        return fallback_specs
