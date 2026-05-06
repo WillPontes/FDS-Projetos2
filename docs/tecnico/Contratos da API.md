@@ -6,7 +6,7 @@ Este documento mapeia as entradas e saídas esperadas para a API do sistema, bas
 
 ## 📱 Mobile App (Motorista)
 
-### Dashboard de Impacto (Telas 1 a 3)
+1) ### Dashboard de Impacto (Telas 1 a 3)
 Retorna as métricas de sustentabilidade e impacto do motorista.
 ```json
 {
@@ -19,7 +19,7 @@ Retorna as métricas de sustentabilidade e impacto do motorista.
 }
 ```
 
-### Histórico de Passagens (Tela 4)
+2) ### Histórico de Passagens (Tela 4)
 ```json
 {
   "total_carbon": "float",
@@ -34,7 +34,7 @@ Retorna as métricas de sustentabilidade e impacto do motorista.
   }
 }
 ```
-### Perfil do Motorista (Tela 6)
+3) ### Perfil do Motorista (Tela 6)
 ```json
 {
   "driver_name": "string",
@@ -44,7 +44,7 @@ Retorna as métricas de sustentabilidade e impacto do motorista.
   "status": "boolean"
 }
 ```
-### Eco-Routing / Sistema de Rotas (Telas 7 e 8)
+4) ### Eco-Routing / Sistema de Rotas (Telas 7 e 8)
 ```json
 {
   "destination": "string",
@@ -61,7 +61,7 @@ Retorna as métricas de sustentabilidade e impacto do motorista.
 
 ## 💻 Web Platform (Gestor de Frota)
 
-### Dashboard Principal e Gráficos (Tela 9)
+5) ### Dashboard Principal e Gráficos (Tela 9)
 ```json
 {
   "period_filter": "string",
@@ -95,7 +95,7 @@ Retorna as métricas de sustentabilidade e impacto do motorista.
 }
 ```
 
-### Gestão de Frota (Telas 10 e 11)
+6) ### Gestão de Frota (Telas 10 e 11)
 ```json
 {
   "search": "string",
@@ -112,7 +112,7 @@ Retorna as métricas de sustentabilidade e impacto do motorista.
 }
 ```
 
-### Configurações da Conta (Tela 12)
+7) ### Configurações da Conta (Tela 12)
 ```json
 {
   "name": "string",
