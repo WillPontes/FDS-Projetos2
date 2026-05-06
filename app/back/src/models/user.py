@@ -14,3 +14,10 @@ class UserPublic(SQLModel):
     id: int
     name: str
     email: str
+
+class CarPublic(SQLModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    placa: str
+    modelo: str
+    combustivel: str

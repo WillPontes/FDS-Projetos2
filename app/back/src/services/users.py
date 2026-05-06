@@ -9,3 +9,4 @@ from src.models.user import User
 async def list_users(session: AsyncSession) -> Sequence[User]:
     result = await session.execute(select(User))
     return result.scalars().all()
+
