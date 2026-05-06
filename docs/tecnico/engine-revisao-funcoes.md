@@ -36,8 +36,8 @@ Código de referência completo: [engine-calculo.md §6](engine-calculo.md#6-có
 
 | Função / Método             | Resumo                                                                                                                  | Responsável | Revisado por |
 | --------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ----------- | ------------ |
-| `get_complete_vehicle_data` | Banco de dados interno → API Senatran → perfil genérico de fallback. Retorna `plate`, `category`, `fuel_type`, `model`. | Lucas       | —            |
-| `_map_external_to_internal` | Traduz o JSON da API Senatran para o contrato interno da engine. Flex e GNV caem em `gasolina_c` por segurança.         | Lucas       | —            |
+| `get_complete_vehicle_data` | Banco de dados interno → API Senatran → perfil genérico de fallback. Retorna `plate`, `category`, `fuel_type`, `model`. | Lucas       | Lucas        |
+| `_map_external_to_internal` | Traduz o JSON da API Senatran para o contrato interno da engine. Flex e GNV caem em `gasolina_c` por segurança.         | Lucas       | Lucas        |
 
 ---
 
