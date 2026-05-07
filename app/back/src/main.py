@@ -3,10 +3,12 @@ from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.database.connection import engine, Base
-from src.models.technical_specs import TechnicalSpecs
+from sqlmodel import SQLModel
 
-from src.lib.db import create_db_and_tables
+from src.database.connection import engine
+
+from src.models.fuel_prices import FuelPriceByUF
+from src.models.technical_specs import TechnicalSpecs
 from src.routes import router
 
 load_dotenv()
@@ -15,7 +17,7 @@ load_dotenv()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(SQLModel.metadata.create_all)
 
     yield
 
