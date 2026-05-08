@@ -2,8 +2,8 @@ import { Fragment } from "react"
 import { Link, useMatches } from "@tanstack/react-router"
 
 const ROUTE_LABELS: Record<string, string> = {
-  "/fleet/": "Frota",
-  "/fleet/new": "Novo Veículo",
+  "/frota/": "Frota",
+  "/frota/adicionar": "Novo Veículo",
   "/users": "Usuários",
 }
 

@@ -2,10 +2,11 @@ import { useForm, type Resolver } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useNavigate } from "@tanstack/react-router"
 import { toast } from "sonner"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ControlledInput } from "@/components/form/controlled-input"
 import { ControlledSelect, type SelectOption } from "@/components/form/controlled-select"
+import { FormActions } from "@/components/form/form-actions"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { vehicleCreateSchema, type VehicleFormData } from "../schemas/vehicle-schema"
 import { useCreateVehicleMutation } from "../hooks/use-create-vehicle-mutation"
 
@@ -33,15 +34,15 @@ export function FleetFormPage() {
     mutate(data, {
       onSuccess: () => {
         toast.success("Veículo cadastrado com sucesso!")
-        navigate({ to: "/fleet" })
+        navigate({ to: "/frota" })
       },
     })
   }
 
   return (
-    <div className="mx-auto max-w-xl">
-      <Card>
-        <CardHeader>
+    <div className="mx-auto w-full max-w-xl px-1 sm:px-0">
+      <Card className="shadow-sm">
+        <CardHeader className="space-y-1 pb-4">
           <CardTitle>Novo Veículo</CardTitle>
         </CardHeader>
         <CardContent>
@@ -71,19 +72,19 @@ export function FleetFormPage() {
               label="Status"
               options={STATUS_OPTIONS}
             />
-            <div className="flex justify-end gap-2 pt-2">
+            <FormActions>
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => navigate({ to: "/fleet" })}
+                onClick={() => navigate({ to: "/frota" })}
                 disabled={isPending}
               >
                 Cancelar
               </Button>
               <Button type="submit" disabled={isPending}>
-                {isPending ? "Salvando..." : "Salvar"}
+                {isPending ? "Salvando…" : "Salvar"}
               </Button>
-            </div>
+            </FormActions>
           </form>
         </CardContent>
       </Card>

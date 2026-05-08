@@ -1,5 +1,11 @@
-import { type Control, Controller, type FieldPath, type FieldValues } from "react-hook-form"
-import { Label } from "@/components/ui/label"
+import {
+  type Control,
+  Controller,
+  type FieldPath,
+  type FieldValues,
+} from "react-hook-form"
+
+import { FormField, formFieldErrorId } from "@/components/form/form-field"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 
@@ -20,27 +26,31 @@ export function ControlledInput<T extends FieldValues>({
   placeholder,
   disabled,
 }: ControlledInputProps<T>) {
+  const id = String(name)
   return (
     <Controller
       control={control}
       name={name}
-      render={({ field, fieldState }) => (
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor={String(name)}>{label}</Label>
-          <Input
-            {...field}
-            id={String(name)}
-            type={type}
-            placeholder={placeholder}
-            disabled={disabled}
-            className={cn(fieldState.error && "border-destructive focus-visible:ring-destructive")}
-            value={field.value ?? ""}
-          />
-          {fieldState.error && (
-            <span className="text-xs text-destructive">{fieldState.error.message}</span>
-          )}
-        </div>
-      )}
+      render={({ field, fieldState }) => {
+        const errorMsg = fieldState.error?.message
+        return (
+          <FormField id={id} label={label} error={errorMsg}>
+            <Input
+              {...field}
+              id={id}
+              type={type}
+              placeholder={placeholder}
+              disabled={disabled}
+              aria-invalid={!!errorMsg}
+              aria-describedby={errorMsg ? formFieldErrorId(id) : undefined}
+              className={cn(
+                errorMsg && "border-destructive focus-visible:ring-destructive",
+              )}
+              value={field.value ?? ""}
+            />
+          </FormField>
+        )
+      }}
     />
   )
 }

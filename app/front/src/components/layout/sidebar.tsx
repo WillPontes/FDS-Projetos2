@@ -58,7 +58,7 @@ export function Sidebar() {
       </div>
       <nav className="flex flex-col gap-1 p-2">
         <SidebarLink to="/" label="Início" icon={Home} collapsed={collapsed} exact />
-        <SidebarLink to="/fleet" label="Frota" icon={Truck} collapsed={collapsed} exact />
+        <SidebarLink to="/frota" label="Frota" icon={Truck} collapsed={collapsed} exact />
       </nav>
     </aside>
   )
