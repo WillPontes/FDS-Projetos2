@@ -1,8 +1,8 @@
-import { useUsersQuery } from "@/api/users/hooks/queries/useUsersQuery";
-import { Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router"
+import { useGetUsers } from "@/api/users/hooks/useGetUsers"
 
-export function UsersPage() {
-  const { data, isPending, isError, error } = useUsersQuery();
+export const UsersPage = () => {
+  const { data, isPending, isError, error } = useGetUsers()
 
   return (
     <main className="mx-auto flex min-h-screen max-w-lg flex-col gap-6 p-8">
@@ -39,5 +39,5 @@ export function UsersPage() {
         </ul>
       )}
     </main>
-  );
+  )
 }

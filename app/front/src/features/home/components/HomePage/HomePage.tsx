@@ -1,6 +1,6 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router"
 
-export function HomePage() {
+export const HomePage = () => {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-4 p-8">
       <h1 className="text-4xl font-bold tracking-tight">Taggy EcoScore</h1>
@@ -12,5 +12,5 @@ export function HomePage() {
         Ver usuários
       </Link>
     </main>
-  );
+  )
 }

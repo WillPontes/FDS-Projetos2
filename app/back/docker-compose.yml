@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: taggy_postgres
+    container_name: taggy_db
     restart: unless-stopped
 
     environment:
@@ -47,6 +47,7 @@ services:
       - ./credentials.json:/app/credentials.json
 
     command: >
+      sh -c "uv run alembic upgrade head &&
       uv run uvicorn src.main:app
       --host 0.0.0.0
       --port 8000

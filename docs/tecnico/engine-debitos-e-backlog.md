@@ -30,13 +30,25 @@ O desenho cobre o **núcleo ESG + valor financeiro + orquestração** de evento.
 
 ## TODOs no código de referência (§6)
 
+Localização: [engine-calculo.md — Bloco 1 `CakcEngine`](engine-calculo.md#bloco-1--calcengine), nas funções `get_ludic_metrics`, `get_ludic_metrics_by_axis` , `calculate_payback_snapshot` , `process_transaction` e `_default_ludic_metaphors`.
+
+| Item | Descrição |
+|------|-----------|
+| get_ludic_metrics | Ajustar as métricas conforme os wireframes, ajustar a interação com o dicionário, divisão por 0 e fallbacks mais robustos. |
+| get_ludic_metrics_by_axis | Refatorar a busca dos itens de dicionários buscando Fallbacks mais robustos. |
+| calculate_payback_snapshot | Assegurar que em accumulated_savings_br1 e monthly_tag_fee_brl sejam em float e não tenham valores negativos. billing_months não poderá receber 0, no return, colocar o .round em monthly_tag_fee_br1 |
+| process_transaction | Em vehicle_data, context e payback, confirmar o uso de .get() para evitar falhas por chaves inexistentes, garantir que stops_avoided não seja fixado em 1 quando o context for estacionamento(não podemos focar exclusivamente nos pedágios) e assegurar que is_digital sofra conversão explícita para não aceitar strings como booleanos verdadeiros. |
+| _default_ludic_metaphors | Em "paper", "notebook" Trocar quantidade de folhas de caderno "50" pra "96" (média de páginas de um caderno). 
+---
+
 Localização: [engine-calculo.md — Bloco 2 `VehicleDatabase`](engine-calculo.md#bloco-2--vehicledatabase), no método `get_complete_vehicle_data` e em `_map_external_to_internal`.
 
 | Item | Descrição |
 |------|-----------|
 | Headers Serpro | `headers={}` placeholder — preencher **Authorization** e cabeçalhos exigidos pelo estaleiro Serpro quando integrar de verdade. |
 | OpenAPI | Alinhar nomes de campos ao schema oficial (`consultarVeiculoPorPlaca`): peso → categoria, campo de combustível, etc. |
-
+| VehicleDatabase | Ajeitar a função `get_complete_vehicle_data`, pois, no final está retornando um veiculo que não existe. A função deve retornar uma `informação verdadeira` ou `Error`. |
+| Remover fallbacks| Dados ausentes ou inválidos devem gerar erro, nunca valores inferidos.
 ---
 
 ## Melhorias possíveis (já documentadas no spec)
