@@ -8,8 +8,8 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from sqlalchemy.pool import NullPool
 from sqlmodel import SQLModel
 
-# CRITICAL: importar todos os models aqui — sem isso autogenerate ignora as tabelas.
-# Ao criar um novo model, adicionar o import neste bloco.
+from src.models.fuel_prices import FuelPriceByUF  # noqa: F401
+from src.models.technical_specs import TechnicalSpecs  # noqa: F401
 from src.models.user import User  # noqa: F401
 
 load_dotenv()
