@@ -1,9 +1,6 @@
 from datetime import datetime, timezone
-from typing import Any
 
-from pydantic import ConfigDict
-from sqlalchemy import Column, DateTime, String
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import Column, DateTime, Float, String
 from sqlmodel import Field, SQLModel
 
 
@@ -14,36 +11,22 @@ def utc_now() -> datetime:
 class FuelPriceByUF(SQLModel, table=True):
     __tablename__ = "fuel_prices_by_uf"
 
-    uf: str = Field(
-        sa_column=Column(String(2), primary_key=True, index=True),
-    )
+    id: int | None = Field(default=None, primary_key=True)
 
-    prices: dict[str, Any] = Field(
-        default_factory=dict,
-        sa_column=Column(JSONB, nullable=False),
-    )
+    uf: str = Field(sa_column=Column(
+        String(2), nullable=False, unique=True, index=True))
 
-    meta: dict[str, Any] = Field(
-        default_factory=dict,
-        sa_column=Column(JSONB, nullable=False),
-    )
+    price_diesel_s10: float | None = Field(
+        default=None, sa_column=Column(Float, nullable=True))
 
-    created_at: datetime = Field(
-        default_factory=utc_now,
-        sa_column=Column(DateTime(timezone=True), nullable=False),
-    )
+    price_gasolina_c: float | None = Field(
+        default=None, sa_column=Column(Float, nullable=True))
+
+    price_etanol: float | None = Field(
+        default=None, sa_column=Column(Float, nullable=True))
 
     updated_at: datetime = Field(
         default_factory=utc_now,
-        sa_column=Column(DateTime(timezone=True), nullable=False, onupdate=utc_now),
+        sa_column=Column(DateTime(timezone=True),
+                         nullable=False, onupdate=utc_now),
     )
-
-
-class FuelPriceByUFPublic(SQLModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    uf: str
-    prices: dict[str, Any]
-    meta: dict[str, Any]
-    created_at: datetime
-    updated_at: datetime

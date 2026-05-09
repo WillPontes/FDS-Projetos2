@@ -6,40 +6,34 @@ from src.providers.official_source_provider import OfficialSourceProvider
 from src.repositories.fuel_prices_repository import FuelPricesRepository
 from src.repositories.technical_specs_repository import TechnicalSpecsRepository
 
-router = APIRouter(tags=["Fuel Prices"])
+router = APIRouter(tags=["fuel_prices"])
+
+
+def _provider(db: AsyncSession) -> OfficialSourceProvider:
+    return OfficialSourceProvider(
+        technical_specs_repository=TechnicalSpecsRepository(db),
+        fuel_prices_repository=FuelPricesRepository(db),
+    )
 
 
 @router.post("/fuel-prices/sync")
 async def sync_fuel_prices(db: AsyncSession = Depends(get_db)):
-    technical_specs_repository = TechnicalSpecsRepository(db)
-    fuel_prices_repository = FuelPricesRepository(db)
-
-    provider = OfficialSourceProvider(
-        technical_specs_repository=technical_specs_repository,
-        fuel_prices_repository=fuel_prices_repository,
-    )
+    provider = _provider(db)
 
     await provider.sync_all_sources()
 
-    fuel_prices = await provider.get_all_fuel_prices()
+    fuel_prices = await provider.get_all_fuel_prices_dict()
 
     return {
-        "message": "Preços de combustíveis sincronizados com sucesso",
         "data": fuel_prices,
     }
 
 
 @router.get("/fuel-prices")
 async def get_fuel_prices(db: AsyncSession = Depends(get_db)):
-    technical_specs_repository = TechnicalSpecsRepository(db)
-    fuel_prices_repository = FuelPricesRepository(db)
+    provider = _provider(db)
 
-    provider = OfficialSourceProvider(
-        technical_specs_repository=technical_specs_repository,
-        fuel_prices_repository=fuel_prices_repository,
-    )
-
-    fuel_prices = await provider.get_all_fuel_prices()
+    fuel_prices = await provider.get_all_fuel_prices_dict()
 
     if not fuel_prices:
         raise HTTPException(
@@ -48,7 +42,6 @@ async def get_fuel_prices(db: AsyncSession = Depends(get_db)):
         )
 
     return {
-        "message": "Preços de combustíveis carregados com sucesso",
         "data": fuel_prices,
     }
 
@@ -58,15 +51,9 @@ async def get_fuel_price_by_uf(
     uf: str,
     db: AsyncSession = Depends(get_db),
 ):
-    technical_specs_repository = TechnicalSpecsRepository(db)
-    fuel_prices_repository = FuelPricesRepository(db)
+    provider = _provider(db)
 
-    provider = OfficialSourceProvider(
-        technical_specs_repository=technical_specs_repository,
-        fuel_prices_repository=fuel_prices_repository,
-    )
-
-    fuel_price = await provider.get_fuel_price_by_uf(uf)
+    fuel_price = await provider.get_fuel_price_by_uf_dict(uf)
 
     if not fuel_price:
         raise HTTPException(
@@ -75,6 +62,5 @@ async def get_fuel_price_by_uf(
         )
 
     return {
-        "message": f"Preços de combustíveis da UF {uf.upper()} carregados com sucesso",
         "data": fuel_price,
     }

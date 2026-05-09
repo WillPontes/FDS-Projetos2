@@ -7,8 +7,6 @@ from sqlmodel import SQLModel
 
 from src.database.connection import engine
 
-from src.models.fuel_prices import FuelPriceByUF
-from src.models.technical_specs import TechnicalSpecs
 from src.routes import router
 
 load_dotenv()
@@ -18,7 +16,6 @@ load_dotenv()
 async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(SQLModel.metadata.create_all)
-
     yield
 
 

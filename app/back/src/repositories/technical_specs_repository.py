@@ -7,126 +7,95 @@ from src.models.technical_specs import TechnicalSpecs
 
 
 class TechnicalSpecsRepository:
-    """
-    Repository responsável por operações de banco da tabela technical_specs.
-    Usa métodos padronizados: get_by_id, get_all, create, update, delete e upsert_by_id.
-    """
+    """Persistência da tabela technical_specs (documento global tipicamente id=1)."""
 
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_by_id(self, id: int) -> Optional[Dict[str, Any]]:
+    async def get_by_id(self, id: int) -> Optional[TechnicalSpecs]:
         result = await self.session.execute(
             select(TechnicalSpecs).where(TechnicalSpecs.id == id)
         )
+        return result.scalar_one_or_none()
 
-        specs = result.scalar_one_or_none()
-
-        if specs is None:
-            return None
-
-        return self._to_dict(specs)
-
-    async def get_all(self) -> List[Dict[str, Any]]:
+    async def get_all(self) -> List[TechnicalSpecs]:
         result = await self.session.execute(select(TechnicalSpecs))
+        return list(result.scalars().all())
 
-        rows = result.scalars().all()
-
-        return [self._to_dict(row) for row in rows]
-
-    async def create(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    async def create(self, data: Dict[str, Any]) -> TechnicalSpecs:
         fields = self._extract_fields(data)
-
         specs = TechnicalSpecs(**fields)
-
         self.session.add(specs)
         await self.session.commit()
         await self.session.refresh(specs)
+        return specs
 
-        return self._to_dict(specs)
-
-    async def update(self, id: int, data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    async def update(self, id: int, data: Dict[str, Any]) -> Optional[TechnicalSpecs]:
         result = await self.session.execute(
             select(TechnicalSpecs).where(TechnicalSpecs.id == id)
         )
-
         specs = result.scalar_one_or_none()
-
         if specs is None:
             return None
-
         fields = self._extract_fields(data)
-
         for field_name, field_value in fields.items():
             setattr(specs, field_name, field_value)
-
         await self.session.commit()
         await self.session.refresh(specs)
-
-        return self._to_dict(specs)
+        return specs
 
     async def delete(self, id: int) -> bool:
         result = await self.session.execute(
             select(TechnicalSpecs).where(TechnicalSpecs.id == id)
         )
-
         specs = result.scalar_one_or_none()
-
         if specs is None:
             return False
-
         await self.session.delete(specs)
         await self.session.commit()
-
         return True
 
-    async def upsert_by_id(self, id: int, data: Dict[str, Any]) -> Dict[str, Any]:
+    async def upsert_by_id(self, id: int, data: Dict[str, Any]) -> TechnicalSpecs:
         result = await self.session.execute(
             select(TechnicalSpecs).where(TechnicalSpecs.id == id)
         )
-
         specs = result.scalar_one_or_none()
         fields = self._extract_fields(data)
-
         if specs is None:
             specs = TechnicalSpecs(id=id, **fields)
             self.session.add(specs)
         else:
             for field_name, field_value in fields.items():
                 setattr(specs, field_name, field_value)
-
         await self.session.commit()
         await self.session.refresh(specs)
-
-        return self._to_dict(specs)
-
-    def _to_dict(self, specs: TechnicalSpecs) -> Dict[str, Any]:
-        return {
-            "id": specs.id,
-            "emission_factors": specs.emission_factors,
-            "idle_rates": specs.idle_rates,
-            "paper_impact": specs.paper_impact,
-            "ludic_factors": specs.ludic_factors,
-            "ludic_metaphors": specs.ludic_metaphors,
-            "baselines": specs.baselines,
-            "maint_costs": specs.maint_costs,
-            "brake_cost_per_stop_brl": specs.brake_cost_per_stop_brl,
-            "accel_surge": specs.accel_surge,
-            "benchmarks": specs.benchmarks,
-            "created_at": specs.created_at,
-            "updated_at": specs.updated_at,
-        }
+        return specs
 
     def _extract_fields(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        return {
-            "emission_factors": data.get("emission_factors", {}),
-            "idle_rates": data.get("idle_rates", {}),
-            "paper_impact": data.get("paper_impact", {}),
-            "ludic_factors": data.get("ludic_factors", {}),
-            "ludic_metaphors": data.get("ludic_metaphors", {}),
-            "baselines": data.get("baselines", {}),
-            "maint_costs": data.get("maint_costs", {}),
-            "brake_cost_per_stop_brl": data.get("brake_cost_per_stop_brl", {}),
-            "accel_surge": data.get("accel_surge", {}),
-            "benchmarks": data.get("benchmarks", {}),
-        }
+        """Extrai apenas campos persistidos; ignorando id/timestamps quando omitidos."""
+        keys = (
+            "emission_factor_diesel_s10",
+            "emission_factor_gasolina_c",
+            "emission_factor_etanol",
+            "idle_rate_leve",
+            "idle_rate_pesado",
+            "paper_co2_per_ticket",
+            "paper_water_per_ticket",
+            "ludic_tree_year_absorption",
+            "ludic_phone_charge_factor",
+            "ludic_coffee_factor",
+            "ludic_metaphor_units",
+            "baseline_pedagio_avg_wait_sec",
+            "baseline_estacionamento_avg_wait_sec",
+            "maint_cost_leve",
+            "maint_cost_pesado",
+            "accel_surge_leve",
+            "accel_surge_pesado",
+            "benchmark_kg_co2_per_km_car",
+            "benchmark_kg_co2_per_burger",
+        )
+        out: Dict[str, Any] = {}
+        for k in keys:
+            if k in data:
+                out[k] = data[k]
+        return out

@@ -7,132 +7,58 @@ from src.models.fuel_prices import FuelPriceByUF
 
 
 class FuelPricesRepository:
-    """
-    Repository responsável por operações da tabela fuel_prices_by_uf.
-    Cada UF é persistida em uma linha própria.
-    Usa métodos padronizados: get_by_id, get_all, create, update, delete e upsert_by_id.
-    """
+    """Uma linha por UF (uf único); PK numérica id."""
 
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_by_id(self, uf: str) -> Optional[Dict[str, Any]]:
-        uf = uf.upper()
-
+    async def get_by_uf(self, uf: str) -> Optional[FuelPriceByUF]:
+        uf = uf.upper().strip()
         result = await self.session.execute(
             select(FuelPriceByUF).where(FuelPriceByUF.uf == uf)
         )
+        return result.scalar_one_or_none()
 
-        fuel_price = result.scalar_one_or_none()
-
-        if fuel_price is None:
-            return None
-
-        return self._to_dict(fuel_price)
-
-    async def get_all(self) -> List[Dict[str, Any]]:
+    async def get_all(self) -> List[FuelPriceByUF]:
         result = await self.session.execute(select(FuelPriceByUF))
+        return list(result.scalars().all())
 
-        rows = result.scalars().all()
-
-        return [self._to_dict(row) for row in rows]
-
-    async def create(
+    async def upsert_by_uf(
         self,
         uf: str,
-        prices: Dict[str, Any],
-        meta: Dict[str, Any],
-    ) -> Dict[str, Any]:
-        fuel_price = FuelPriceByUF(
-            uf=uf.upper(),
-            prices=prices,
-            meta=meta,
-        )
-
-        self.session.add(fuel_price)
-
-        await self.session.commit()
-        await self.session.refresh(fuel_price)
-
-        return self._to_dict(fuel_price)
-
-    async def update(
-        self,
-        uf: str,
-        prices: Dict[str, Any],
-        meta: Dict[str, Any],
-    ) -> Optional[Dict[str, Any]]:
-        uf = uf.upper()
-
+        *,
+        price_diesel_s10: float | None,
+        price_gasolina_c: float | None,
+        price_etanol: float | None,
+    ) -> FuelPriceByUF:
+        uf = uf.upper().strip()
         result = await self.session.execute(
             select(FuelPriceByUF).where(FuelPriceByUF.uf == uf)
         )
-
-        fuel_price = result.scalar_one_or_none()
-
-        if fuel_price is None:
-            return None
-
-        fuel_price.prices = prices
-        fuel_price.meta = meta
-
-        await self.session.commit()
-        await self.session.refresh(fuel_price)
-
-        return self._to_dict(fuel_price)
-
-    async def delete(self, uf: str) -> bool:
-        uf = uf.upper()
-
-        result = await self.session.execute(
-            select(FuelPriceByUF).where(FuelPriceByUF.uf == uf)
-        )
-
-        fuel_price = result.scalar_one_or_none()
-
-        if fuel_price is None:
-            return False
-
-        await self.session.delete(fuel_price)
-        await self.session.commit()
-
-        return True
-
-    async def upsert_by_id(
-        self,
-        uf: str,
-        prices: Dict[str, Any],
-        meta: Dict[str, Any],
-    ) -> Dict[str, Any]:
-        uf = uf.upper()
-
-        result = await self.session.execute(
-            select(FuelPriceByUF).where(FuelPriceByUF.uf == uf)
-        )
-
-        fuel_price = result.scalar_one_or_none()
-
-        if fuel_price is None:
-            fuel_price = FuelPriceByUF(
+        row = result.scalar_one_or_none()
+        if row is None:
+            row = FuelPriceByUF(
                 uf=uf,
-                prices=prices,
-                meta=meta,
+                price_diesel_s10=price_diesel_s10,
+                price_gasolina_c=price_gasolina_c,
+                price_etanol=price_etanol,
             )
-            self.session.add(fuel_price)
+            self.session.add(row)
         else:
-            fuel_price.prices = prices
-            fuel_price.meta = meta
-
+            row.price_diesel_s10 = price_diesel_s10
+            row.price_gasolina_c = price_gasolina_c
+            row.price_etanol = price_etanol
         await self.session.commit()
-        await self.session.refresh(fuel_price)
+        await self.session.refresh(row)
+        return row
 
-        return self._to_dict(fuel_price)
-
-    def _to_dict(self, fuel_price: FuelPriceByUF) -> Dict[str, Any]:
-        return {
-            "uf": fuel_price.uf,
-            "prices": fuel_price.prices,
-            "meta": fuel_price.meta,
-            "created_at": fuel_price.created_at,
-            "updated_at": fuel_price.updated_at,
-        }
+    async def delete_by_uf(self, uf: str) -> bool:
+        result = await self.session.execute(
+            select(FuelPriceByUF).where(FuelPriceByUF.uf == uf)
+        )
+        row = result.scalar_one_or_none()
+        if row is None:
+            return False
+        await self.session.delete(row)
+        await self.session.commit()
+        return True
