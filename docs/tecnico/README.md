@@ -6,18 +6,14 @@ O **motor de impacto por passagem** estima CO₂e, água, papel, R$ e storytelli
 
 1. **[engine-visao-geral.md](engine-visao-geral.md)** — fluxo em texto, diagramas Mermaid, assinaturas das classes.
 2. **[engine-calculo.md](engine-calculo.md)** — fluxo de dados, dicionário `technical_specs`, código Python de referência (§6), limitações (§7).
-3. **[guia-desenvolvedor.md](guia-desenvolvedor.md)** — webhook, validação das etapas 1–3, tabela do pipeline `process_transaction`, exemplo JSON, roteiro de revisão para dev iniciante e FAQ.
-
-Premissas de negócio: [Premissas do desafio](../negocio/premissas-desafio.md). User stories: [user-stories.md](../produto/user-stories.md).
+   Premissas de negócio: [Premissas do desafio](../negocio/premissas-desafio.md). User stories: [user-stories.md](../produto/user-stories.md).
 
 ## Índice dos arquivos
 
-| Arquivo | Abrir quando |
-|---------|--------------|
-| [engine-visao-geral.md](engine-visao-geral.md) | Entender quem chama quem e a sequência até o payload. |
-| [engine-calculo.md](engine-calculo.md) | Implementar ou auditar fórmulas, specs e código de referência. |
-| [guia-desenvolvedor.md](guia-desenvolvedor.md) | Validar campos do webhook, ver exemplo trabalhado, revisar a engine passo a passo ou tirar dúvidas. |
+| Arquivo                                                    | Abrir quando                                                                     |
+| ---------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| [engine-visao-geral.md](engine-visao-geral.md)             | Entender quem chama quem e a sequência até o payload.                            |
+| [engine-calculo.md](engine-calculo.md)                     | Implementar ou auditar fórmulas, specs e código de referência.                   |
 | [engine-debitos-e-backlog.md](engine-debitos-e-backlog.md) | Revisão de cobertura das user stories, TODOs do código §6, melhorias conhecidas. |
-| [engine-revisao-funcoes.md](engine-revisao-funcoes.md) | Registrar quem revisou cada função/método da engine. |
 
 Em caso de divergência entre a visão geral e o spec, prevalece **engine-calculo.md** até alinhamento explícito.

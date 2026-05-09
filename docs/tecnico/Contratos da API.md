@@ -1,6 +1,6 @@
 # Documentação de Contratos da API
 
->Este documento mapeia as entradas e saídas esperadas para a API do sistema, baseando-se nas telas da versão mobile e da versão desktop. Os dados estão mapeados no formato `chave: tipo`, utilizando dicionários (objetos).
+> Este documento mapeia as entradas e saídas esperadas para a API do sistema, baseando-se nas telas da versão mobile e da versão desktop. Os dados estão mapeados no formato `chave: tipo`, utilizando dicionários (objetos).
 
 ---
 
@@ -17,13 +17,14 @@ Retorna as métricas de sustentabilidade e impacto ambiental do motorista, organ
 `Method GET `
 
 **Response 200 OK**
+
 ```json
 {
   "days_saved_without_queues": "int",
-  "tree_saved":                "int",
-  "total_carbon":              "float",
-  "total_water_saved":         "float",
-  "paper_saved":               "float"
+  "tree_saved": "int",
+  "total_carbon": "float",
+  "total_water_saved": "float",
+  "paper_saved": "float"
 }
 ```
 
@@ -32,9 +33,10 @@ Retorna as métricas de sustentabilidade e impacto ambiental do motorista, organ
 `Method GET `
 
 **Response 200 OK**
+
 ```json
 {
-  "weekly_goal":       "int",
+  "weekly_goal": "int",
   "weekly_percentage": "int"
 }
 ```
@@ -48,11 +50,12 @@ Retorna as métricas de sustentabilidade e impacto ambiental do motorista, organ
 `Method GET `
 
 **Response 200 OK**
+
 ```json
 {
   "total_passages": "int",
-  "total_carbon":   "float",
-  "hours_saved":    "float"
+  "total_carbon": "float",
+  "hours_saved": "float"
 }
 ```
 
@@ -61,24 +64,27 @@ Retorna as métricas de sustentabilidade e impacto ambiental do motorista, organ
 `Method GET `
 
 **Query Params**
+
 ```json
 {
-  "page":      "int | optional",
+  "page": "int | optional",
   "page_size": "int | optional"
 }
 ```
 
 **Response 200 OK**
+
 ```json
 {
   "total_results": "int",
+  "page": "int",
   "last_passages": [
     {
-      "local_name":       "string",
+      "local_name": "string",
       "passage_datetime": "string",
-      "carbon":           "int",
-      "water_saved":      "int",
-      "time":             "int"
+      "carbon": "int",
+      "water_saved": "int",
+      "time": "int"
     }
   ]
 }
@@ -91,13 +97,14 @@ Retorna as métricas de sustentabilidade e impacto ambiental do motorista, organ
 `Method GET `
 
 **Response 200 OK**
+
 ```json
 {
-  "name":     "string",
-  "role":     "driver | manager | admin",
-  "plate":    "string | optional",
+  "name": "string",
+  "role": "driver | manager | admin",
+  "plate": "string | optional",
   "fleet_id": "string | optional",
-  "status":   "boolean"
+  "status": "boolean"
 }
 ```
 
@@ -110,6 +117,7 @@ Retorna as métricas de sustentabilidade e impacto ambiental do motorista, organ
 `Method POST `
 
 **Request Body**
+
 ```json
 {
   "destination": "string",
@@ -125,10 +133,11 @@ Retorna as métricas de sustentabilidade e impacto ambiental do motorista, organ
 ```
 
 **Response 200 OK**
+
 ```json
 {
   "carbon_estimate": "int",
-  "time_estimate":   "int"
+  "time_estimate": "int"
 }
 ```
 
@@ -141,6 +150,7 @@ Retorna as métricas de sustentabilidade e impacto ambiental do motorista, organ
 ### 5. Dashboard Principal e Gráficos (Tela 9)
 
 > Cada endpoint abaixo aceita os seguintes query params opcionais como filtro:
+>
 > - `period_filter[start_date]`: string
 > - `period_filter[end_date]`: string
 > - `vehicle_plate_filter`: string
@@ -150,12 +160,13 @@ Retorna as métricas de sustentabilidade e impacto ambiental do motorista, organ
 `Method GET `
 
 **Response 200 OK**
+
 ```json
 {
-  "total_co2_avoided_kg":    "float",
+  "total_co2_avoided_kg": "float",
   "total_fuel_saved_liters": "float",
-  "accumulated_economy":     "float",
-  "active_tags":             "int"
+  "accumulated_economy": "float",
+  "active_tags": "int"
 }
 ```
 
@@ -164,11 +175,12 @@ Retorna as métricas de sustentabilidade e impacto ambiental do motorista, organ
 `Method GET `
 
 **Response 200 OK**
+
 ```json
 {
   "emissions_by_state_map": [
     {
-      "state_uf":           "string",
+      "state_uf": "string",
       "co2_emission_value": "float"
     }
   ]
@@ -180,12 +192,13 @@ Retorna as métricas de sustentabilidade e impacto ambiental do motorista, organ
 `Method GET `
 
 **Response 200 OK**
+
 ```json
 {
   "monthly_expenses_chart": [
     {
-      "month":                "string",
-      "expenses_with_tag":    "float",
+      "month": "string",
+      "expenses_with_tag": "float",
       "expenses_without_tag": "float"
     }
   ]
@@ -197,15 +210,16 @@ Retorna as métricas de sustentabilidade e impacto ambiental do motorista, organ
 `Method GET `
 
 **Response 200 OK**
+
 ```json
 {
   "top_efficient_vehicles": [
     {
-      "rank":                        "int",
-      "plate":                       "string",
-      "driver_name":                 "string",
+      "rank": "int",
+      "plate": "string",
+      "driver_name": "string",
       "efficiency_score_percentage": "float",
-      "total_economy":               "float"
+      "total_economy": "float"
     }
   ]
 }
@@ -220,27 +234,30 @@ Retorna as métricas de sustentabilidade e impacto ambiental do motorista, organ
 `Method GET `
 
 **Query Params**
+
 ```json
 {
-  "search":      "string | optional",
+  "search": "string | optional",
   "fuel_filter": "gasolina | diesel | flex | etanol | optional",
-  "start_date":  "string | optional",
-  "end_date":    "string | optional",
-  "page":        "int | optional",
-  "page_size":   "int | optional"
+  "start_date": "string | optional",
+  "end_date": "string | optional",
+  "page": "int | optional",
+  "page_size": "int | optional"
 }
 ```
 
 **Response 200 OK**
+
 ```json
 {
   "total_results": "int",
+  "page": "int",
   "vehicles_list": [
     {
-      "tag_series":        "string",
-      "plate":             "string",
-      "vehicle_model":     "string",
-      "fuel_type":         "string",
+      "tag_series": "string",
+      "plate": "string",
+      "vehicle_model": "string",
+      "fuel_type": "string",
       "installation_date": "string"
     }
   ]
@@ -252,24 +269,35 @@ Retorna as métricas de sustentabilidade e impacto ambiental do motorista, organ
 `Method POST `
 
 **Request Body**
+
 ```json
 {
-  "plate":             "string",
-  "vehicle_model":     "string",
-  "fuel_type":         "gasolina | diesel | flex | etanol",
+  "plate": "string",
+  "vehicle_model": "string",
+  "fuel_type": "gasolina | diesel | flex | etanol",
   "installation_date": "string"
 }
 ```
 
 **Response 201 Created**
+
 ```json
 {
   "vehicle_id": "string",
-  "message":    "Veículo cadastrado com sucesso"
+  "message": "Veículo cadastrado com sucesso"
 }
 ```
 
-**Response 422 Unprocessable Entity**
+**Response 400 Bad Request**
+
+```json
+{
+  "message": "Erro ao cadastrar veículo"
+}
+```
+
+**Response 500 Internal Server Error**
+
 ```json
 {
   "message": "Erro ao cadastrar veículo"
@@ -281,29 +309,41 @@ Retorna as métricas de sustentabilidade e impacto ambiental do motorista, organ
 `Method PUT `
 
 **Path Params**
+
 ```
 vehicle_id: string
 ```
 
 **Request Body**
+
 ```json
 {
-  "plate":             "string | optional",
-  "vehicle_model":     "string | optional",
-  "fuel_type":         "gasolina | diesel | flex | etanol | optional",
+  "plate": "string | optional",
+  "vehicle_model": "string | optional",
+  "fuel_type": "gasolina | diesel | flex | etanol | optional",
   "installation_date": "string | optional"
 }
 ```
 
 **Response 200 OK**
+
 ```json
 {
   "vehicle_id": "string",
-  "message":    "Veículo editado com sucesso"
+  "message": "Veículo editado com sucesso"
 }
 ```
 
-**Response 422 Unprocessable Entity**
+**Response 400 Bad Request**
+
+```json
+{
+  "message": "Erro ao editar veículo"
+}
+```
+
+**Response 500 Internal Server Error**
+
 ```json
 {
   "message": "Erro ao editar veículo"
@@ -315,18 +355,29 @@ vehicle_id: string
 `Method DELETE `
 
 **Path Params**
+
 ```
 vehicle_id: string
 ```
 
 **Response 200 OK**
+
 ```json
 {
   "message": "Veículo excluído com sucesso"
 }
 ```
 
-**Response 422 Unprocessable Entity**
+**Response 400 Bad Request**
+
+```json
+{
+  "message": "Erro ao excluir veículo"
+}
+```
+
+**Response 500 Internal Server Error**
+
 ```json
 {
   "message": "Erro ao excluir veículo"
@@ -338,17 +389,19 @@ vehicle_id: string
 `Method POST `
 
 **Request Body** `multipart/form-data`
+
 ```
 file: File   // .csv com colunas: plate, vehicle_model, fuel_type, installation_date
 ```
 
 **Response 200 OK**
+
 ```json
 {
   "imported_count": "int",
   "errors": [
     {
-      "row":     "int",
+      "row": "int",
       "message": "string"
     }
   ]
@@ -360,25 +413,28 @@ file: File   // .csv com colunas: plate, vehicle_model, fuel_type, installation_
 `Method GET `
 
 **Query Params**
+
 ```json
 {
-  "filter_1": "string | optional",
-  "filter_2": "string | optional",
-  "filter_3": "string | optional"
+  "start_date": "string | optional",
+  "end_date": "string | optional",
+  "fuel_type": "string | optional"
 }
 ```
 
 **Response 200 OK**
+
 ```json
 {
   "total_results": "int",
   "vehicles_list": [
     {
-      "tag_series":        "string",
-      "plate":             "string",
-      "vehicle_model":     "string",
-      "fuel_type":         "string",
-      "installation_date": "string"
+      "tag_series": "string",
+      "plate": "string",
+      "vehicle_model": "string",
+      "fuel_type": "string",
+      "installation_date": "string",
+      "total_emissions": "float"
     }
   ]
 }
@@ -393,10 +449,11 @@ file: File   // .csv com colunas: plate, vehicle_model, fuel_type, installation_
 `Method GET `
 
 **Response 200 OK**
+
 ```json
 {
-  "name":            "string",
-  "email":           "string",
+  "name": "string",
+  "email": "string",
   "two_factor_auth": "boolean"
 }
 ```
@@ -406,22 +463,33 @@ file: File   // .csv com colunas: plate, vehicle_model, fuel_type, installation_
 `Method PUT `
 
 **Request Body**
+
 ```json
 {
-  "name":            "string | optional",
-  "email":           "string | optional",
+  "name": "string | optional",
+  "email": "string | optional",
   "two_factor_auth": "boolean | optional"
 }
 ```
 
 **Response 200 OK**
+
 ```json
 {
   "message": "Configurações atualizadas com sucesso"
 }
 ```
 
-**Response 422 Unprocessable Entity**
+**Response 400 Bad Request**
+
+```json
+{
+  "message": "Erro ao atualizar configurações"
+}
+```
+
+**Response 500 Internal Server Error**
+
 ```json
 {
   "message": "Erro ao atualizar configurações"
@@ -433,21 +501,33 @@ file: File   // .csv com colunas: plate, vehicle_model, fuel_type, installation_
 `Method PUT `
 
 **Request Body**
+
 ```json
 {
   "current_password": "string",
-  "new_password":     "string"
+  "new_password": "string",
+  "confirm_password": "string"
 }
 ```
 
 **Response 200 OK**
+
 ```json
 {
   "message": "Senha alterada com sucesso"
 }
 ```
 
-**Response 422 Unprocessable Entity**
+**Response 400 Bad Request**
+
+```json
+{
+  "message": "Erro ao alterar senha"
+}
+```
+
+**Response 500 Internal Server Error**
+
 ```json
 {
   "message": "Erro ao alterar senha"
