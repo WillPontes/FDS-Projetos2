@@ -1,59 +1,23 @@
-from typing import Any, Literal
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.connection import get_db
+from src.dto.transactions import ProcessTransactionBody, TransactionResultDTO
 from src.engine import CalcEngine, CalcEngineError, TransactionOrchestrator
-from src.providers.official_source_provider import OfficialSourceProvider
-from src.repositories.fuel_prices_repository import FuelPricesRepository
-from src.repositories.technical_specs_repository import TechnicalSpecsRepository
+from src.services.technical_specs import get_all_specs
 
-router = APIRouter(tags=["transactions"])
+router = APIRouter(prefix="/transactions", tags=["Transactions"])
 
 
-class VehicleIn(BaseModel):
-    category: Literal["leve", "pesado"]
-    fuel_type: Literal["diesel_s10", "gasolina_c", "etanol"]
-    model: str = Field(min_length=1, max_length=256)
-
-
-class PaybackIn(BaseModel):
-    accumulated_savings_brl: float
-    monthly_tag_fee_brl: float
-    billing_months: float = Field(gt=0)
-
-
-class ProcessTransactionBody(BaseModel):
-    plate: str = Field(min_length=1, max_length=10)
-    elapsed_time: int = Field(ge=0)
-    context: Literal["pedagio", "estacionamento"]
-    uf_passagem: str = Field(
-        min_length=2,
-        max_length=2,
-        pattern=r"^[A-Za-z]{2}$",
-    )
-    is_digital: bool = True
-    vehicle: VehicleIn
-    payback: PaybackIn | None = None
-
-
-def _provider(db: AsyncSession) -> OfficialSourceProvider:
-    return OfficialSourceProvider(
-        technical_specs_repository=TechnicalSpecsRepository(db),
-        fuel_prices_repository=FuelPricesRepository(db),
-    )
-
-
-@router.post("/transactions/process")
+@router.post("/process", response_model=TransactionResultDTO)
 async def process_transaction(
     body: ProcessTransactionBody,
     db: AsyncSession = Depends(get_db),
-) -> dict[str, Any]:
-    provider = _provider(db)
+):
     try:
-        specs = await provider.get_all_specs()
+        specs = await get_all_specs(db)
     except CalcEngineError as e:
         raise HTTPException(status_code=422, detail=str(e)) from e
 

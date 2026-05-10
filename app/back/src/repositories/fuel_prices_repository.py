@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Optional
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -19,7 +19,7 @@ class FuelPricesRepository:
         )
         return result.scalar_one_or_none()
 
-    async def get_all(self) -> List[FuelPriceByUF]:
+    async def get_all(self) -> list[FuelPriceByUF]:
         result = await self.session.execute(select(FuelPriceByUF))
         return list(result.scalars().all())
 
@@ -48,8 +48,7 @@ class FuelPricesRepository:
             row.price_diesel_s10 = price_diesel_s10
             row.price_gasolina_c = price_gasolina_c
             row.price_etanol = price_etanol
-        await self.session.commit()
-        await self.session.refresh(row)
+        await self.session.flush()
         return row
 
     async def delete_by_uf(self, uf: str) -> bool:
@@ -59,6 +58,5 @@ class FuelPricesRepository:
         row = result.scalar_one_or_none()
         if row is None:
             return False
-        await self.session.delete(row)
-        await self.session.commit()
+        self.session.delete(row)
         return True

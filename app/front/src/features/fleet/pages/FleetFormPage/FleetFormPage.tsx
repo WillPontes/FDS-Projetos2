@@ -5,22 +5,14 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ControlledInput } from "@/components/ControlledInput";
-import {
-  ControlledSelect,
-  type SelectOption,
-} from "@/components/ControlledSelect";
+import { ControlledSelect } from "@/components/ControlledSelect";
 import {
   vehicleCreateSchema,
   type VehicleFormData,
 } from "../../schemas/vehicle-schema";
 import { useCreateVehicle } from "../../hooks/useCreateVehicle";
-import { FormActions } from "@/components/form/form-actions";
-
-const STATUS_OPTIONS: SelectOption[] = [
-  { label: "Ativo", value: "active" },
-  { label: "Inativo", value: "inactive" },
-  { label: "Em Manutenção", value: "maintenance" },
-];
+import { FormActions } from "@/components/form/FormActions";
+import { STATUS_OPTIONS } from "../../constants";
 
 export const FleetFormPage = () => {
   const navigate = useNavigate();
