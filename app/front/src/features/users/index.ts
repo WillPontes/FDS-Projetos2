@@ -1,1 +1,1 @@
-export { UsersPage } from "./components/UsersPage";
+export { UsersListPage } from "./pages/UsersListPage"

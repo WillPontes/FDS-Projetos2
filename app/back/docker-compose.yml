@@ -1,16 +1,22 @@
 services:
   db:
     image: postgres:16-alpine
+    container_name: taggy_db
+    restart: unless-stopped
+
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: taggy
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
     volumes:
       - taggy_pgdata:/var/lib/postgresql/data
+
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
+
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d taggy"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 3s
       timeout: 5s
       retries: 10
@@ -19,21 +25,32 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+
+    container_name: taggy_api
+    restart: unless-stopped
+
     ports:
       - "${API_PORT:-8000}:8000"
+
     env_file:
       - .env
+
     environment:
-      # Sobrepõe .env local: dentro da rede Compose o host do Postgres é `db`
-      DATABASE_URL: postgresql+asyncpg://postgres:postgres@db:5432/taggy
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}
+
     depends_on:
       db:
         condition: service_healthy
+
     volumes:
       - ./src:/app/src
+
     command: >
+      sh -c "uv run alembic upgrade head &&
       uv run uvicorn src.main:app
-      --host 0.0.0.0 --port 8000 --reload
+      --host 0.0.0.0
+      --port 8000
+      --reload"
 
 volumes:
   taggy_pgdata:

@@ -1,0 +1,1 @@
+export { useGetVehicles } from "./useGetVehicles"

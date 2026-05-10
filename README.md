@@ -33,7 +33,7 @@ O projeto está dividido em 5 pilares estratégicos:
 
 ## User Stories
 
-O detalhe **Card / Conversation / Confirmation (CCC)**, épicos e links para cartões no Trello estão em **[docs/user-stories.md](docs/user-stories.md)**. Quadro: [cesar-projetos-2](https://trello.com/b/alfFb7dV/cesar-projetos-2). Diagramas de atividades: [`docs/diagramas/specs/`](docs/diagramas/specs/) (PlantUML e draw.io) e exportações PNG em [`docs/diagramas/`](docs/diagramas/); visão agregada opcional no [Google Drive](https://drive.google.com/file/d/1XGv4y-BJ-yUia8EKnrTdb78NESRhesFB/view?usp=drive_link).
+O detalhe **Card / Conversation / Confirmation (CCC)**, épicos e links para cartões no Trello estão em **[docs/produto/user-stories.md](docs/produto/user-stories.md)**. Quadro: [cesar-projetos-2](https://trello.com/b/alfFb7dV/cesar-projetos-2). Diagramas de atividades: [`docs/diagramas/specs/`](docs/diagramas/specs/) (PlantUML e draw.io) e exportações PNG em [`docs/diagramas/`](docs/diagramas/); visão agregada opcional no [Google Drive](https://drive.google.com/file/d/1XGv4y-BJ-yUia8EKnrTdb78NESRhesFB/view?usp=drive_link).
 
 | US | Prioridade | Título | Print UML (PNG no repositório) |
 | :- | :--------- | :----- | :------------------------------ |
