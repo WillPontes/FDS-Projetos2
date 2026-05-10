@@ -1,19 +1,14 @@
 from pydantic import ConfigDict
-from sqlmodel import Field,SQLModel
-
-from src.models.user import User
+from sqlmodel import Field, SQLModel
 
 
-
-
-class Car(SQLModel, table=True):
+class Vehicle(SQLModel, table=True):
+    __tablename__ = "vehicles"
     model_config = ConfigDict(from_attributes=True)
 
     id: int | None = Field(default=None, primary_key=True)
-    id_tag: str = Field (unique=True)
+    id_tag: str = Field(unique=True)
     user_id: int = Field(foreign_key="user.id")
-    
-    placa: str = Field(unique=True)
-    modelo: str
-    combustivel: str
-    
+    license_plate: str = Field(unique=True)
+    model: str
+    fuel_type: str

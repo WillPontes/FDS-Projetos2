@@ -28,7 +28,7 @@ async def process_transaction(
         "plate": body.plate.strip().upper(),
         "elapsed_time": body.elapsed_time,
         "context": body.context,
-        "uf_passagem": body.uf_passagem.strip().upper(),
+        "uf_passagem": body.uf.strip().upper(),
         "is_digital": body.is_digital,
         "vehicle": body.vehicle.model_dump(),
     }

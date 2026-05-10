@@ -8,7 +8,7 @@ from pydantic import BaseModel, ConfigDict
 from src.models.fuel_prices import FuelPriceByUF
 
 FUEL_PRICES_META_SOURCE = "basedosdados:br_anp_precos_combustiveis"
-FUEL_PRICES_META_AGGREGATION = "median_by_uf_last_week"
+FUEL_PRICES_META_AGGREGATION = "avg_by_uf_last_30_days"
 
 
 class FuelPriceByUFDTO(BaseModel):

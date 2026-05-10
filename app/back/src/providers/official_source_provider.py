@@ -53,6 +53,8 @@ class OfficialSourceProvider:
         await self._sync_fuel_prices_from_bq()
 
     async def _sync_fuel_prices_from_bq(self) -> None:
+        import asyncio
+
         from google.cloud import bigquery
 
         client = bigquery.Client()
@@ -88,7 +90,8 @@ class OfficialSourceProvider:
             GROUP BY sigla_uf, produto_padronizado
         """
 
-        rows = client.query(query).result()
+        loop = asyncio.get_event_loop()
+        rows = await loop.run_in_executor(None, lambda: client.query(query).result())
 
         fuel_prices_by_uf: dict[str, dict[str, float]] = {}
 

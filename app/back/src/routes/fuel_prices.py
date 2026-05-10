@@ -19,7 +19,7 @@ async def sync_fuel_prices_route(db: AsyncSession = Depends(get_db)) -> dict[str
 async def get_fuel_prices(db: AsyncSession = Depends(get_db)) -> dict[str, Any]:
     data = await list_fuel_prices(db)
     if not data:
-        raise HTTPException(status_code=404, detail="Preços de combustíveis não encontrados.")
+        raise HTTPException(status_code=404, detail="Fuel prices not found.")
     return {"data": data}
 
 
@@ -29,6 +29,6 @@ async def get_fuel_price_by_uf(uf: str, db: AsyncSession = Depends(get_db)) -> d
     if not data:
         raise HTTPException(
             status_code=404,
-            detail=f"Preços de combustíveis da UF {uf.upper()} não encontrados.",
+            detail=f"Fuel prices for UF {uf.upper()} not found.",
         )
     return {"data": data}
