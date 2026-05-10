@@ -19,7 +19,7 @@ const ErrorFallback = ({ error, resetErrorBoundary }: FallbackProps) => {
   )
 }
 
-export const AppErrorBoundary = ({ children }: { children: React.ReactNode }) => {
+export const ErrorBoundary = ({ children }: { children: React.ReactNode }) => {
   return (
     <ReactErrorBoundary FallbackComponent={ErrorFallback}>
       {children}

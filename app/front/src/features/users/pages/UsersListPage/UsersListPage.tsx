@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router"
-import { useGetUsers } from "@/api/users/hooks/useGetUsers"
+import { useGetUsers } from "../../hooks/useGetUsers"
 
-export const UsersPage = () => {
+export const UsersListPage = () => {
   const { data, isPending, isError, error } = useGetUsers()
 
   return (

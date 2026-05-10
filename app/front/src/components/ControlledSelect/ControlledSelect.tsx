@@ -5,7 +5,7 @@ import {
   type FieldValues,
 } from "react-hook-form";
 
-import { FormField, formFieldErrorId } from "@/components/form/form-field";
+import { FormField, formFieldErrorId } from "@/components/form/FormField";
 import {
   Select,
   SelectContent,
