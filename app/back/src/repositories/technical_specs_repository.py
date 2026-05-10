@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,30 +18,28 @@ class TechnicalSpecsRepository:
         )
         return result.scalar_one_or_none()
 
-    async def get_all(self) -> List[TechnicalSpecs]:
+    async def get_all(self) -> list[TechnicalSpecs]:
         result = await self.session.execute(select(TechnicalSpecs))
         return list(result.scalars().all())
 
-    async def create(self, data: Dict[str, Any]) -> TechnicalSpecs:
-        fields = self._extract_fields(data)
+    async def create(self, data: dict[str, Any]) -> TechnicalSpecs:
+        fields = TechnicalSpecsRepository._extract_fields(data)
         specs = TechnicalSpecs(**fields)
         self.session.add(specs)
-        await self.session.commit()
-        await self.session.refresh(specs)
+        await self.session.flush()
         return specs
 
-    async def update(self, id: int, data: Dict[str, Any]) -> Optional[TechnicalSpecs]:
+    async def update(self, id: int, data: dict[str, Any]) -> Optional[TechnicalSpecs]:
         result = await self.session.execute(
             select(TechnicalSpecs).where(TechnicalSpecs.id == id)
         )
         specs = result.scalar_one_or_none()
         if specs is None:
             return None
-        fields = self._extract_fields(data)
+        fields = TechnicalSpecsRepository._extract_fields(data)
         for field_name, field_value in fields.items():
             setattr(specs, field_name, field_value)
-        await self.session.commit()
-        await self.session.refresh(specs)
+        await self.session.flush()
         return specs
 
     async def delete(self, id: int) -> bool:
@@ -51,27 +49,26 @@ class TechnicalSpecsRepository:
         specs = result.scalar_one_or_none()
         if specs is None:
             return False
-        await self.session.delete(specs)
-        await self.session.commit()
+        self.session.delete(specs)
         return True
 
-    async def upsert_by_id(self, id: int, data: Dict[str, Any]) -> TechnicalSpecs:
+    async def upsert_by_id(self, id: int, data: dict[str, Any]) -> TechnicalSpecs:
         result = await self.session.execute(
             select(TechnicalSpecs).where(TechnicalSpecs.id == id)
         )
         specs = result.scalar_one_or_none()
-        fields = self._extract_fields(data)
+        fields = TechnicalSpecsRepository._extract_fields(data)
         if specs is None:
             specs = TechnicalSpecs(id=id, **fields)
             self.session.add(specs)
         else:
             for field_name, field_value in fields.items():
                 setattr(specs, field_name, field_value)
-        await self.session.commit()
-        await self.session.refresh(specs)
+        await self.session.flush()
         return specs
 
-    def _extract_fields(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    @staticmethod
+    def _extract_fields(data: dict[str, Any]) -> dict[str, Any]:
         """Extrai apenas campos persistidos; ignorando id/timestamps quando omitidos."""
         keys = (
             "emission_factor_diesel_s10",
@@ -94,7 +91,7 @@ class TechnicalSpecsRepository:
             "benchmark_kg_co2_per_km_car",
             "benchmark_kg_co2_per_burger",
         )
-        out: Dict[str, Any] = {}
+        out: dict[str, Any] = {}
         for k in keys:
             if k in data:
                 out[k] = data[k]

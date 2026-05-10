@@ -1,37 +1,12 @@
 import { Link } from "@tanstack/react-router"
-import type { ColumnDef, OnChangeFn, PaginationState, SortingState } from "@tanstack/react-table"
+import type { OnChangeFn, PaginationState, SortingState } from "@tanstack/react-table"
 import { Plus } from "lucide-react"
 import { parseAsInteger, parseAsString, parseAsStringEnum, useQueryStates } from "nuqs"
 import { Button } from "@/components/ui/button"
 import { DataTable } from "@/components/DataTable"
 import { PAGE_SIZE } from "@/constants"
 import { useGetVehicles } from "../../hooks/useGetVehicles"
-import type { Vehicle } from "../../schemas/vehicle-schema"
-import { STATUS_LABELS } from "../../constants"
-
-const columns: ColumnDef<Vehicle>[] = [
-  {
-    accessorKey: "plate",
-    header: "Placa",
-    enableSorting: true,
-  },
-  {
-    accessorKey: "model",
-    header: "Modelo",
-    enableSorting: true,
-  },
-  {
-    accessorKey: "year",
-    header: "Ano",
-    enableSorting: true,
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    enableSorting: false,
-    cell: ({ row }) => STATUS_LABELS[row.getValue<string>("status")] ?? row.getValue("status"),
-  },
-]
+import { columns } from "./columns"
 
 const fleetSearchParams = {
   page: parseAsInteger.withDefault(1),

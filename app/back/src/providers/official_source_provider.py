@@ -23,10 +23,8 @@ class OfficialSourceProvider:
         self.fuel_prices_repository = fuel_prices_repository
 
     async def _engine_dict_from_persisted_or_raise(self) -> dict[str, Any]:
-        from src.dto.official_sources import (
-            fuel_rows_to_engine_prices_map,
-            technical_specs_to_engine_dict,
-        )
+        from src.dto.fuel_price import fuel_rows_to_engine_prices_map
+        from src.dto.technical_specs import technical_specs_to_engine_dict
 
         row = await self.technical_specs_repository.get_by_id(1)
         if row is None:
@@ -117,11 +115,8 @@ class OfficialSourceProvider:
             )
 
     async def get_technical_specs_bundle(self):
-        from src.dto.official_sources import (
-            TechnicalSpecsBundleDTO,
-            fuel_prices_rows_to_by_uf_dict,
-            technical_specs_row_to_dto,
-        )
+        from src.dto.technical_specs import TechnicalSpecsBundleDTO, technical_specs_row_to_dto
+        from src.dto.fuel_price import fuel_prices_rows_to_by_uf_dict
 
         row = await self.technical_specs_repository.get_by_id(1)
         if row is None:
@@ -153,7 +148,7 @@ class OfficialSourceProvider:
 
     async def get_all_fuel_prices_dict(self) -> dict[str, dict[str, Any]]:
         """Mapa UF -> FuelPriceByUFDTO serializado para JSON."""
-        from src.dto.official_sources import fuel_price_row_to_dto
+        from src.dto.fuel_price import fuel_price_row_to_dto
 
         rows = await self.fuel_prices_repository.get_all()
         return {
@@ -165,7 +160,7 @@ class OfficialSourceProvider:
         self,
         uf: str,
     ) -> dict[str, Any] | None:
-        from src.dto.official_sources import fuel_price_row_to_dto
+        from src.dto.fuel_price import fuel_price_row_to_dto
 
         row = await self.fuel_prices_repository.get_by_uf(uf)
         if row is None:

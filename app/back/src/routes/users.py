@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.lib.db import get_session
+from src.database.connection import get_db
 from src.models.user import UserPublic
 from src.services.users import list_users
 
-router = APIRouter(tags=["users"])
+router = APIRouter(prefix="/users", tags=["Users"])
 
 
-@router.get("/users", response_model=list[UserPublic])
-async def get_users(session: AsyncSession = Depends(get_session)) -> list[UserPublic]:
-    rows = await list_users(session)
+@router.get("/", response_model=list[UserPublic])
+async def get_users(db: AsyncSession = Depends(get_db)) -> list[UserPublic]:
+    rows = await list_users(db)
     return [UserPublic.model_validate(row) for row in rows]

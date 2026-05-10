@@ -12,6 +12,7 @@ O **motor de impacto por passagem** estima CO₂e, água, papel, R$ e storytelli
 
 | Arquivo                                                    | Abrir quando                                                                     |
 | ---------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| [convencoes.md](convencoes.md)                             | Nomear arquivos, hooks, functions, repositories, routes — padrões front e back.  |
 | [engine-visao-geral.md](engine-visao-geral.md)             | Entender quem chama quem e a sequência até o payload.                            |
 | [engine-calculo.md](engine-calculo.md)                     | Implementar ou auditar fórmulas, specs e código de referência.                   |
 | [engine-debitos-e-backlog.md](engine-debitos-e-backlog.md) | Revisão de cobertura das user stories, TODOs do código §6, melhorias conhecidas. |
