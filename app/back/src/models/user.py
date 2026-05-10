@@ -16,3 +16,4 @@ class UserPublic(SQLModel):
     id: int
     name: str
     email: str
+
