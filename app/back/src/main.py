@@ -7,6 +7,12 @@ from sqlmodel import SQLModel
 
 from src.database.connection import engine
 
+from src.models.fuel_prices import FuelPriceByUF
+from src.models.organization import Organization
+from src.models.technical_specs import TechnicalSpecs
+from src.models.user import User
+from src.models.vehicle import Vehicle
+
 from src.routes import router
 
 load_dotenv()
@@ -39,4 +45,9 @@ app.include_router(router, prefix="/api")
 
 @app.get("/")
 def health_check():
-    return {"status": "Ok"}
+    return {"status": "API funcionando"}
+
+
+@app.get("/db-test")
+async def db_test():
+    return {"status": "Conexão com banco configurada"}

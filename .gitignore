@@ -5,16 +5,3 @@
 # SO
 .DS_Store
 Thumbs.db
-node_modules
-
-.claude
-.cursor
-.package-lock.json
-.yarn.lock
-.pnpm-lock.yaml
-.bun.lockb
-.npm-lock.yaml
-.npm-shrinkwrap.json
-.npm-package-lock.json
-.npm-package-shrinkwrap.json
-.npm-package-lock.json
