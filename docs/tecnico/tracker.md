@@ -133,7 +133,7 @@
 | ID | Atividade | Tipo | Status | O que fazer |
 |----|-----------|------|--------|-------------|
 | AT01-US04 | Endpoint de Comparação ROI | Back | ⬜ | `GET /api/dashboard/comparison?vehicle_id=&period_days=` — agrega Transactions reais por vehicle_id + período, retorna `{without_tag: {cost, fuel, time}, with_tag: {cost, fuel, time}, delta}` usando baselines de `technical_specs`; role: gestor_frota, admin |
-| AT02-US04 | Dashboard de Performance Econômica | Front | ⬜ | Página `/dashboard` com: cards de totais (economia R$, litros, horas) + gráfico de barras comparativo "Com Taggy" vs. "Sem Taggy" por período — usar Recharts |
+| AT02-US04 | Dashboard de Performance Econômica | Front | ⬜ | Página `/dashboard` com: cards de totais (economia R$, litros, horas) + gráfico de barras comparativo "Com Taggy" vs. "Sem Taggy" por período — usar ShadCN Charts |
 
 ---
 
