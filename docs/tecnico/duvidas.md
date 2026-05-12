@@ -9,3 +9,5 @@
     * `Organização` ➔ `Veículo`
     * `Organização` ➔ `Usuário (Gestor)`
   Esse modelo é compatível com a forma que vocês estruturam frotas e clientes corporativos?
+6. Vocês possuem alguma base ou estudo com o tempo médio que um veículo gasta no pedágio com a tag e sem a tag? Precisamos dessa estimativa de tempo para conseguir calcular o 'tempo salvo' e o 'CO2 evitado' que vamos mostrar nos gráficos.
+7. Disponibilizar algum schema ou contrato de dados para importar alguns valores antigos, para conseguir ter uma visão de valores de sustentabilidade nos ultimos tempos.
