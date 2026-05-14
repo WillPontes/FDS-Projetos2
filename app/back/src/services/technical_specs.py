@@ -18,11 +18,13 @@ def _build_provider(db: AsyncSession) -> OfficialSourceProvider:
 async def get_technical_specs_bundle(db: AsyncSession) -> dict[str, Any]:
     provider = _build_provider(db)
     specs = await provider.get_technical_specs_bundle()
+
     if specs is None:
         raise CalcEngineError("Technical specs não encontradas.")
+
     return specs.model_dump(mode="json")
 
 
 async def get_all_specs(db: AsyncSession) -> dict[str, Any]:
     provider = _build_provider(db)
-    return await provider.get_all_specs()
+    return await provider.get_specs_for_calc_engine()

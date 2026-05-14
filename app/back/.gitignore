@@ -1,13 +1,19 @@
-.venv
-__pycache__
-*.py[cod]
-*.egg-info
+# Raiz do worktree: evitar segredos cometidos por engano
 .env
-.env.*
-!.env.example
-.pytest_cache
-.ruff_cache
-.mypy_cache
-*.log
+.env.local
+
+# SO
 .DS_Store
-credentials.json
+Thumbs.db
+node_modules
+
+.claude
+.cursor
+.package-lock.json
+.yarn.lock
+.pnpm-lock.yaml
+.bun.lockb
+.npm-lock.yaml
+.npm-shrinkwrap.json
+.npm-package-lock.json
+.npm-package-shrinkwrap.json
