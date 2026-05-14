@@ -45,9 +45,4 @@ app.include_router(router, prefix="/api")
 
 @app.get("/")
 def health_check():
-    return {"status": "API funcionando"}
-
-
-@app.get("/db-test")
-async def db_test():
-    return {"status": "Conexão com banco configurada"}
+    return {"status": "Ok"}
