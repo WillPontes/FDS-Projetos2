@@ -232,7 +232,7 @@
 | AT02-US13 | Alteração de Role de Usuário | Back | ⬜ | `PATCH /api/admin/users/{id}/role` com body `{role: "motorista"\|"gestor_frota"\|"admin"}`; role: admin |
 | AT03-US13 | Listagem de Organizações | Back | ⬜ | `GET /api/admin/organizations` — lista todas orgs com count de usuários e veículos; role: admin |
 | AT04-US13 | Resumo ESG Global | Back | ⬜ | `GET /api/admin/esg/summary` — agrega CO2 total, combustível total, água total, transações totais de todas as orgs; role: admin |
-| AT05-US13 | Update de Emission Factors via API | Back | ⬜ | `POST /api/technical-specs/update` — admin atualiza fatores MCTI/GHG Protocol sem deploy; valida com `validate_engine_specs()` antes de salvar; role: admin |
+| AT05-US13 | Update de Emission Factors via API | Back | 🔄 | `POST /api/technical-specs/update` — admin atualiza fatores MCTI/GHG Protocol sem deploy; valida com `validate_engine_specs()` antes de salvar; role: admin |
 | AT06-US13 | Scheduler Automático ANP | Back | ⬜ | APScheduler no startup do FastAPI executando `sync_fuel_prices()` 1x/semana; sem endpoint — automático; log de execução e timestamp de última sync |
 | AT07-US13 | Painel Admin | Front | ⬜ | Página `/admin` com tabs: "Usuários" (tabela com filtros + alterar role), "Organizações" (listagem), "ESG Global" (cards de totais do sistema); acesso restrito a role admin |
 
