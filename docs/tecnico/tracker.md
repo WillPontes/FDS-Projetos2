@@ -119,7 +119,7 @@
 | ID | Atividade | Tipo | Status | O que fazer |
 |----|-----------|------|--------|-------------|
 | AT01-US01 | Utilitário de Metáforas Visuais | Back | 🔄 | `CalcEngine.get_ludic_metrics()` retorna `trees_saved`, `smartphone_charges`, `coffee_filters` — `constants/ludic_metaphors.py` com os fatores |
-| AT02-US01 | Galeria de Cards de Impacto Lúdico | Front | ⬜ | Seção na tela de resultado (AT02-US02) com cards visuais: ícone + número + descrição por metáfora (ex: "🌳 2,3 árvores salvas") — dados de `ludic_metrics` no response |
+| AT02-US01 | Galeria de Cards de Impacto Lúdico | Front | 🔄 | Seção na tela de resultado (AT02-US02) com cards visuais: ícone + número + descrição por metáfora (ex: "🌳 2,3 árvores salvas") — dados de `ludic_metrics` no response |
 
 ---
 
@@ -133,7 +133,7 @@
 | ID | Atividade | Tipo | Status | O que fazer |
 |----|-----------|------|--------|-------------|
 | AT01-US04 | Endpoint de Comparação ROI | Back | ⬜ | `GET /api/dashboard/comparison?vehicle_id=&period_days=` — agrega Transactions reais por vehicle_id + período, retorna `{without_tag: {cost, fuel, time}, with_tag: {cost, fuel, time}, delta}` usando baselines de `technical_specs`; role: gestor_frota, admin |
-| AT02-US04 | Dashboard de Performance Econômica | Front | ⬜ | Página `/dashboard` com: cards de totais (economia R$, litros, horas) + gráfico de barras comparativo "Com Taggy" vs. "Sem Taggy" por período — usar ShadCN Charts |
+| AT02-US04 | Dashboard de Performance Econômica | Front | 🔄 | Página `/dashboard` com: cards de totais (economia R$, litros, horas) + gráfico de barras comparativo "Com Taggy" vs. "Sem Taggy" por período — usar ShadCN Charts |
 
 ---
 
