@@ -52,6 +52,62 @@ export const DashboardPage = () => {
           </span>
         </div>
       </section>
+      <section className="mt-10">
+  <h2 className="text-2xl font-semibold mb-6">
+    Comparação de veículos
+  </h2>
+
+  <div className="overflow-hidden rounded-2xl border bg-white shadow-sm">
+    <table className="w-full">
+      <thead className="bg-gray-100">
+        <tr>
+          <th className="p-4 text-left">Tipo</th>
+          <th className="p-4 text-left">CO₂</th>
+          <th className="p-4 text-left">Custo anual</th>
+          <th className="p-4 text-left">Sustentabilidade</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr className="border-t">
+          <td className="p-4 font-medium">
+            Elétrico
+          </td>
+
+          <td className="p-4 text-green-600">
+            Baixo
+          </td>
+
+          <td className="p-4">
+            R$ 4.000
+          </td>
+
+          <td className="p-4">
+            Alta
+          </td>
+        </tr>
+
+        <tr className="border-t">
+          <td className="p-4 font-medium">
+            Combustão
+          </td>
+
+          <td className="p-4 text-red-500">
+            Alto
+          </td>
+
+          <td className="p-4">
+            R$ 12.400
+          </td>
+
+          <td className="p-4">
+            Baixa
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
     </main>
   )
 }
