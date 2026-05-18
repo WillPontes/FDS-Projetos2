@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UsersRouteImport } from './routes/users'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as FrotaIndexRouteImport } from './routes/frota/index'
 import { Route as FrotaAdicionarRouteImport } from './routes/frota/adicionar'
@@ -17,6 +18,11 @@ import { Route as FrotaAdicionarRouteImport } from './routes/frota/adicionar'
 const UsersRoute = UsersRouteImport.update({
   id: '/users',
   path: '/users',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,12 +43,14 @@ const FrotaAdicionarRoute = FrotaAdicionarRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/users': typeof UsersRoute
   '/frota/adicionar': typeof FrotaAdicionarRoute
   '/frota/': typeof FrotaIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/users': typeof UsersRoute
   '/frota/adicionar': typeof FrotaAdicionarRoute
   '/frota': typeof FrotaIndexRoute
@@ -50,20 +58,28 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/dashboard': typeof DashboardRoute
   '/users': typeof UsersRoute
   '/frota/adicionar': typeof FrotaAdicionarRoute
   '/frota/': typeof FrotaIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/users' | '/frota/adicionar' | '/frota/'
+  fullPaths: '/' | '/dashboard' | '/users' | '/frota/adicionar' | '/frota/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/users' | '/frota/adicionar' | '/frota'
-  id: '__root__' | '/' | '/users' | '/frota/adicionar' | '/frota/'
+  to: '/' | '/dashboard' | '/users' | '/frota/adicionar' | '/frota'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard'
+    | '/users'
+    | '/frota/adicionar'
+    | '/frota/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DashboardRoute: typeof DashboardRoute
   UsersRoute: typeof UsersRoute
   FrotaAdicionarRoute: typeof FrotaAdicionarRoute
   FrotaIndexRoute: typeof FrotaIndexRoute
@@ -76,6 +92,13 @@ declare module '@tanstack/react-router' {
       path: '/users'
       fullPath: '/users'
       preLoaderRoute: typeof UsersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -104,6 +127,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DashboardRoute: DashboardRoute,
   UsersRoute: UsersRoute,
   FrotaAdicionarRoute: FrotaAdicionarRoute,
   FrotaIndexRoute: FrotaIndexRoute,
