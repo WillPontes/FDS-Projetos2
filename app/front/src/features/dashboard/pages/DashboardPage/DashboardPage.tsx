@@ -233,6 +233,17 @@ export const DashboardPage = () => {
           </span>
         </div>
       </section>
+      <footer className="mt-10 border-t pt-6 text-sm text-gray-500">
+  <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+    <p>
+      📅 Última análise realizada hoje às 22:47
+    </p>
+
+    <p>
+      📊  Dados estimados com base nas métricas operacionais da Taggy
+    </p>
+  </div>
+</footer>
     </main>
   )
 }
