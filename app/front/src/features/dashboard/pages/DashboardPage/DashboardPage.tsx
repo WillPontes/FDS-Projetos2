@@ -1,5 +1,10 @@
 import { EmissionChart } from "../../components/EmissionChart"
 
+const transactionData = {
+  co2: "{transactionData.co2}  kg",
+  fuel: "{transactionData.fuel} L",
+  vehicle: "{transactionData.vehicle}",
+}
 export const DashboardPage = () => {
   return (
     <main className="p-8">
