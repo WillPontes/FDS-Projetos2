@@ -57,13 +57,13 @@
 
 | ID | Atividade | Tipo | Status | O que fazer |
 |----|-----------|------|--------|-------------|
-| AT01-US12 | Model Organization | Back | ⬜ | `models/organization.py` com tabela `organizations` (id, name, cnpj nullable unique, created_at); `OrganizationRepository` com `get_by_id`, `get_all`, `create` |
-| AT02-US12 | Atualizar User (role + org) | Back | ⬜ | Adicionar `role: Literal["motorista","gestor_frota","admin"]` (default: motorista) e `organization_id: int \| None` (FK → organizations) ao model `User`; nova migration |
-| AT03-US12 | Atualizar Vehicle (org + driver) | Back | ⬜ | Adicionar `organization_id: int \| None` (FK → organizations) e `assigned_driver_id: int \| None` (FK → users) ao model `Vehicle`; nova migration |
+| AT01-US12 | Model Organization | Back | ✅ | `models/organization.py` com tabela `organizations` (id, name, cnpj nullable unique, created_at); `OrganizationRepository` com `get_by_id`, `get_all`, `create` |
+| AT02-US12 | Atualizar User (role + org) | Back | ✅ | Adicionar `role: Literal["motorista","gestor_frota","admin"]` (default: motorista) e `organization_id: int \| None` (FK → organizations) ao model `User`; nova migration |
+| AT03-US12 | Atualizar Vehicle (org + driver) | Back | ✅ | Adicionar `organization_id: int \| None` (FK → organizations) e `assigned_driver_id: int \| None` (FK → users) ao model `Vehicle`; nova migration |
 | AT04-US12 | require_role() dependency | Back | ⬜ | `middleware/auth.py` — `require_role(*roles)` FastAPI dependency que lê `user.role` do JWT e retorna 403 se role não permitida; integrar em todas as rotas com restrição |
-| AT05-US12 | Model Transaction | Back | ⬜ | `models/transaction.py` com tabela `transactions` (id, user_id FK nullable, vehicle_id FK nullable, organization_id FK nullable, plate, context, uf, elapsed_time_sec, is_digital, co2_avoided_kg, fuel_saved_liters, time_saved_sec, financial_savings_brl, water_saved_liters, parameters_snapshot JSONB, created_at); `TransactionRepository` |
-| AT06-US12 | Persistir Transaction no /process | Back | ⬜ | Após `orchestrator.handle_tag_event()` em `routes/transactions.py`, salvar Transaction no banco via `TransactionRepository.create()`; incluir `parameters_snapshot` com emission factors e pricing_snapshot usados |
-| AT07-US12 | Model UserStats | Back | ⬜ | `models/user_stats.py` com tabela `user_stats` (user_id FK unique, total_time_saved_sec, co2_total_kg, fuel_total_liters, water_total_liters, financial_total_brl, transactions_count, updated_at); upsert automático a cada transação processada via `UserStatsRepository.upsert_by_user()` |
+| AT05-US12 | Model Transaction | Back | ✅ | `models/transaction.py` com tabela `transactions` (id, user_id FK nullable, vehicle_id FK nullable, organization_id FK nullable, plate, context, uf, elapsed_time_sec, is_digital, co2_avoided_kg, fuel_saved_liters, time_saved_sec, financial_savings_brl, water_saved_liters, parameters_snapshot JSONB, created_at); `TransactionRepository` |
+| AT06-US12 | Persistir Transaction no /process | Back | ✅ | Após `orchestrator.handle_tag_event()` em `routes/transactions.py`, salvar Transaction no banco via `TransactionRepository.create()`; incluir `parameters_snapshot` com emission factors e pricing_snapshot usados |
+| AT07-US12 | Model UserStats | Back | ✅ | `models/user_stats.py` com tabela `user_stats` (user_id FK unique, total_time_saved_sec, co2_total_kg, fuel_total_liters, water_total_liters, financial_total_brl, transactions_count, updated_at); upsert automático a cada transação processada via `UserStatsRepository.upsert_by_user()` |
 
 ---
 
@@ -77,9 +77,9 @@
 | AT01-US05 | CRUD de Veículos | Back | ✅ | Rotas `GET /POST /PATCH /DELETE /api/vehicles` com `VehicleRepository` e `VehicleService` |
 | AT02-US05 | Formulário de Cadastro de Veículo | Front | ✅ | Página `/frota/adicionar` com form validado (placa, modelo, combustível, tag ID) e submit para a API |
 | AT03-US05 | Validação de Duplicidade de Tag/Placa | Back | ✅ | Verificação de placa e tag_id únicos no service antes do `create`; retorna erro 409 |
-| AT04-US05 | Formulário de Edição de Veículo | Front | ⬜ | Página `/frota/editar/$id` com form pré-populado com os dados do veículo; submit faz `PATCH`; mesma estrutura visual do cadastro |
-| AT05-US05 | Exclusão de Veículo com Confirmação | Front | ⬜ | Botão "Excluir" na tabela da lista de frota abre `AlertDialog` de confirmação antes de deletar; feedback de sucesso/erro |
-| AT06-US05 | Ações de Editar/Excluir na Tabela | Front | ⬜ | Coluna "Ações" na `FleetListPage` com botão editar (navega para `/frota/editar/$id`) e botão excluir (abre dialog) |
+| AT04-US05 | Formulário de Edição de Veículo | Front | ✅ | Página `/frota/editar/$id` com form pré-populado com os dados do veículo; submit faz `PATCH`; mesma estrutura visual do cadastro |
+| AT05-US05 | Exclusão de Veículo com Confirmação | Front | ✅ | Botão "Excluir" na tabela da lista de frota abre `AlertDialog` de confirmação antes de deletar; feedback de sucesso/erro |
+| AT06-US05 | Ações de Editar/Excluir na Tabela | Front | ✅ | Coluna "Ações" na `FleetListPage` com botão editar (navega para `/frota/editar/$id`) e botão excluir (abre dialog) |
 
 ---
 
@@ -102,8 +102,8 @@
 
 | ID | Atividade | Tipo | Status | O que fazer |
 |----|-----------|------|--------|-------------|
-| AT01-US03 | Contador de Transações Digitais | Back | 🔄 | `calculate_paper_and_water_savings(is_digital)` implementado no `CalcEngine`; resultado exposto em `TransactionResultDTO.paper_savings` |
-| AT02-US03 | Painel de Economia de Papel e Água | Front | ⬜ | Seção na tela de resultado (AT02-US02) com cards: tickets físicos evitados e litros d'água poupados — dados vêm do mesmo response de transação |
+| AT01-US03 | Contador de Transações Digitais | Back | ✅ | `calculate_paper_and_water_savings(is_digital)` implementado no `CalcEngine`; resultado exposto em `TransactionResultDTO.paper_savings` |
+| AT02-US03 | Painel de Economia de Papel e Água | Front | ✅ | Seção na tela de resultado (AT02-US02) com cards: tickets físicos evitados e litros d'água poupados — dados vêm do mesmo response de transação |
 
 ---
 
@@ -133,7 +133,7 @@
 | ID | Atividade | Tipo | Status | O que fazer |
 |----|-----------|------|--------|-------------|
 | AT01-US04 | Endpoint de Comparação ROI | Back | ⬜ | `GET /api/dashboard/comparison?vehicle_id=&period_days=` — agrega Transactions reais por vehicle_id + período, retorna `{without_tag: {cost, fuel, time}, with_tag: {cost, fuel, time}, delta}` usando baselines de `technical_specs`; role: gestor_frota, admin |
-| AT02-US04 | Dashboard de Performance Econômica | Front | 🔄 | Página `/dashboard` com: cards de totais (economia R$, litros, horas) + gráfico de barras comparativo "Com Taggy" vs. "Sem Taggy" por período — usar ShadCN Charts |
+| AT02-US04 | Dashboard de Performance Econômica | Front | ✅ | Página `/dashboard` com: cards de totais (economia R$, litros, horas) + gráfico de barras comparativo "Com Taggy" vs. "Sem Taggy" por período — usar ShadCN Charts |
 
 ---
 
@@ -232,7 +232,7 @@
 | AT02-US13 | Alteração de Role de Usuário | Back | ⬜ | `PATCH /api/admin/users/{id}/role` com body `{role: "motorista"\|"gestor_frota"\|"admin"}`; role: admin |
 | AT03-US13 | Listagem de Organizações | Back | ⬜ | `GET /api/admin/organizations` — lista todas orgs com count de usuários e veículos; role: admin |
 | AT04-US13 | Resumo ESG Global | Back | ⬜ | `GET /api/admin/esg/summary` — agrega CO2 total, combustível total, água total, transações totais de todas as orgs; role: admin |
-| AT05-US13 | Update de Emission Factors via API | Back | 🔄 | `POST /api/technical-specs/update` — admin atualiza fatores MCTI/GHG Protocol sem deploy; valida com `validate_engine_specs()` antes de salvar; role: admin |
+| AT05-US13 | Update de Emission Factors via API | Back | ✅ | `POST /api/technical-specs/update` — admin atualiza fatores MCTI/GHG Protocol sem deploy; valida com `validate_engine_specs()` antes de salvar; role: admin |
 | AT06-US13 | Scheduler Automático ANP | Back | ⬜ | APScheduler no startup do FastAPI executando `sync_fuel_prices()` 1x/semana; sem endpoint — automático; log de execução e timestamp de última sync |
 | AT07-US13 | Painel Admin | Front | ⬜ | Página `/admin` com tabs: "Usuários" (tabela com filtros + alterar role), "Organizações" (listagem), "ESG Global" (cards de totais do sistema); acesso restrito a role admin |
 
