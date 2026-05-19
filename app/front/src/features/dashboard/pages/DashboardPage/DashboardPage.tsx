@@ -18,6 +18,22 @@ export const DashboardPage = () => {
         Resultados ambientais após processamento da transação
       </p>
 
+      <div className="mt-6 inline-flex items-center gap-3 rounded-2xl bg-green-100 px-5 py-3 shadow-sm">
+  <div className="text-3xl">
+    🌱
+  </div>
+
+  <div>
+    <p className="text-sm font-medium text-green-700">
+      EcoScore A+
+    </p>
+
+    <p className="text-xs text-green-600">
+      Excelente eficiência ambiental
+    </p>
+  </div>
+</div>
+
       <section className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
         <div className="rounded-xl border p-6 shadow-sm">
           <h2 className="text-lg font-semibold">
