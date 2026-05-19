@@ -1,16 +1,28 @@
+import {
+  Trees,
+  BatteryCharging,
+  Coffee,
+} from "lucide-react"
+
 const ludicMetrics = [
   {
-    icon: "🌳",
+    icon: (
+      <Trees className="h-8 w-8 text-green-600" />
+    ),
     value: "2,3",
     label: "árvores preservadas",
   },
   {
-    icon: "📱",
+    icon: (
+      <BatteryCharging className="h-8 w-8 text-blue-600" />
+    ),
     value: "120",
     label: "cargas de celular economizadas",
   },
   {
-    icon: "☕",
+    icon: (
+      <Coffee className="h-8 w-8 text-amber-700" />
+    ),
     value: "80",
     label: "filtros de café poupados",
   },
@@ -27,9 +39,9 @@ export const LudicCards = () => {
         {ludicMetrics.map((metric) => (
           <div
             key={metric.label}
-            className="rounded-2xl border bg-white p-6 shadow-sm"
+            className="rounded-2xl border bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
           >
-            <div className="text-5xl">
+            <div>
               {metric.icon}
             </div>
 

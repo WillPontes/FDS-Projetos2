@@ -6,6 +6,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
+  CartesianGrid,
 } from "recharts"
 
 const data = [
@@ -28,6 +29,11 @@ export const EmissionChart = () => {
 
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data}>
+          <CartesianGrid
+            strokeDasharray="3 3"
+            vertical={false}
+            opacity={0.2}
+          />
           <XAxis dataKey="tipo" />
 
           <YAxis />
@@ -37,6 +43,7 @@ export const EmissionChart = () => {
           <Bar
             dataKey="emissao"
             radius={[8, 8, 0, 0]}
+            animationDuration={1200}
           >
             {data.map((entry, index) => (
               <Cell
