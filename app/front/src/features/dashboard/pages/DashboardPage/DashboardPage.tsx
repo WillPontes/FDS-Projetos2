@@ -1,4 +1,5 @@
 import { EmissionChart } from "../../components/EmissionChart"
+import { LudicCards } from "../../components/LudicCards"
 
 const transactionData = {
   co2: "{transactionData.co2}  kg",
@@ -130,6 +131,7 @@ export const DashboardPage = () => {
 
       <section className="mt-10">
         <EmissionChart />
+        <LudicCards />
       </section>
     </main>
   )
