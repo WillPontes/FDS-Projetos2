@@ -71,6 +71,7 @@ export const EmissionChart = () => {
               boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
               fontSize: "14px",
             }}
+            formatter={(value) => [`${value}kg CO₂`, "Emissão"]}
           />
 
           <Bar
