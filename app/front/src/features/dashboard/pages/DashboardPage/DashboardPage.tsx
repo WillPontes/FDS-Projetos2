@@ -1,5 +1,6 @@
 import { EmissionChart } from "./components/EmissionChart";
 import { LudicCards } from "./components/LudicCards";
+import { Leaf, Truck, Fuel } from "lucide-react"
 
 const transactionData = {
   co2: "{transactionData.co2}  kg",
@@ -36,9 +37,13 @@ export const DashboardPage = () => {
 
       <section className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
         <div className="rounded-xl border p-6 shadow-sm">
+          <div className="flex items-center gap-2">
+            <Leaf className="h-5 w-5 text-green-600" />
+          
           <h2 className="text-lg font-semibold">
-            🌱 CO₂ evitado
+            CO₂ evitado
           </h2>
+        </div>
 
           <p className="mt-2 text-3xl font-bold">
             48kg
@@ -50,9 +55,13 @@ export const DashboardPage = () => {
         </div>
 
         <div className="rounded-xl border p-6 shadow-sm">
-          <h2 className="text-lg font-semibold">
-            ⛽ Combustível economizado
-          </h2>
+          <div className="flex items-center gap-2">
+            <Fuel className="h-5 w-5 text-blue-600" />
+
+            <h2 className="text-lg font-semibold">
+              Combustível economizado
+            </h2>
+          </div>
 
           <p className="mt-2 text-3xl font-bold">
             32L
@@ -64,9 +73,13 @@ export const DashboardPage = () => {
         </div>
 
         <div className="rounded-xl border p-6 shadow-sm">
-          <h2 className="text-lg font-semibold">
-            🚛 Tipo de veículo
-          </h2>
+          <div className="flex items-center gap-2">
+            <Truck className="h-5 w-5 text-gray-600" />
+
+            <h2 className="text-lg font-semibold">
+              Tipo de veículo
+            </h2>
+          </div>
 
           <p className="mt-2 text-3xl font-bold">
             Caminhão
