@@ -23,10 +23,6 @@ export const DashboardPage = () => {
           <h1 className="text-4xl font-bold tracking-tight">
             Dashboard Ambiental
           </h1>
-
-          <p className="mt-2 text-gray-500">
-            Monitoramento inteligente de impacto sustentável da operação
-          </p>
         </div>
 
         <div className="inline-flex items-center gap-2 rounded-full border bg-white px-4 py-2 text-sm shadow-sm">
@@ -43,7 +39,7 @@ export const DashboardPage = () => {
 
         <div>
           <p className="text-sm font-medium text-slate-900">
-            EcoScore A+
+            EcoScore
           </p>
 
           <p className="text-xs text-gray-500">

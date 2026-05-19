@@ -9,6 +9,8 @@ import {
   CartesianGrid,
 } from "recharts"
 
+import { Globe } from "lucide-react"
+
 const data = [
   {
     tipo: "Sem Taggy",
@@ -22,27 +24,58 @@ const data = [
 
 export const EmissionChart = () => {
   return (
-    <div className="h-[300px] w-full rounded-2xl border bg-white p-4 shadow-sm">
-      <h2 className="mb-4 text-xl font-semibold">
-        🌍 Emissão de CO₂
-      </h2>
+    <div className="h-[320px] w-full rounded-2xl border bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-md">
+      <div className="mb-5 flex items-center gap-2">
+        <Globe className="h-5 w-5 text-slate-700" />
+
+        <h2 className="text-xl font-semibold text-slate-900">
+          Emissão de CO₂
+        </h2>
+      </div>
 
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data}>
+        <BarChart
+          data={data}
+          margin={{
+            top: 10,
+            right: 10,
+            left: -20,
+            bottom: 0,
+          }}
+        >
           <CartesianGrid
             strokeDasharray="3 3"
             vertical={false}
-            opacity={0.2}
+            stroke="#e5e7eb"
+            opacity={0.5}
           />
-          <XAxis dataKey="tipo" />
 
-          <YAxis />
+          <XAxis
+            dataKey="tipo"
+            tick={{ fill: "#64748b", fontSize: 13 }}
+            axisLine={false}
+            tickLine={false}
+          />
 
-          <Tooltip />
+          <YAxis
+            tick={{ fill: "#64748b", fontSize: 12 }}
+            axisLine={false}
+            tickLine={false}
+          />
+
+          <Tooltip
+            cursor={{ fill: "rgba(148,163,184,0.08)" }}
+            contentStyle={{
+              borderRadius: "12px",
+              border: "1px solid #e5e7eb",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+              fontSize: "14px",
+            }}
+          />
 
           <Bar
             dataKey="emissao"
-            radius={[8, 8, 0, 0]}
+            radius={[10, 10, 0, 0]}
             animationDuration={1200}
           >
             {data.map((entry, index) => (
@@ -50,8 +83,8 @@ export const EmissionChart = () => {
                 key={`cell-${index}`}
                 fill={
                   entry.tipo === "Sem Taggy"
-                    ? "#ef4444"
-                    : "#22c55e"
+                    ? "rgba(100,116,139,0.85)"
+                    : "rgba(22,163,74,0.85)"
                 }
               />
             ))}
