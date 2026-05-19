@@ -91,7 +91,7 @@
 | ID | Atividade | Tipo | Status | O que fazer |
 |----|-----------|------|--------|-------------|
 | AT01-US02 | Engine de Cálculo de CO2 | Back | ✅ | `CalcEngine.calculate_emissions_from_fuel()` com coeficientes GHG Protocol — diferencia flex e diesel |
-| AT02-US02 | Tela de Resultado de Impacto | Front | ⬜ | Página ou seção após processar uma transação exibindo: CO2 evitado (kg), combustível economizado (litros), tipo de veículo — consome `POST /api/transactions/process` |
+| AT02-US02 | Tela de Resultado de Impacto | Front | ✅ | Página ou seção após processar uma transação exibindo: CO2 evitado (kg), combustível economizado (litros), tipo de veículo — consome `POST /api/transactions/process` |
 
 ---
 
@@ -119,7 +119,7 @@
 | ID | Atividade | Tipo | Status | O que fazer |
 |----|-----------|------|--------|-------------|
 | AT01-US01 | Utilitário de Metáforas Visuais | Back | 🔄 | `CalcEngine.get_ludic_metrics()` retorna `trees_saved`, `smartphone_charges`, `coffee_filters` — `constants/ludic_metaphors.py` com os fatores |
-| AT02-US01 | Galeria de Cards de Impacto Lúdico | Front | 🔄 | Seção na tela de resultado (AT02-US02) com cards visuais: ícone + número + descrição por metáfora (ex: "🌳 2,3 árvores salvas") — dados de `ludic_metrics` no response |
+| AT02-US01 | Galeria de Cards de Impacto Lúdico | Front | ✅ | Seção na tela de resultado (AT02-US02) com cards visuais: ícone + número + descrição por metáfora (ex: "🌳 2,3 árvores salvas") — dados de `ludic_metrics` no response |
 
 ---
 
