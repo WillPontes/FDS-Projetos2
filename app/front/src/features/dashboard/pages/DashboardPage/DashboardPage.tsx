@@ -1,5 +1,5 @@
-import { EmissionChart } from "../../components/EmissionChart";
-import { LudicCards } from "../../components/LudicCards";
+import { EmissionChart } from "./components/EmissionChart";
+import { LudicCards } from "./components/LudicCards";
 
 const transactionData = {
   co2: "{transactionData.co2}  kg",
