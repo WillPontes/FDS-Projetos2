@@ -201,5 +201,6 @@ def technical_specs_to_engine_dict(
             "as_of": fuel_prices_as_of,
             "source": FUEL_PRICES_META_SOURCE,
             "aggregation": FUEL_PRICES_META_AGGREGATION,
+            "default_uf": "SP",
         },
     }

@@ -12,6 +12,8 @@ from src.models.organization import Organization
 from src.models.technical_specs import TechnicalSpecs
 from src.models.user import User
 from src.models.vehicle import Vehicle
+from src.models.transaction import Transaction
+from src.models.user_stats import UserStats
 
 from src.routes import router
 
