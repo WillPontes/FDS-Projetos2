@@ -17,7 +17,7 @@ export const DashboardPage = () => {
 
       <section className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
         <div className="rounded-xl border p-6 shadow-sm">
-          <h2 className="text-lg font-semibold">CO₂ evitado</h2>
+          <h2 className="text-lg font-semibold">🌱 CO₂ evitado</h2>
 
           <p className="mt-2 text-3xl font-bold">48kg</p>
 
@@ -25,7 +25,7 @@ export const DashboardPage = () => {
         </div>
 
         <div className="rounded-xl border p-6 shadow-sm">
-          <h2 className="text-lg font-semibold">Combustível economizado</h2>
+          <h2 className="text-lg font-semibold">⛽ Combustível economizado</h2>
 
           <p className="mt-2 text-3xl font-bold">32L</p>
 
@@ -33,7 +33,7 @@ export const DashboardPage = () => {
         </div>
 
         <div className="rounded-xl border p-6 shadow-sm">
-          <h2 className="text-lg font-semibold">Tipo do veículo</h2>
+          <h2 className="text-lg font-semibold">🚛 Tipo de veículo</h2>
 
           <p className="mt-2 text-3xl font-bold">Caminhão</p>
 
@@ -60,7 +60,9 @@ export const DashboardPage = () => {
 
             <tbody>
               <tr className="border-t">
-                <td className="p-4 font-medium">Sem Taggy</td>
+                <td className="p-4 font-medium text-red-500">
+                  ❌ Sem Taggy
+                </td>
 
                 <td className="p-4 text-red-500">Alta</td>
 
@@ -70,7 +72,8 @@ export const DashboardPage = () => {
               </tr>
 
               <tr className="border-t">
-                <td className="p-4 font-medium">Com Taggy</td>
+                <td className="p-4 font-medium text-green-600">
+                  ✅ Com Taggy</td>
 
                 <td className="p-4 text-green-600">Reduzida</td>
 
