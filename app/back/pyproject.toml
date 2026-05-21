@@ -19,6 +19,7 @@ dev-dependencies = [
     "pytest>=8.3",
     "httpx>=0.28",
     "pytest-asyncio>=0.25",
+    "python-dotenv>=1.0",
 ]
 
 [tool.ruff]

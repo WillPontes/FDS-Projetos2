@@ -8,7 +8,7 @@ class Vehicle(SQLModel, table=True):
 
     id: int | None = Field(default=None, primary_key=True)
     id_tag: str = Field(unique=True)
-    user_id: int = Field(foreign_key="user.id")
+    user_id: int = Field(foreign_key="users.id")
     license_plate: str = Field(unique=True)
     model: str
     fuel_type: str

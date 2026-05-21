@@ -4,7 +4,14 @@ Insere ou atualiza technical_specs id=1 com valores completos válidos para a Ca
 
 Uso (em app/back, DATABASE_URL no .env):
 
-    PYTHONPATH=. python scripts/seed_technical_specs.py
+    uv run python scripts/seed_technical_specs.py
+
+No container (API no ar, deps instaladas no build via uv sync):
+
+    docker compose exec api uv run python scripts/seed_technical_specs.py
+
+Use sempre ``uv run`` no container; ``python`` solto aponta para o interpretador da
+imagem base, sem o .venv do projeto.
 
 Ordem sugerida: Postgres no ar -> alembic upgrade head -> este script -> sync de preços.
 """
@@ -57,6 +64,7 @@ async def main() -> None:
     async with AsyncSessionLocal() as session:
         repo = TechnicalSpecsRepository(session)
         await repo.upsert_by_id(1, SEED_TECHNICAL_SPECS_ID_1)
+        await session.commit()
         print("technical_specs id=1 atualizado com valores completos.")
 
 
