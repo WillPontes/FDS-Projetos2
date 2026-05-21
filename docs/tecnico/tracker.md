@@ -77,9 +77,9 @@
 | AT01-US05 | CRUD de Veículos | Back | ✅ | Rotas `GET /POST /PATCH /DELETE /api/vehicles` com `VehicleRepository` e `VehicleService` |
 | AT02-US05 | Formulário de Cadastro de Veículo | Front | ✅ | Página `/frota/adicionar` com form validado (placa, modelo, combustível, tag ID) e submit para a API |
 | AT03-US05 | Validação de Duplicidade de Tag/Placa | Back | ✅ | Verificação de placa e tag_id únicos no service antes do `create`; retorna erro 409 |
-| AT04-US05 | Formulário de Edição de Veículo | Front | ⬜ | Página `/frota/editar/$id` com form pré-populado com os dados do veículo; submit faz `PATCH`; mesma estrutura visual do cadastro |
-| AT05-US05 | Exclusão de Veículo com Confirmação | Front | ⬜ | Botão "Excluir" na tabela da lista de frota abre `AlertDialog` de confirmação antes de deletar; feedback de sucesso/erro |
-| AT06-US05 | Ações de Editar/Excluir na Tabela | Front | ⬜ | Coluna "Ações" na `FleetListPage` com botão editar (navega para `/frota/editar/$id`) e botão excluir (abre dialog) |
+| AT04-US05 | Formulário de Edição de Veículo | Front | ✅ | Página `/frota/editar/$id` com form pré-populado com os dados do veículo; submit faz `PATCH`; mesma estrutura visual do cadastro |
+| AT05-US05 | Exclusão de Veículo com Confirmação | Front | ✅ | Botão "Excluir" na tabela da lista de frota abre `AlertDialog` de confirmação antes de deletar; feedback de sucesso/erro |
+| AT06-US05 | Ações de Editar/Excluir na Tabela | Front | ✅ | Coluna "Ações" na `FleetListPage` com botão editar (navega para `/frota/editar/$id`) e botão excluir (abre dialog) |
 
 ---
 
@@ -91,7 +91,7 @@
 | ID | Atividade | Tipo | Status | O que fazer |
 |----|-----------|------|--------|-------------|
 | AT01-US02 | Engine de Cálculo de CO2 | Back | ✅ | `CalcEngine.calculate_emissions_from_fuel()` com coeficientes GHG Protocol — diferencia flex e diesel |
-| AT02-US02 | Tela de Resultado de Impacto | Front | ⬜ | Página ou seção após processar uma transação exibindo: CO2 evitado (kg), combustível economizado (litros), tipo de veículo — consome `POST /api/transactions/process` |
+| AT02-US02 | Tela de Resultado de Impacto | Front | ✅ | Página ou seção após processar uma transação exibindo: CO2 evitado (kg), combustível economizado (litros), tipo de veículo — consome `POST /api/transactions/process` |
 
 ---
 
@@ -102,8 +102,8 @@
 
 | ID | Atividade | Tipo | Status | O que fazer |
 |----|-----------|------|--------|-------------|
-| AT01-US03 | Contador de Transações Digitais | Back | 🔄 | `calculate_paper_and_water_savings(is_digital)` implementado no `CalcEngine`; resultado exposto em `TransactionResultDTO.paper_savings` |
-| AT02-US03 | Painel de Economia de Papel e Água | Front | ⬜ | Seção na tela de resultado (AT02-US02) com cards: tickets físicos evitados e litros d'água poupados — dados vêm do mesmo response de transação |
+| AT01-US03 | Contador de Transações Digitais | Back | ✅ | `calculate_paper_and_water_savings(is_digital)` implementado no `CalcEngine`; resultado exposto em `TransactionResultDTO.paper_savings` |
+| AT02-US03 | Painel de Economia de Papel e Água | Front | ✅ | Seção na tela de resultado (AT02-US02) com cards: tickets físicos evitados e litros d'água poupados — dados vêm do mesmo response de transação |
 
 ---
 
@@ -119,7 +119,7 @@
 | ID | Atividade | Tipo | Status | O que fazer |
 |----|-----------|------|--------|-------------|
 | AT01-US01 | Utilitário de Metáforas Visuais | Back | 🔄 | `CalcEngine.get_ludic_metrics()` retorna `trees_saved`, `smartphone_charges`, `coffee_filters` — `constants/ludic_metaphors.py` com os fatores |
-| AT02-US01 | Galeria de Cards de Impacto Lúdico | Front | ⬜ | Seção na tela de resultado (AT02-US02) com cards visuais: ícone + número + descrição por metáfora (ex: "🌳 2,3 árvores salvas") — dados de `ludic_metrics` no response |
+| AT02-US01 | Galeria de Cards de Impacto Lúdico | Front | ✅ | Seção na tela de resultado (AT02-US02) com cards visuais: ícone + número + descrição por metáfora (ex: "🌳 2,3 árvores salvas") — dados de `ludic_metrics` no response |
 
 ---
 
@@ -133,7 +133,7 @@
 | ID | Atividade | Tipo | Status | O que fazer |
 |----|-----------|------|--------|-------------|
 | AT01-US04 | Endpoint de Comparação ROI | Back | ⬜ | `GET /api/dashboard/comparison?vehicle_id=&period_days=` — agrega Transactions reais por vehicle_id + período, retorna `{without_tag: {cost, fuel, time}, with_tag: {cost, fuel, time}, delta}` usando baselines de `technical_specs`; role: gestor_frota, admin |
-| AT02-US04 | Dashboard de Performance Econômica | Front | ⬜ | Página `/dashboard` com: cards de totais (economia R$, litros, horas) + gráfico de barras comparativo "Com Taggy" vs. "Sem Taggy" por período — usar ShadCN Charts |
+| AT02-US04 | Dashboard de Performance Econômica | Front | ✅ | Página `/dashboard` com: cards de totais (economia R$, litros, horas) + gráfico de barras comparativo "Com Taggy" vs. "Sem Taggy" por período — usar ShadCN Charts |
 
 ---
 
@@ -232,7 +232,7 @@
 | AT02-US13 | Alteração de Role de Usuário | Back | ⬜ | `PATCH /api/admin/users/{id}/role` com body `{role: "motorista"\|"gestor_frota"\|"admin"}`; role: admin |
 | AT03-US13 | Listagem de Organizações | Back | ⬜ | `GET /api/admin/organizations` — lista todas orgs com count de usuários e veículos; role: admin |
 | AT04-US13 | Resumo ESG Global | Back | ⬜ | `GET /api/admin/esg/summary` — agrega CO2 total, combustível total, água total, transações totais de todas as orgs; role: admin |
-| AT05-US13 | Update de Emission Factors via API | Back | ⬜ | `POST /api/technical-specs/update` — admin atualiza fatores MCTI/GHG Protocol sem deploy; valida com `validate_engine_specs()` antes de salvar; role: admin |
+| AT05-US13 | Update de Emission Factors via API | Back | ✅ | `POST /api/technical-specs/update` — admin atualiza fatores MCTI/GHG Protocol sem deploy; valida com `validate_engine_specs()` antes de salvar; role: admin |
 | AT06-US13 | Scheduler Automático ANP | Back | ⬜ | APScheduler no startup do FastAPI executando `sync_fuel_prices()` 1x/semana; sem endpoint — automático; log de execução e timestamp de última sync |
 | AT07-US13 | Painel Admin | Front | ⬜ | Página `/admin` com tabs: "Usuários" (tabela com filtros + alterar role), "Organizações" (listagem), "ESG Global" (cards de totais do sistema); acesso restrito a role admin |
 

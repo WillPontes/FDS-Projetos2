@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Link } from "@tanstack/react-router"
-import { ChevronLeft, ChevronRight, Home, Truck } from "lucide-react"
+import { ChevronLeft, ChevronRight, Home, Truck, Leaf } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -56,9 +56,19 @@ export const Sidebar = () => {
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </Button>
       </div>
+
       <nav className="flex flex-col gap-1 p-2">
         <SidebarLink to="/" label="Início" icon={Home} collapsed={collapsed} exact />
+
         <SidebarLink to="/frota" label="Frota" icon={Truck} collapsed={collapsed} exact />
+
+        <SidebarLink
+          to="/dashboard"
+          label="Impacto Ambiental"
+          icon={Leaf}
+          collapsed={collapsed}
+          exact
+        />
       </nav>
     </aside>
   )

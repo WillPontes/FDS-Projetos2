@@ -30,6 +30,16 @@ docker compose up --build
 
 Isto sobe o **Postgres** (`db`) e a **API** (`api`). O compose define `DATABASE_URL` com host `db` na rede interna; o ficheiro `.env` pode conter outras chaves (ex.: `JWT_SECRET`).
 
+No arranque do serviço `api`, as migrações Alembic correm automaticamente (`uv run alembic upgrade head`). As dependências Python são instaladas no **build** da imagem (`uv sync` no Dockerfile), não em cada `exec`.
+
+Para popular `technical_specs` id=1 (após Postgres e API saudáveis):
+
+```bash
+docker compose exec api uv run python scripts/seed_technical_specs.py
+```
+
+Dentro do container use sempre `uv run` (como no Dockerfile e no compose). `python` ou `pip` soltos não veem o `.venv` do projeto.
+
 Para só levantar a base (e correr a API na máquina com `uv run`):
 
 ```bash
