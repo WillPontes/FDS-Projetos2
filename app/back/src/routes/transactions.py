@@ -24,6 +24,86 @@ from src.services.transactions import (
 
 router = APIRouter(prefix="/transactions", tags=["Transactions"])
 
+@router.get("/", response_model=list[TransactionPublic])
+async def list_transactions(
+    db: AsyncSession = Depends(get_db),
+):
+    transactions = await list_transactions_svc(db)
+
+    return [
+        TransactionPublic.model_validate(transaction)
+        for transaction in transactions
+    ]
+
+
+@router.get("/{transaction_id}", response_model=TransactionPublic)
+async def get_transaction(
+    transaction_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    transaction = await get_transaction_by_id_svc(db, transaction_id)
+
+    if not transaction:
+        raise HTTPException(
+            status_code=404,
+            detail="Transaction not found",
+        )
+
+    return TransactionPublic.model_validate(transaction)
+
+
+@router.post("/", response_model=TransactionPublic)
+async def create_transaction(
+    transaction_in: TransactionIn,
+    db: AsyncSession = Depends(get_db),
+):
+    transaction = await create_transaction_svc(db, transaction_in)
+
+    await db.commit()
+
+    return TransactionPublic.model_validate(transaction)
+
+
+@router.patch("/{transaction_id}", response_model=TransactionPublic)
+async def update_transaction(
+    transaction_id: int,
+    transaction_update: TransactionUpdate,
+    db: AsyncSession = Depends(get_db),
+):
+    transaction = await update_transaction_svc(
+        db,
+        transaction_id,
+        transaction_update,
+    )
+
+    if not transaction:
+        raise HTTPException(
+            status_code=404,
+            detail="Transaction not found",
+        )
+
+    await db.commit()
+
+    return TransactionPublic.model_validate(transaction)
+
+
+@router.delete("/{transaction_id}", response_model=dict)
+async def delete_transaction(
+    transaction_id: int,
+    db: AsyncSession = Depends(get_db),
+):
+    deleted = await delete_transaction_svc(db, transaction_id)
+
+    if not deleted:
+        raise HTTPException(
+            status_code=404,
+            detail="Transaction not found",
+        )
+
+    await db.commit()
+
+    return {"message": "Transaction deleted"}
+
 
 @router.post("/process", response_model=TransactionResultDTO)
 async def process_transaction(
