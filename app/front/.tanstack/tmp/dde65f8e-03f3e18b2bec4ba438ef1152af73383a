@@ -10,8 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UsersRouteImport } from './routes/users'
-import { Route as PassagesImpactRouteImport } from './routes/passages-impact'
-import { Route as ImpactRouteImport } from './routes/impact'
+import { Route as ImpactsRouteImport } from './routes/impacts'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as FrotaIndexRouteImport } from './routes/frota/index'
 import { Route as FrotaAdicionarRouteImport } from './routes/frota/adicionar'
@@ -21,14 +20,9 @@ const UsersRoute = UsersRouteImport.update({
   path: '/users',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PassagesImpactRoute = PassagesImpactRouteImport.update({
-  id: '/passages-impact',
-  path: '/passages-impact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ImpactRoute = ImpactRouteImport.update({
-  id: '/impact',
-  path: '/impact',
+const ImpactsRoute = ImpactsRouteImport.update({
+  id: '/impacts',
+  path: '/impacts',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -49,16 +43,14 @@ const FrotaAdicionarRoute = FrotaAdicionarRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/impact': typeof ImpactRoute
-  '/passages-impact': typeof PassagesImpactRoute
+  '/impacts': typeof ImpactsRoute
   '/users': typeof UsersRoute
   '/frota/adicionar': typeof FrotaAdicionarRoute
   '/frota/': typeof FrotaIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/impact': typeof ImpactRoute
-  '/passages-impact': typeof PassagesImpactRoute
+  '/impacts': typeof ImpactsRoute
   '/users': typeof UsersRoute
   '/frota/adicionar': typeof FrotaAdicionarRoute
   '/frota': typeof FrotaIndexRoute
@@ -66,43 +58,22 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/impact': typeof ImpactRoute
-  '/passages-impact': typeof PassagesImpactRoute
+  '/impacts': typeof ImpactsRoute
   '/users': typeof UsersRoute
   '/frota/adicionar': typeof FrotaAdicionarRoute
   '/frota/': typeof FrotaIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/impact'
-    | '/passages-impact'
-    | '/users'
-    | '/frota/adicionar'
-    | '/frota/'
+  fullPaths: '/' | '/impacts' | '/users' | '/frota/adicionar' | '/frota/'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/impact'
-    | '/passages-impact'
-    | '/users'
-    | '/frota/adicionar'
-    | '/frota'
-  id:
-    | '__root__'
-    | '/'
-    | '/impact'
-    | '/passages-impact'
-    | '/users'
-    | '/frota/adicionar'
-    | '/frota/'
+  to: '/' | '/impacts' | '/users' | '/frota/adicionar' | '/frota'
+  id: '__root__' | '/' | '/impacts' | '/users' | '/frota/adicionar' | '/frota/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ImpactRoute: typeof ImpactRoute
-  PassagesImpactRoute: typeof PassagesImpactRoute
+  ImpactsRoute: typeof ImpactsRoute
   UsersRoute: typeof UsersRoute
   FrotaAdicionarRoute: typeof FrotaAdicionarRoute
   FrotaIndexRoute: typeof FrotaIndexRoute
@@ -117,18 +88,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UsersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/passages-impact': {
-      id: '/passages-impact'
-      path: '/passages-impact'
-      fullPath: '/passages-impact'
-      preLoaderRoute: typeof PassagesImpactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/impact': {
-      id: '/impact'
-      path: '/impact'
-      fullPath: '/impact'
-      preLoaderRoute: typeof ImpactRouteImport
+    '/impacts': {
+      id: '/impacts'
+      path: '/impacts'
+      fullPath: '/impacts'
+      preLoaderRoute: typeof ImpactsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -157,8 +121,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ImpactRoute: ImpactRoute,
-  PassagesImpactRoute: PassagesImpactRoute,
+  ImpactsRoute: ImpactsRoute,
   UsersRoute: UsersRoute,
   FrotaAdicionarRoute: FrotaAdicionarRoute,
   FrotaIndexRoute: FrotaIndexRoute,

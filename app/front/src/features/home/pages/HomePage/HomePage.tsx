@@ -6,7 +6,7 @@ export const HomePage = () => {
       <h1 className="text-4xl font-bold tracking-tight">Taggy EcoScore</h1>
 
       <Link
-        to="/users"
+        to="/"
         className="text-primary text-sm font-medium underline underline-offset-4 hover:opacity-90"
       >
         Ver usuários
