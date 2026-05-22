@@ -24,7 +24,6 @@ from src.services.transactions import (
 
 router = APIRouter(prefix="/transactions", tags=["Transactions"])
 
-
 @router.get("/", response_model=list[TransactionPublic])
 async def list_transactions(
     db: AsyncSession = Depends(get_db),
@@ -127,7 +126,6 @@ async def process_transaction(
         "is_digital": body.is_digital,
         "vehicle": body.vehicle.model_dump(),
     }
-
     if body.payback is not None:
         payload_dict["payback"] = body.payback.model_dump()
 
@@ -173,7 +171,7 @@ async def process_transaction(
             fuel_liters=result.get("fuel_saved_liters"),
             water_liters=result.get("water_saved_liters"),
             financial_brl=result.get("financial_savings_brl"),
-    )
+        )
 
     await db.commit()
 

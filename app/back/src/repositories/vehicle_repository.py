@@ -32,7 +32,6 @@ class VehicleRepository:
 
     async def get_all(self) -> list[Vehicle]:
         result = await self.session.execute(select(Vehicle))
-
         return list(result.scalars().all())
 
     async def create(self, vehicle_in: VehicleIn) -> Vehicle:

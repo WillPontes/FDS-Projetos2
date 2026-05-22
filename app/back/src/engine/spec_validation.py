@@ -122,13 +122,3 @@ def validate_engine_specs(specs: dict[str, Any]) -> None:
     by_uf = specs.get("fuel_prices_by_uf")
     if not isinstance(by_uf, dict) or not by_uf:
         raise CalcEngineError("fuel_prices_by_uf vazio ou em falta.")
-
-    meta = specs.get("fuel_prices_meta")
-    if not isinstance(meta, dict):
-        raise CalcEngineError("fuel_prices_meta em falta ou inválido.")
-    for key in ("as_of", "source", "aggregation", "default_uf"):
-        if key not in meta:
-            raise CalcEngineError(f"fuel_prices_meta sem {key}.")
-        val = meta[key]
-        if not isinstance(val, str) or not val.strip():
-            raise CalcEngineError(f"fuel_prices_meta.{key} deve ser string não vazia.")
