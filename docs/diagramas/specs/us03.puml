@@ -1,0 +1,17 @@
+@startuml US03
+start
+:O sistema recebe quanto combustível\nfoi economizado (por carro ou por passagem);
+:O sistema vê se o carro é leve (flex)\nou pesado (diesel);
+if (É carro leve flex?) then (sim)
+  :Usa a tabela de conversão\npara carro leve;
+else (não)
+  :Usa a tabela de conversão\npara carro pesado;
+endif
+:Calcula quantos kg de CO2\nforam evitados;
+:Atualiza a tela com o total em kg de CO2;
+if (Alguém pede o relatório?) then (sim)
+  :Gera um arquivo com os dados\nusados no cálculo (para conferir);
+else (não)
+endif
+stop
+@enduml

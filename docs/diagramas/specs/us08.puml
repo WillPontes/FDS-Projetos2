@@ -1,0 +1,21 @@
+@startuml US08
+start
+partition "Mapa e rotas verdes" {
+  :O usuário informa origem e destino;
+  :O sistema carrega o mapa\n(API Google Maps ou Mapbox);
+  :Consulta histórico de fluidez\nde passagens com tag no corredor;
+  :Destaca visualmente as "Rotas Verdes"\n(menor tendência a paradas);
+}
+partition "Sugestão de rota sustentável" {
+  :O sistema recebe rotas candidatas\n(rota padrão vs. rotas de alta fluidez);
+  :Estima tempo parado, consumo\n e emissões por alternativa;
+  :Compara rotas por eficiência\nde emissões e desgaste;
+  :Calcula CO2 evitado estimado\nantes de iniciar o trajeto;
+  :Apresenta a sugestão de melhor rota\nao usuário;
+}
+if (O usuário confirma e inicia?) then (sim)
+  :Inicia navegação com a rota escolhida;
+else (não)
+endif
+stop
+@enduml

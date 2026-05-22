@@ -1,0 +1,26 @@
+@startuml US06
+start
+if (O que fazer?) then (cadastrar ou editar)
+  :O gestor preenche placa, modelo,\ncombustível e número da Tag;
+  if (Faltou algum campo?) then (sim)
+    :Mostra mensagem de erro;
+    stop
+  endif
+  if (Essa Tag já está em outro carro?) then (sim)
+    :Não deixa salvar e avisa o problema;
+    stop
+  endif
+  :Guarda ou atualiza o carro no sistema;
+elseif (importar planilha?) then (sim)
+  :O gestor envia arquivo CSV ou Excel\ncom vários carros;
+  :O sistema confere cada linha\ne se a Tag não está repetida;
+  if (Tem linha errada?) then (sim)
+    :Mostra quais linhas estão erradas;
+  else (não)
+    :Importa os carros;
+  endif
+else (apagar)
+  :O gestor apaga o carro da lista;
+endif
+stop
+@enduml

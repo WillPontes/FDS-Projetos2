@@ -1,0 +1,9 @@
+@startuml US04
+start
+:O sistema contabiliza cada passagem\nsem parada como ticket evitado;
+:Calcula quanto papel térmico (BPA)\ndeixou de ser usado;
+:Converte papel evitado em litros de água\npoupados na produção;
+:Soma o total de "árvores preservadas";
+:Mostra na tela tickets, litros de água\ne árvores acumulados;
+stop
+@enduml

@@ -1,0 +1,9 @@
+@startuml US02
+start
+:O usuário abre a tela de impacto;
+:Escolhe uma aba:\nCarbono, Água ou Papel;
+:O sistema busca o número real\n(kg de CO2, litros de água, papel...);
+:Transforma esse número num exemplo\ndo dia a dia (ex.: árvores);
+:Mostra o exemplo e o número real\n(há pelo menos 3 opções por aba);
+stop
+@enduml

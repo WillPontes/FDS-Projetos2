@@ -1,0 +1,1 @@
+export { SkeletonTable } from "./SkeletonTable"

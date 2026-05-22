@@ -1,0 +1,13 @@
+@startuml US09
+start
+:O sistema confirma a passagem\n(pedágio ou estacionamento);
+:Calcula combustível economizado\nnessa ida;
+:Calcula CO2 evitado\nnessa ida;
+:Monta o texto do aviso no celular\ncom esses números;
+if (O aviso sai em até 3 minutos\ndepois da passagem?) then (sim)
+  :Envia a notificação;
+else (não)
+  :Guarda que passou do prazo\n(para a equipe ver depois);
+endif
+stop
+@enduml

@@ -1,0 +1,11 @@
+@startuml US05
+start
+:O gestor abre o painel\n"Com Taggy x Sem Taggy";
+:O gestor escolhe os filtros:\ncarro, placa ou período;
+:O sistema mostra o gasto real\nusando a Taggy (passagem rápida);
+:O sistema estima o que seria\nsem tag: fila, carro parado,\ngasto a mais de combustível;
+:Calcula quanto dinheiro (R$)\nfoi economizado;
+:Calcula quantos litros\nforam economizados;
+:Mostra um gráfico e os números\nda diferença entre os dois casos;
+stop
+@enduml

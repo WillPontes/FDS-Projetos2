@@ -1,0 +1,12 @@
+@startuml US01
+start
+:Equipa define stack front/back\ne convenções de código;
+:Inicializa repositório com boilerplate,\nlint, testes e CI básicos;
+:Documenta onboarding mínimo\n(README, como rodar, padrões);
+if (Revisão de qualidade ok?) then (sim)
+  :Publica branch principal\ncom histórico de contribuição;
+else (não)
+  :Ajusta configuração\ne documentação;
+endif
+stop
+@enduml

@@ -1,0 +1,33 @@
+[project]
+name = "taggy-api"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi[standard]>=0.115",
+    "sqlmodel>=0.0.21",
+    "asyncpg>=0.29",
+    "alembic>=1.13",
+    "python-dotenv>=1.0",
+    "pydantic-settings>=2.7",
+    "PyJWT>=2.9",
+    "google-cloud-bigquery",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "ruff>=0.9",
+    "pytest>=8.3",
+    "httpx>=0.28",
+    "pytest-asyncio>=0.25",
+    "python-dotenv>=1.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+"src/main.py" = ["E402"]

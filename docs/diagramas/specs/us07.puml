@@ -1,0 +1,10 @@
+@startuml US07
+start
+:Uma passagem é confirmada\n(pagou com a tag);
+:O sistema pega o tempo médio\nna fila do pedágio manual;
+:O sistema pega o tempo\nde passar direto com a tag;
+:Calcula quanto tempo\nessa passagem economizou;
+:Soma tudo (horas ou dias ganhos);
+:Atualiza na hora o placar\nna tela do usuário;
+stop
+@enduml

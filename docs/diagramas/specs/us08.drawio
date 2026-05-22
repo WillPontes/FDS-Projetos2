@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2026-04-15T12:00:00.000Z" version="22.1.0" type="device">
+  <diagram id="us08" name="US08_Roteirizador_Fluxo_Sustentavel">
+    <mxGraphModel dx="1024" dy="768" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="us_container" value="US08_Roteirizador_Fluxo_Sustentavel" style="swimlane;whiteSpace=wrap;html=1;startSize=30;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="230" y="10" width="300" height="860" as="geometry" />
+        </mxCell>
+        <mxCell id="2" value="" style="ellipse;fillColor=#000000;strokeColor=none;" vertex="1" parent="us_container">
+          <mxGeometry x="135" y="40" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="3" value="Recebe rotas candidatas&#xa;(padrão vs. alta fluidez)" style="rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#ffffff;strokeColor=#000000;" vertex="1" parent="us_container">
+          <mxGeometry x="45" y="90" width="210" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="4" value="Estima tempo parado, consumo&#xa;e emissões por alternativa" style="rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#ffffff;strokeColor=#000000;" vertex="1" parent="us_container">
+          <mxGeometry x="40" y="180" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="5" value="Compara e ranqueia por&#xa;menor CO2 / desgaste" style="rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#ffffff;strokeColor=#000000;" vertex="1" parent="us_container">
+          <mxGeometry x="50" y="270" width="200" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="6" value="Calcula CO2 evitado estimado&#xa;antes de iniciar o trajeto" style="rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#ffffff;strokeColor=#000000;" vertex="1" parent="us_container">
+          <mxGeometry x="40" y="355" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="7" value="Apresenta sugestão de melhor rota&#xa;por eficiência de emissões" style="rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#ffffff;strokeColor=#000000;" vertex="1" parent="us_container">
+          <mxGeometry x="35" y="445" width="230" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="8" value="Usuário confirma e inicia?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="us_container">
+          <mxGeometry x="90" y="530" width="120" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="9" value="Inicia navegação com a rota escolhida" style="rounded=1;whiteSpace=wrap;html=1;arcSize=20;fillColor=#ffffff;strokeColor=#000000;" vertex="1" parent="us_container">
+          <mxGeometry x="40" y="645" width="220" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="10" value="" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="us_container">
+          <mxGeometry x="135" y="740" width="30" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="11" edge="1" parent="us_container" source="2" target="3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="12" edge="1" parent="us_container" source="3" target="4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="13" edge="1" parent="us_container" source="4" target="5"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="14" edge="1" parent="us_container" source="5" target="6"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="15" edge="1" parent="us_container" source="6" target="7"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="16" edge="1" parent="us_container" source="7" target="8"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="17" value="sim" style="edgeStyle=orthogonalEdgeStyle;html=1;align=center;verticalAlign=middle;rounded=0;" edge="1" parent="us_container" source="8" target="9"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="18" value="não" style="edgeStyle=orthogonalEdgeStyle;html=1;align=center;verticalAlign=middle;rounded=0;" edge="1" parent="us_container" source="8" target="10"><mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="270" y="572" /><mxPoint x="270" y="755" /></Array></mxGeometry></mxCell>
+        <mxCell id="19" edge="1" parent="us_container" source="9" target="10"><mxGeometry relative="1" as="geometry" /></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

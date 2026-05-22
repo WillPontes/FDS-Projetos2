@@ -1,0 +1,12 @@
+@startuml US10
+start
+if (A meta é da frota inteira?) then (sim)
+  :Configura a meta da semana\npara a frota;
+else (é só de uma pessoa)
+  :Configura a meta da semana\npara aquele usuário;
+endif
+:O sistema conta o que aconteceu\nna semana (ex.: passagens sem fila);
+:Atualiza o número e a porcentagem;
+:Mostra a barra de progresso na tela;
+stop
+@enduml

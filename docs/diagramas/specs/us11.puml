@@ -1,0 +1,13 @@
+@startuml US11
+start
+:O sistema soma o que já economizou\n(combustível + manutenção);
+:O sistema pega o valor da mensalidade da tag;
+:Faz a conta:\neconomia total menos mensalidade;
+:Mostra o resultado bem claro na tela;
+if (A economia já passou\nda mensalidade?) then (sim)
+  :Mostra em destaque: "Tag Paga";
+else (não)
+  :Mostra se ainda falta economizar\nou se está no zero;
+endif
+stop
+@enduml
