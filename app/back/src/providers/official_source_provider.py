@@ -1,5 +1,3 @@
-#app\back\src\providers\official_source_provider.py
-
 from typing import Any
 
 from src.engine.exceptions import CalcEngineError
@@ -42,11 +40,9 @@ class OfficialSourceProvider:
                 "Mapa fuel_prices_by_uf vazio: sincronize preços com tipos válidos."
             )
 
-        fuel_prices_as_of = max(fr.updated_at for fr in fuel_rows).isoformat()
         specs_dict = technical_specs_to_engine_dict(
             row,
             prices_map,
-            fuel_prices_as_of=fuel_prices_as_of,
         )
         validate_engine_specs(specs_dict)
         return specs_dict
@@ -120,7 +116,10 @@ class OfficialSourceProvider:
             )
 
     async def get_technical_specs_bundle(self):
-        from src.dto.technical_specs import TechnicalSpecsBundleDTO, technical_specs_row_to_dto
+        from src.dto.technical_specs import (
+            TechnicalSpecsBundleDTO,
+            technical_specs_row_to_dto,
+        )
         from src.dto.fuel_price import fuel_prices_rows_to_by_uf_dict
 
         row = await self.technical_specs_repository.get_by_id(1)
@@ -157,8 +156,7 @@ class OfficialSourceProvider:
 
         rows = await self.fuel_prices_repository.get_all()
         return {
-            row.uf: fuel_price_row_to_dto(row).model_dump(mode="json")
-            for row in rows
+            row.uf: fuel_price_row_to_dto(row).model_dump(mode="json") for row in rows
         }
 
     async def get_fuel_price_by_uf_dict(

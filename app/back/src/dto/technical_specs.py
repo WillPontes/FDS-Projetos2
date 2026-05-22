@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
+from typing import Any, Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -59,14 +59,31 @@ class TechnicalSpecsCreate(BaseModel):
     benchmark_kg_co2_per_burger: float
 
 
-class TechnicalSpecsUpdate(TechnicalSpecsCreate):
-    pass
+class TechnicalSpecsUpdate(BaseModel):
+    emission_factor_diesel_s10: Optional[float] = None
+    emission_factor_gasolina_c: Optional[float] = None
+    emission_factor_etanol: Optional[float] = None
+    idle_rate_leve: Optional[float] = None
+    idle_rate_pesado: Optional[float] = None
+    paper_co2_per_ticket: Optional[float] = None
+    paper_water_per_ticket: Optional[float] = None
+    ludic_tree_year_absorption: Optional[float] = None
+    ludic_phone_charge_factor: Optional[float] = None
+    ludic_coffee_factor: Optional[float] = None
+    ludic_metaphor_units: Optional[dict] = None
+    baseline_pedagio_avg_wait_sec: Optional[int] = None
+    baseline_estacionamento_avg_wait_sec: Optional[int] = None
+    maint_cost_leve: Optional[float] = None
+    maint_cost_pesado: Optional[float] = None
+    accel_surge_leve: Optional[float] = None
+    accel_surge_pesado: Optional[float] = None
+    benchmark_kg_co2_per_km_car: Optional[float] = None
+    benchmark_kg_co2_per_burger: Optional[float] = None
 
 
 class TechnicalSpecsBundleDTO(BaseModel):
     specs: TechnicalSpecsDTO
     fuel_prices_by_uf: dict[str, FuelPriceByUFDTO]
-    fuel_prices_as_of: str = ""
 
 
 def technical_specs_row_to_dto(row: TechnicalSpecs) -> TechnicalSpecsDTO:
@@ -84,7 +101,9 @@ def technical_specs_row_to_dto(row: TechnicalSpecs) -> TechnicalSpecsDTO:
         ludic_coffee_factor=float(row.ludic_coffee_factor),
         ludic_metaphor_units=dict(row.ludic_metaphor_units or {}),
         baseline_pedagio_avg_wait_sec=int(row.baseline_pedagio_avg_wait_sec),
-        baseline_estacionamento_avg_wait_sec=int(row.baseline_estacionamento_avg_wait_sec),
+        baseline_estacionamento_avg_wait_sec=int(
+            row.baseline_estacionamento_avg_wait_sec
+        ),
         maint_cost_leve=float(row.maint_cost_leve),
         maint_cost_pesado=float(row.maint_cost_pesado),
         accel_surge_leve=float(row.accel_surge_leve),
@@ -149,8 +168,6 @@ def merge_ludic_metaphor_units_with_labels(
 def technical_specs_to_engine_dict(
     row: TechnicalSpecs,
     fuel_prices_by_uf: dict[str, dict[str, float]],
-    *,
-    fuel_prices_as_of: str,
 ) -> dict[str, Any]:
     from src.dto.fuel_price import FUEL_PRICES_META_AGGREGATION, FUEL_PRICES_META_SOURCE
 
@@ -197,10 +214,4 @@ def technical_specs_to_engine_dict(
             "kg_co2_per_burger": float(row.benchmark_kg_co2_per_burger),
         },
         "fuel_prices_by_uf": fuel_prices_by_uf,
-        "fuel_prices_meta": {
-            "as_of": fuel_prices_as_of,
-            "source": FUEL_PRICES_META_SOURCE,
-            "aggregation": FUEL_PRICES_META_AGGREGATION,
-            "default_uf": "SP",
-        },
     }
