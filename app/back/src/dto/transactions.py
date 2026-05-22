@@ -31,3 +31,19 @@ class ProcessTransactionBody(BaseModel):
 
 class TransactionResultDTO(BaseModel):
     data: dict[str, Any]
+    
+    @property
+    def paper_savings(self) -> float:
+        """
+        Extrai dinamicamente a economia de papel calculada pelo CalcEngine 
+        que foi injetada dentro da chave 'environmental' do dicionário de dados.
+        """
+        if not isinstance(self.data, dict):
+            return 0.0
+            
+        # O CalcEngine salva em: payload["environmental"]["paper_tickets"]
+        environmental = self.data.get("environmental", {})
+        if isinstance(environmental, dict):
+            return float(environmental.get("paper_tickets", 0.0))
+            
+        return 0.0
