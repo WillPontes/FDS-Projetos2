@@ -7,7 +7,7 @@ import {
 const ludicMetrics = [
   {
     icon: (
-      <Trees className="h-8 w-8 text-green-600" />
+      <Trees className="h-8 w-8 text-primary" />
     ),
     value: "2,3",
     label: "árvores preservadas",
@@ -30,7 +30,7 @@ const ludicMetrics = [
 
 export const LudicCards = () => {
   return (
-    <section className="mt-10">
+    <section>
       <h2 className="mb-6 text-2xl font-semibold">
         Tradução lúdica do impacto
       </h2>
@@ -39,7 +39,7 @@ export const LudicCards = () => {
         {ludicMetrics.map((metric) => (
           <div
             key={metric.label}
-            className="rounded-2xl border bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
+            className="card-surface-lg p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
           >
             <div>
               {metric.icon}
@@ -49,7 +49,7 @@ export const LudicCards = () => {
               {metric.value}
             </h3>
 
-            <p className="mt-2 text-gray-500">
+            <p className="mt-2 text-muted-foreground">
               {metric.label}
             </p>
           </div>

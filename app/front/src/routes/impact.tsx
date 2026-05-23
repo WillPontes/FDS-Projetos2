@@ -1,6 +1,6 @@
-import { ImpactPage }  from '@/features/impacts';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute } from "@tanstack/react-router"
+import { ImpactDashboardPage } from "@/features/sustainability"
 
 export const Route = createFileRoute("/impact")({
-  component: ImpactPage,
-}); 
+  component: ImpactDashboardPage,
+})

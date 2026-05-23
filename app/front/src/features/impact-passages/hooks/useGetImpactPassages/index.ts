@@ -1,1 +1,0 @@
-export { useGetImpactPassages } from "./useGetImpactPassages"

@@ -1,56 +1,23 @@
 # Arquitetura Feature-Based
 
-Cada feature encapsula todo o código relacionado ao seu domínio: UI, dados e lógica.
-
-## Estrutura de uma feature
-
-```
-features/
-  <feature>/
-    api/
-      query-keys.ts     chaves do React Query
-      requests.ts       funções de requisição HTTP
-      types.ts          tipos de request/response
-    components/
-      <Component>/
-        <Component>.tsx
-        index.ts
-    constants.ts        constantes do domínio
-    hooks/
-      <useGetX>/        hook de leitura
-        <useGetX>.ts
-        index.ts
-      <useCreateX>/     hook de mutação
-        <useCreateX>.ts
-        index.ts
-    pages/
-      <Page>/
-        <Page>.tsx
-        index.ts
-    schemas/
-      <entity>-schema.ts  validação Zod
-    index.ts            barrel export público da feature
-```
-
-## Convenções
-
-| Elemento | Padrão |
-|---|---|
-| Arquivo | `PascalCase.tsx` / `PascalCase.ts` |
-| Pasta | `PascalCase` para componentes/hooks/pages |
-| Componente | `export const X = () => {}` |
-| Hook de query | `useGetX` |
-| Hook de mutation | `useCreateX`, `useUpdateX`, `useDeleteX` |
-| Types | `type X = {}` (não `interface`) |
-| Barrel | `/{NOME}/index.ts` re-exportando `{NOME}.tsx` |
+Padrões completos em **[docs/tecnico/convencoes.md](../../../docs/tecnico/convencoes.md)**.
 
 ## Features atuais
 
-- **fleet** — gestão de veículos (CRUD)
-- **home** — página inicial
-- **users** — listagem de usuários
+| Feature | Domínio | Rotas |
+|---------|---------|-------|
+| `home` | Landing | `/` |
+| `dashboard` | Gestor — KPIs ambientais (Tela 09) | `/dashboard` |
+| `fleet` | Gestor — inventário frota (US05) | `/frota`, `/frota/adicionar` |
+| `users` | Admin — listagem | `/users` |
+| `sustainability` | Motorista — impacto + passagens (contratos §1–§2) | `/impact`, `/passagens` |
 
-## Constantes globais
+## Estrutura de uma feature
 
-Constantes compartilhadas entre features ficam em `src/constants/`.  
-Constantes específicas de uma feature ficam em `src/features/<feature>/constants.ts`.
+Ver convencoes.md: `api/`, `hooks/`, `pages/<Page>/`, `schemas/`, `components/`, `index.ts`.
+
+## Layout global
+
+- **App:** `AppLayout` (sidebar fixa + `Header` + `Footer`) via `AppShell` em todas as rotas
+- **Página:** `GestorPageShell` opcional (título, descrição, ações) dentro do conteúdo da rota
+- **Motorista (UI):** componentes em `components/layout/driver/` (`MetricCard`, `StatCard`, etc.)

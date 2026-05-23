@@ -1,22 +1,16 @@
-import { useState, useEffect } from "react";
-import { Link } from "@tanstack/react-router";
-import { ChevronLeft, ChevronRight, Home, Truck, Leaf } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Link } from "@tanstack/react-router"
+import type { LucideIcon } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { APP_NAV_ITEMS } from "@/constants/nav"
 
 type SidebarLinkProps = {
-  to: string;
-  label: string;
-  icon: LucideIcon;
-  exact?: boolean;
-};
+  to: string
+  label: string
+  icon: LucideIcon
+  exact?: boolean
+}
 
-const SidebarLink = ({
-  to,
-  label,
-  icon: Icon,
-  exact = false,
-}: SidebarLinkProps) => {
+const SidebarLink = ({ to, label, icon: Icon, exact = false }: SidebarLinkProps) => {
   return (
     <Link
       to={to}
@@ -25,54 +19,33 @@ const SidebarLink = ({
         "hover:bg-accent hover:text-accent-foreground",
       )}
       activeProps={{
-        className: "bg-accent text-accent-foreground font-medium",
+        className: "bg-accent font-medium text-accent-foreground",
       }}
       activeOptions={{ exact }}
     >
       <Icon className="h-4 w-4 shrink-0" />
       <span>{label}</span>
     </Link>
-  );
-};
+  )
+}
 
 export const Sidebar = () => {
-  // Controle absoluto: false = escondida em qualquer tela, true = aberta em qualquer tela
-  const [isOpen, setIsOpen] = useState(false);
-
-  useEffect(() => {
-    // Escuta o clique do botão de 3 listras da sua página
-    const handleToggle = () => setIsOpen((prev) => !prev);
-
-    window.addEventListener("toggle-sidebar", handleToggle);
-    return () => window.removeEventListener("toggle-sidebar", handleToggle);
-  }, []);
-
   return (
-    <>
-      {/* CORTINA ESCURA DE FUNDO: Se o menu abrir, clicar fora dele vai fechá-lo */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/40 z-90"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
-
-      <aside
-        className={cn(
-          "flex flex-col border-r bg-card transition-all duration-300 w-64",
-          "fixed top-0 h-screen z-100",
-          isOpen ? "left-0" : "-left-64",
-        )}
-      >
-        <div className="flex h-14 items-center border-b px-4">
-          <span className="font-semibold text-slate-900">Gestão</span>
-        </div>
-
-        <nav className="flex flex-col gap-1 p-2">
-          <SidebarLink to="/" label="Início" icon={Home} exact />
-          <SidebarLink to="/frota" label="Frota" icon={Truck} exact />
-        </nav>
-      </aside>
-    </>
-  );
-};
+    <aside className="flex h-screen w-64 shrink-0 flex-col border-r bg-card">
+      <div className="flex h-14 items-center border-b px-4">
+        <span className="font-semibold text-foreground">Taggy</span>
+      </div>
+      <nav className="flex flex-col gap-1 overflow-y-auto p-2">
+        {APP_NAV_ITEMS.map((item) => (
+          <SidebarLink
+            key={item.to}
+            to={item.to}
+            label={item.label}
+            icon={item.icon}
+            exact={item.exact}
+          />
+        ))}
+      </nav>
+    </aside>
+  )
+}

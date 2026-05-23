@@ -1,0 +1,1 @@
+export { useGetWeeklyGoal } from "./useGetWeeklyGoal"

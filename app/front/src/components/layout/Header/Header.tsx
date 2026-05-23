@@ -5,8 +5,8 @@ import { ROUTE_LABELS } from "@/constants";
 export const Header = () => {
   const matches = useMatches();
   const crumbs = matches
-    .filter((m) => m.pathname !== "/" && ROUTE_LABELS[m.routeId])
-    .map((m) => ({ label: ROUTE_LABELS[m.routeId]!, path: m.pathname }));
+    .filter((m) => m.pathname !== "/" && ROUTE_LABELS[m.pathname])
+    .map((m) => ({ label: ROUTE_LABELS[m.pathname]!, path: m.pathname }));
 
   return (
     <header className="flex h-14 items-center border-b px-6">

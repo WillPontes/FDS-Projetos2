@@ -14,6 +14,7 @@ import {
 } from "nuqs";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/DataTable";
+import { GestorPageShell } from "@/components/layout/GestorPageShell";
 import { PAGE_SIZE } from "@/constants";
 import { useGetVehicles } from "../../hooks/useGetVehicles";
 import type { Vehicle } from "../../schemas/vehicle-schema";
@@ -87,17 +88,17 @@ export const FleetListPage = () => {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Frota</h1>
+    <GestorPageShell
+      title="Frota"
+      actions={
         <Button asChild>
           <Link to="/frota/adicionar">
             <Plus className="h-4 w-4" />
             Novo Veículo
           </Link>
         </Button>
-      </div>
-
+      }
+    >
       <DataTable
         columns={columns}
         data={data?.items ?? []}
@@ -108,6 +109,6 @@ export const FleetListPage = () => {
         sorting={sorting}
         onSortingChange={handleSortingChange}
       />
-    </div>
+    </GestorPageShell>
   );
 };

@@ -27,6 +27,7 @@
   --color-success-foreground: hsl(var(--success-foreground));
   --color-warning: hsl(var(--warning));
   --color-warning-foreground: hsl(var(--warning-foreground));
+  --color-taggy-brand: #7cb305;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -105,5 +106,31 @@
   h5,
   h6 {
     font-family: var(--font-heading);
+  }
+}
+
+@layer components {
+  .card-surface {
+    @apply rounded-lg border border-border bg-card text-card-foreground shadow-sm;
+  }
+
+  .card-surface-lg {
+    @apply rounded-2xl border border-border bg-card text-card-foreground shadow-sm;
+  }
+
+  .page-title {
+    @apply font-heading text-2xl font-semibold tracking-tight text-foreground;
+  }
+
+  .page-title-hero {
+    @apply font-heading text-3xl font-bold tracking-tight text-foreground md:text-4xl;
+  }
+
+  .metric-label {
+    @apply text-xs font-medium uppercase tracking-wider text-muted-foreground;
+  }
+
+  .driver-screen {
+    @apply flex min-h-full flex-col bg-background font-sans text-foreground antialiased;
   }
 }
