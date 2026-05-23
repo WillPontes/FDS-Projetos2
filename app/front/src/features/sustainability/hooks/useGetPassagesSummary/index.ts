@@ -1,0 +1,1 @@
+export { useGetPassagesSummary } from "./useGetPassagesSummary"

@@ -10,12 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UsersRouteImport } from './routes/users'
-<<<<<<< HEAD
-import { Route as PassagesImpactRouteImport } from './routes/passages-impact'
+import { Route as PassagensRouteImport } from './routes/passagens'
 import { Route as ImpactRouteImport } from './routes/impact'
-=======
 import { Route as DashboardRouteImport } from './routes/dashboard'
->>>>>>> 7b6b99c0cbbea5f837ab2e428c0ecd2ee115ae5c
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as FrotaIndexRouteImport } from './routes/frota/index'
 import { Route as FrotaAdicionarRouteImport } from './routes/frota/adicionar'
@@ -25,20 +22,19 @@ const UsersRoute = UsersRouteImport.update({
   path: '/users',
   getParentRoute: () => rootRouteImport,
 } as any)
-<<<<<<< HEAD
-const PassagesImpactRoute = PassagesImpactRouteImport.update({
-  id: '/passages-impact',
-  path: '/passages-impact',
+const PassagensRoute = PassagensRouteImport.update({
+  id: '/passagens',
+  path: '/passagens',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ImpactRoute = ImpactRouteImport.update({
   id: '/impact',
   path: '/impact',
-=======
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
->>>>>>> 7b6b99c0cbbea5f837ab2e428c0ecd2ee115ae5c
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -59,24 +55,18 @@ const FrotaAdicionarRoute = FrotaAdicionarRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-<<<<<<< HEAD
-  '/impact': typeof ImpactRoute
-  '/passages-impact': typeof PassagesImpactRoute
-=======
   '/dashboard': typeof DashboardRoute
->>>>>>> 7b6b99c0cbbea5f837ab2e428c0ecd2ee115ae5c
+  '/impact': typeof ImpactRoute
+  '/passagens': typeof PassagensRoute
   '/users': typeof UsersRoute
   '/frota/adicionar': typeof FrotaAdicionarRoute
   '/frota/': typeof FrotaIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-<<<<<<< HEAD
-  '/impact': typeof ImpactRoute
-  '/passages-impact': typeof PassagesImpactRoute
-=======
   '/dashboard': typeof DashboardRoute
->>>>>>> 7b6b99c0cbbea5f837ab2e428c0ecd2ee115ae5c
+  '/impact': typeof ImpactRoute
+  '/passagens': typeof PassagensRoute
   '/users': typeof UsersRoute
   '/frota/adicionar': typeof FrotaAdicionarRoute
   '/frota': typeof FrotaIndexRoute
@@ -84,48 +74,38 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-<<<<<<< HEAD
-  '/impact': typeof ImpactRoute
-  '/passages-impact': typeof PassagesImpactRoute
-=======
   '/dashboard': typeof DashboardRoute
->>>>>>> 7b6b99c0cbbea5f837ab2e428c0ecd2ee115ae5c
+  '/impact': typeof ImpactRoute
+  '/passagens': typeof PassagensRoute
   '/users': typeof UsersRoute
   '/frota/adicionar': typeof FrotaAdicionarRoute
   '/frota/': typeof FrotaIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-<<<<<<< HEAD
   fullPaths:
     | '/'
+    | '/dashboard'
     | '/impact'
-    | '/passages-impact'
+    | '/passagens'
     | '/users'
     | '/frota/adicionar'
     | '/frota/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/dashboard'
     | '/impact'
-    | '/passages-impact'
+    | '/passagens'
     | '/users'
     | '/frota/adicionar'
     | '/frota'
   id:
     | '__root__'
     | '/'
-    | '/impact'
-    | '/passages-impact'
-=======
-  fullPaths: '/' | '/dashboard' | '/users' | '/frota/adicionar' | '/frota/'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/users' | '/frota/adicionar' | '/frota'
-  id:
-    | '__root__'
-    | '/'
     | '/dashboard'
->>>>>>> 7b6b99c0cbbea5f837ab2e428c0ecd2ee115ae5c
+    | '/impact'
+    | '/passagens'
     | '/users'
     | '/frota/adicionar'
     | '/frota/'
@@ -133,12 +113,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-<<<<<<< HEAD
-  ImpactRoute: typeof ImpactRoute
-  PassagesImpactRoute: typeof PassagesImpactRoute
-=======
   DashboardRoute: typeof DashboardRoute
->>>>>>> 7b6b99c0cbbea5f837ab2e428c0ecd2ee115ae5c
+  ImpactRoute: typeof ImpactRoute
+  PassagensRoute: typeof PassagensRoute
   UsersRoute: typeof UsersRoute
   FrotaAdicionarRoute: typeof FrotaAdicionarRoute
   FrotaIndexRoute: typeof FrotaIndexRoute
@@ -153,12 +130,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UsersRouteImport
       parentRoute: typeof rootRouteImport
     }
-<<<<<<< HEAD
-    '/passages-impact': {
-      id: '/passages-impact'
-      path: '/passages-impact'
-      fullPath: '/passages-impact'
-      preLoaderRoute: typeof PassagesImpactRouteImport
+    '/passagens': {
+      id: '/passagens'
+      path: '/passagens'
+      fullPath: '/passagens'
+      preLoaderRoute: typeof PassagensRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/impact': {
@@ -166,13 +142,13 @@ declare module '@tanstack/react-router' {
       path: '/impact'
       fullPath: '/impact'
       preLoaderRoute: typeof ImpactRouteImport
-=======
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
->>>>>>> 7b6b99c0cbbea5f837ab2e428c0ecd2ee115ae5c
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -201,12 +177,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-<<<<<<< HEAD
-  ImpactRoute: ImpactRoute,
-  PassagesImpactRoute: PassagesImpactRoute,
-=======
   DashboardRoute: DashboardRoute,
->>>>>>> 7b6b99c0cbbea5f837ab2e428c0ecd2ee115ae5c
+  ImpactRoute: ImpactRoute,
+  PassagensRoute: PassagensRoute,
   UsersRoute: UsersRoute,
   FrotaAdicionarRoute: FrotaAdicionarRoute,
   FrotaIndexRoute: FrotaIndexRoute,

@@ -1,43 +1,47 @@
+import type { ColumnDef } from "@tanstack/react-table"
 import { Link } from "@tanstack/react-router"
+import { GestorPageShell } from "@/components/layout/GestorPageShell"
+import { DataTable } from "@/components/DataTable"
+import { Button } from "@/components/ui/button"
 import { useGetUsers } from "../../hooks/useGetUsers"
+import type { User } from "../../api/types"
+
+const columns: ColumnDef<User>[] = [
+  {
+    accessorKey: "name",
+    header: "Nome",
+  },
+  {
+    accessorKey: "email",
+    header: "E-mail",
+  },
+]
 
 export const UsersListPage = () => {
-  const { data, isPending, isError, error } = useGetUsers()
+  const { data, isLoading, isError, error } = useGetUsers()
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-lg flex-col gap-6 p-8">
-      <div className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-semibold tracking-tight">Usuários</h1>
-        <Link
-          to="/"
-          className="text-muted-foreground text-sm underline underline-offset-4 hover:text-foreground"
-        >
-          Início
-        </Link>
-      </div>
-
-      {isPending ? (
-        <p className="text-muted-foreground">Carregando…</p>
-      ) : isError ? (
+    <GestorPageShell
+      title="Usuários"
+      actions={
+        <Button variant="outline" asChild>
+          <Link to="/">Início</Link>
+        </Button>
+      }
+    >
+      {isError ? (
         <p className="text-destructive" role="alert">
           {error instanceof Error
             ? error.message
             : "Erro ao carregar usuários."}
         </p>
-      ) : data?.length === 0 ? (
-        <p className="text-muted-foreground">Nenhum usuário encontrado.</p>
       ) : (
-        <ul className="divide-y divide-border rounded-md border border-border">
-          {data?.map((user) => (
-            <li key={user.id} className="flex flex-col gap-0.5 px-4 py-3">
-              <span className="font-medium">{user.name}</span>
-              <span className="text-muted-foreground text-sm">
-                {user.email}
-              </span>
-            </li>
-          ))}
-        </ul>
+        <DataTable
+          columns={columns}
+          data={data ?? []}
+          isLoading={isLoading}
+        />
       )}
-    </main>
+    </GestorPageShell>
   )
 }

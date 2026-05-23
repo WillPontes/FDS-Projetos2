@@ -24,11 +24,11 @@ const data = [
 
 export const EmissionChart = () => {
   return (
-    <div className="h-[320px] w-full rounded-2xl border bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-md">
+    <div className="card-surface-lg h-[320px] w-full p-6 transition-all duration-300 hover:shadow-md">
       <div className="mb-5 flex items-center gap-2">
-        <Globe className="h-5 w-5 text-slate-700" />
+        <Globe className="h-5 w-5 text-muted-foreground" />
 
-        <h2 className="text-xl font-semibold text-slate-900">
+        <h2 className="text-xl font-semibold text-foreground">
           Emissão de CO₂
         </h2>
       </div>

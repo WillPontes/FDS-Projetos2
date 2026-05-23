@@ -1,0 +1,1 @@
+export { PassagesHistoryPage } from "./PassagesHistoryPage"

@@ -1,1 +1,0 @@
-export { ImpactPage } from "./ImpactListPage"

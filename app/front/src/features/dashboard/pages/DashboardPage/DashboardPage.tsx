@@ -6,52 +6,38 @@ import {
   Globe,
 } from "lucide-react"
 
+import { GestorPageShell } from "@/components/layout/GestorPageShell"
 import { EmissionChart } from "./components/EmissionChart"
 import { LudicCards } from "./components/LudicCards"
 
-const transactionData = {
-  co2: "{transactionData.co2} kg",
-  fuel: "{transactionData.fuel} L",
-  vehicle: "{transactionData.vehicle}",
-}
-
 export const DashboardPage = () => {
   return (
-    <main className="p-8">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <h1 className="text-4xl font-bold tracking-tight">
-            Dashboard Ambiental
-          </h1>
-        </div>
-
-        <div className="inline-flex items-center gap-2 rounded-full border bg-white px-4 py-2 text-sm shadow-sm">
-          <div className="h-2 w-2 rounded-full bg-green-500" />
-
-          <span className="font-medium text-gray-700">
+    <GestorPageShell
+      title="Dashboard Ambiental"
+      hero
+      actions={
+        <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm shadow-sm">
+          <div className="h-2 w-2 rounded-full bg-success" />
+          <span className="font-medium text-muted-foreground">
             Análise em tempo real
           </span>
         </div>
-      </div>
-
-      <div className="mt-6 inline-flex items-center gap-3 rounded-2xl border bg-white px-5 py-3 shadow-sm">
-        <Leaf className="h-7 w-7 text-green-600" />
-
+      }
+    >
+      <div className="inline-flex items-center gap-3 rounded-2xl border border-border bg-card px-5 py-3 shadow-sm">
+        <Leaf className="h-7 w-7 text-primary" />
         <div>
-          <p className="text-sm font-medium text-slate-900">
-            EcoScore
-          </p>
-
-          <p className="text-xs text-gray-500">
+          <p className="text-sm font-medium text-foreground">EcoScore</p>
+          <p className="text-xs text-muted-foreground">
             Excelente eficiência ambiental
           </p>
         </div>
       </div>
 
-      <section className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
-        <div className="rounded-xl border p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+      <section className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <div className="card-surface p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
           <div className="flex items-center gap-2">
-            <Leaf className="h-5 w-5 text-green-600" />
+            <Leaf className="h-5 w-5 text-primary" />
 
             <h2 className="text-lg font-semibold">
               CO₂ evitado
@@ -62,12 +48,12 @@ export const DashboardPage = () => {
             48kg
           </p>
 
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-muted-foreground">
             redução ambiental
           </span>
         </div>
 
-        <div className="rounded-xl border p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+        <div className="card-surface p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
           <div className="flex items-center gap-2">
             <Fuel className="h-5 w-5 text-blue-600" />
 
@@ -80,14 +66,14 @@ export const DashboardPage = () => {
             32L
           </p>
 
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-muted-foreground">
             combustível poupado
           </span>
         </div>
 
-        <div className="rounded-xl border p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+        <div className="card-surface p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
           <div className="flex items-center gap-2">
-            <Truck className="h-5 w-5 text-slate-600" />
+            <Truck className="h-5 w-5 text-muted-foreground" />
 
             <h2 className="text-lg font-semibold">
               Tipo de veículo
@@ -98,20 +84,20 @@ export const DashboardPage = () => {
             Caminhão
           </p>
 
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-muted-foreground">
             veículo processado
           </span>
         </div>
       </section>
 
-      <section className="mt-10">
+      <section>
         <h2 className="mb-6 text-2xl font-semibold">
           Comparativo operacional
         </h2>
 
-        <div className="overflow-hidden rounded-2xl border bg-white shadow-sm transition-all duration-300 hover:shadow-md">
+        <div className="card-surface-lg overflow-hidden transition-all duration-300 hover:shadow-md">
           <table className="w-full">
-            <thead className="bg-gray-100">
+            <thead className="bg-muted">
               <tr>
                 <th className="p-4 text-left">
                   Cenário
@@ -132,7 +118,7 @@ export const DashboardPage = () => {
             </thead>
 
             <tbody>
-              <tr className="border-t transition-colors hover:bg-gray-50">
+              <tr className="border-t transition-colors hover:bg-muted/50">
                 <td className="p-4 font-medium text-red-500">
                   ❌ Sem Taggy
                 </td>
@@ -150,12 +136,12 @@ export const DashboardPage = () => {
                 </td>
               </tr>
 
-              <tr className="border-t transition-colors hover:bg-gray-50">
-                <td className="p-4 font-medium text-green-600">
+              <tr className="border-t transition-colors hover:bg-muted/50">
+                <td className="p-4 font-medium text-primary">
                   ✅ Com Taggy
                 </td>
 
-                <td className="p-4 text-green-600">
+                <td className="p-4 text-primary">
                   Reduzida
                 </td>
 
@@ -172,43 +158,43 @@ export const DashboardPage = () => {
         </div>
       </section>
 
-      <section className="mt-10">
+      <section>
         <EmissionChart />
       </section>
 
-      <section className="mt-10">
+      <section>
         <LudicCards />
       </section>
 
-      <section className="mt-10 rounded-2xl border bg-white p-6 shadow-sm">
+      <section className="card-surface-lg p-6">
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5 text-slate-700" />
+              <BarChart3 className="h-5 w-5 text-muted-foreground" />
 
               <span className="text-2xl font-semibold">
                 Eficiência sustentável
               </span>
             </div>
 
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-muted-foreground">
               Desempenho ambiental da operação analisada
             </p>
           </div>
 
-          <div className="rounded-full bg-gray-100 px-4 py-2 text-sm font-semibold text-slate-700">
+          <div className="rounded-full bg-muted px-4 py-2 text-sm font-semibold text-foreground">
             +78% eficiente
           </div>
         </div>
 
-        <div className="mt-6 h-5 overflow-hidden rounded-full bg-gray-200">
-          <div className="h-full w-[78%] rounded-full bg-green-600 transition-all duration-500" />
+        <div className="mt-6 h-5 overflow-hidden rounded-full bg-muted">
+          <div className="h-full w-[78%] rounded-full bg-primary transition-all duration-500" />
         </div>
 
         <div className="mt-4 flex flex-wrap gap-3">
-          <span className="rounded-full bg-gray-100 px-3 py-1 text-sm">
+          <span className="rounded-full bg-muted px-3 py-1 text-sm">
             <div className="flex items-center gap-2">
-              <Leaf className="h-4 w-4 text-green-700" />
+              <Leaf className="h-4 w-4 text-primary" />
 
               <span>
                 Sustentabilidade elevada
@@ -216,7 +202,7 @@ export const DashboardPage = () => {
             </div>
           </span>
 
-          <span className="rounded-full bg-gray-100 px-3 py-1 text-sm">
+          <span className="rounded-full bg-muted px-3 py-1 text-sm">
             <div className="flex items-center gap-2">
               <Fuel className="h-4 w-4 text-blue-600" />
 
@@ -226,9 +212,9 @@ export const DashboardPage = () => {
             </div>
           </span>
 
-          <span className="rounded-full bg-gray-100 px-3 py-1 text-sm">
+          <span className="rounded-full bg-muted px-3 py-1 text-sm">
             <div className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4 text-slate-700" />
+              <BarChart3 className="h-4 w-4 text-muted-foreground" />
 
               <span>
                 Operação otimizada
@@ -238,28 +224,28 @@ export const DashboardPage = () => {
         </div>
       </section>
 
-      <section className="mt-10 rounded-2xl border bg-white p-6 shadow-sm">
+      <section className="card-surface-lg p-6">
         <div className="flex items-center gap-3">
-          <Globe className="h-10 w-10 text-slate-700" />
+          <Globe className="h-10 w-10 text-muted-foreground" />
 
           <div>
-            <h2 className="text-2xl font-semibold text-slate-900">
+            <h2 className="text-2xl font-semibold text-foreground">
               Resultado da operação
             </h2>
 
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               Resumo inteligente da análise ambiental
             </p>
           </div>
         </div>
 
-        <p className="mt-6 text-lg leading-8 text-gray-700">
+        <p className="mt-6 text-lg leading-8 text-muted-foreground">
           A utilização da
-          <span className="font-bold text-slate-900">
+          <span className="font-bold text-foreground">
             {" "}Taggy
           </span>
           {" "}nesta operação reduziu aproximadamente
-          <span className="font-bold text-green-600">
+          <span className="font-bold text-primary">
             {" "}38% das emissões de CO₂
           </span>
           {" "}e gerou uma economia estimada de
@@ -269,7 +255,7 @@ export const DashboardPage = () => {
         </p>
       </section>
 
-      <footer className="mt-10 border-t pt-6 text-sm text-gray-500">
+      <footer className="border-t pt-6 text-sm text-muted-foreground">
         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <p>
             📅 Última análise realizada hoje às 22:47
@@ -280,6 +266,6 @@ export const DashboardPage = () => {
           </p>
         </div>
       </footer>
-    </main>
+    </GestorPageShell>
   )
 }
