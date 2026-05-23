@@ -38,7 +38,9 @@ async def create_vehicle(
     vehicle_in: VehicleIn,
     session: AsyncSession = Depends(get_db),
 ):
-    existing_plate = await get_vehicle_by_license_plate_svc(session, vehicle_in.license_plate)
+    existing_plate = await get_vehicle_by_license_plate_svc(
+        session, vehicle_in.license_plate
+    )
     if existing_plate:
         raise HTTPException(status_code=400, detail="License plate already exists")
     existing_tag = await get_vehicle_by_tag_svc(session, vehicle_in.id_tag)

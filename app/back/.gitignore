@@ -1,13 +1,29 @@
-.venv
-__pycache__
-*.py[cod]
-*.egg-info
+# Variáveis sensíveis
 .env
-.env.*
-!.env.example
-.pytest_cache
-.ruff_cache
-.mypy_cache
-*.log
-.DS_Store
+.env.local
 credentials.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Node
+node_modules/
+.package-lock.json
+.yarn.lock
+.pnpm-lock.yaml
+.bun.lockb
+.npm-lock.yaml
+.npm-shrinkwrap.json
+.npm-package-lock.json
+.npm-package-shrinkwrap.json
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# IDEs / IA
+.claude/
+.cursor/

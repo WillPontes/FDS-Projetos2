@@ -10,8 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UsersRouteImport } from './routes/users'
+<<<<<<< HEAD
 import { Route as PassagesImpactRouteImport } from './routes/passages-impact'
 import { Route as ImpactRouteImport } from './routes/impact'
+=======
+import { Route as DashboardRouteImport } from './routes/dashboard'
+>>>>>>> 7b6b99c0cbbea5f837ab2e428c0ecd2ee115ae5c
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as FrotaIndexRouteImport } from './routes/frota/index'
 import { Route as FrotaAdicionarRouteImport } from './routes/frota/adicionar'
@@ -21,6 +25,7 @@ const UsersRoute = UsersRouteImport.update({
   path: '/users',
   getParentRoute: () => rootRouteImport,
 } as any)
+<<<<<<< HEAD
 const PassagesImpactRoute = PassagesImpactRouteImport.update({
   id: '/passages-impact',
   path: '/passages-impact',
@@ -29,6 +34,11 @@ const PassagesImpactRoute = PassagesImpactRouteImport.update({
 const ImpactRoute = ImpactRouteImport.update({
   id: '/impact',
   path: '/impact',
+=======
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+>>>>>>> 7b6b99c0cbbea5f837ab2e428c0ecd2ee115ae5c
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -49,16 +59,24 @@ const FrotaAdicionarRoute = FrotaAdicionarRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+<<<<<<< HEAD
   '/impact': typeof ImpactRoute
   '/passages-impact': typeof PassagesImpactRoute
+=======
+  '/dashboard': typeof DashboardRoute
+>>>>>>> 7b6b99c0cbbea5f837ab2e428c0ecd2ee115ae5c
   '/users': typeof UsersRoute
   '/frota/adicionar': typeof FrotaAdicionarRoute
   '/frota/': typeof FrotaIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+<<<<<<< HEAD
   '/impact': typeof ImpactRoute
   '/passages-impact': typeof PassagesImpactRoute
+=======
+  '/dashboard': typeof DashboardRoute
+>>>>>>> 7b6b99c0cbbea5f837ab2e428c0ecd2ee115ae5c
   '/users': typeof UsersRoute
   '/frota/adicionar': typeof FrotaAdicionarRoute
   '/frota': typeof FrotaIndexRoute
@@ -66,14 +84,19 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+<<<<<<< HEAD
   '/impact': typeof ImpactRoute
   '/passages-impact': typeof PassagesImpactRoute
+=======
+  '/dashboard': typeof DashboardRoute
+>>>>>>> 7b6b99c0cbbea5f837ab2e428c0ecd2ee115ae5c
   '/users': typeof UsersRoute
   '/frota/adicionar': typeof FrotaAdicionarRoute
   '/frota/': typeof FrotaIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
+<<<<<<< HEAD
   fullPaths:
     | '/'
     | '/impact'
@@ -94,6 +117,15 @@ export interface FileRouteTypes {
     | '/'
     | '/impact'
     | '/passages-impact'
+=======
+  fullPaths: '/' | '/dashboard' | '/users' | '/frota/adicionar' | '/frota/'
+  fileRoutesByTo: FileRoutesByTo
+  to: '/' | '/dashboard' | '/users' | '/frota/adicionar' | '/frota'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard'
+>>>>>>> 7b6b99c0cbbea5f837ab2e428c0ecd2ee115ae5c
     | '/users'
     | '/frota/adicionar'
     | '/frota/'
@@ -101,8 +133,12 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+<<<<<<< HEAD
   ImpactRoute: typeof ImpactRoute
   PassagesImpactRoute: typeof PassagesImpactRoute
+=======
+  DashboardRoute: typeof DashboardRoute
+>>>>>>> 7b6b99c0cbbea5f837ab2e428c0ecd2ee115ae5c
   UsersRoute: typeof UsersRoute
   FrotaAdicionarRoute: typeof FrotaAdicionarRoute
   FrotaIndexRoute: typeof FrotaIndexRoute
@@ -117,6 +153,7 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UsersRouteImport
       parentRoute: typeof rootRouteImport
     }
+<<<<<<< HEAD
     '/passages-impact': {
       id: '/passages-impact'
       path: '/passages-impact'
@@ -129,6 +166,13 @@ declare module '@tanstack/react-router' {
       path: '/impact'
       fullPath: '/impact'
       preLoaderRoute: typeof ImpactRouteImport
+=======
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+>>>>>>> 7b6b99c0cbbea5f837ab2e428c0ecd2ee115ae5c
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -157,8 +201,12 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+<<<<<<< HEAD
   ImpactRoute: ImpactRoute,
   PassagesImpactRoute: PassagesImpactRoute,
+=======
+  DashboardRoute: DashboardRoute,
+>>>>>>> 7b6b99c0cbbea5f837ab2e428c0ecd2ee115ae5c
   UsersRoute: UsersRoute,
   FrotaAdicionarRoute: FrotaAdicionarRoute,
   FrotaIndexRoute: FrotaIndexRoute,
