@@ -2,7 +2,6 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.services.user_stats import upsert_user_stats_from_transaction
 
 from src.database.connection import get_db
 from src.dto.transactions import (
@@ -13,6 +12,7 @@ from src.dto.transactions import (
     TransactionUpdate,
 )
 from src.engine import CalcEngine, CalcEngineError, TransactionOrchestrator
+from src.services.goals import increment_current_week_goal_progress
 from src.services.technical_specs import get_all_specs
 from src.services.transactions import (
     create_transaction as create_transaction_svc,
@@ -21,8 +21,10 @@ from src.services.transactions import (
     list_transactions as list_transactions_svc,
     update_transaction as update_transaction_svc,
 )
+from src.services.user_stats import upsert_user_stats_from_transaction
 
 router = APIRouter(prefix="/transactions", tags=["Transactions"])
+
 
 @router.get("/", response_model=list[TransactionPublic])
 async def list_transactions(
@@ -126,6 +128,7 @@ async def process_transaction(
         "is_digital": body.is_digital,
         "vehicle": body.vehicle.model_dump(),
     }
+
     if body.payback is not None:
         payload_dict["payback"] = body.payback.model_dump()
 
@@ -171,6 +174,12 @@ async def process_transaction(
             fuel_liters=result.get("fuel_saved_liters"),
             water_liters=result.get("water_saved_liters"),
             financial_brl=result.get("financial_savings_brl"),
+        )
+
+        await increment_current_week_goal_progress(
+            db=db,
+            user_id=body.user_id,
+            co2_increment_kg=result.get("co2_avoided_kg"),
         )
 
     await db.commit()
