@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from src.routes.fuel_prices import router as fuel_prices_router
 from src.routes.goals import router as goals_router
 from src.routes.health import router as health_router
+from src.routes.notifications import router as notifications_router
 from src.routes.organization import router as organization_router
 from src.routes.technical_specs import router as technical_specs_router
 from src.routes.transactions import router as transactions_router
@@ -21,3 +22,4 @@ router.include_router(organization_router)
 router.include_router(transactions_router)
 router.include_router(user_stats_router)
 router.include_router(goals_router)
+router.include_router(notifications_router)

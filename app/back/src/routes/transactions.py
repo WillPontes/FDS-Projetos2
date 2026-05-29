@@ -13,6 +13,8 @@ from src.dto.transactions import (
 )
 from src.engine import CalcEngine, CalcEngineError, TransactionOrchestrator
 from src.services.goals import increment_current_week_goal_progress
+from src.services.notification_builder import build_message
+from src.services.realtime_notifier import notifier
 from src.services.technical_specs import get_all_specs
 from src.services.transactions import (
     create_transaction as create_transaction_svc,
@@ -183,6 +185,11 @@ async def process_transaction(
         )
 
     await db.commit()
+
+    # Notificação via WebSocket direcionada ao usuário da transação
+    notification_message = build_message(result)
+    if notification_message and body.user_id is not None:
+        notifier.schedule_send(user_id=body.user_id, message=notification_message)
 
     return {
         "data": {
