@@ -1,11 +1,17 @@
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 
-export const useWebsocketNotification = () => {
+/**
+ * Hook que conecta ao WebSocket de notificações e dispara toasts.
+ * Requer userId para receber apenas notificações do usuário logado.
+ */
+export const useWebsocketNotification = (userId: number | null) => {
   useEffect(() => {
+    if (userId === null) return;
+
     const wsUrl = import.meta.env.PROD 
-      ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/notifications/ws`
-      : 'ws://localhost:8000/api/notifications/ws';
+      ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/notifications/ws?user_id=${userId}`
+      : `ws://localhost:8000/api/notifications/ws?user_id=${userId}`;
     
     const ws = new WebSocket(wsUrl);
 
@@ -14,7 +20,6 @@ export const useWebsocketNotification = () => {
     };
 
     ws.onmessage = (event) => {
-      // Quando recebermos a mensagem do backend
       if (event.data) {
         toast.success(event.data, {
           duration: 5000,
@@ -30,9 +35,8 @@ export const useWebsocketNotification = () => {
       console.log('WebSocket Disconnected');
     };
 
-    // Cleanup: fecha a conexão quando o componente for desmontado
     return () => {
       ws.close();
     };
-  }, []);
+  }, [userId]);
 };

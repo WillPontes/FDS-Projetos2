@@ -3,6 +3,7 @@ Constrói mensagens de notificação personalizadas para toasts.
 
 Seleciona aleatoriamente uma metáfora lúdica dentre todos os eixos
 que tiveram economia na transação, tornando as notificações variadas.
+Sem fallbacks — sempre dados reais ou None.
 """
 
 from __future__ import annotations
@@ -29,15 +30,16 @@ def _extract_savings(result: dict[str, Any]) -> dict[str, float]:
     return {axis: value for axis, value in mappings.items() if value and value > 0}
 
 
-def _format_metaphor(axis: str, raw_value: float) -> str:
+def _format_metaphor(axis: str, raw_value: float) -> str | None:
     """
     Escolhe aleatoriamente uma metáfora dentro do eixo e monta a frase.
+    Retorna None se não houver metáforas configuradas para o eixo.
     """
     units = DEFAULT_METAPHOR_UNITS.get(axis, {})
     labels = METAPHOR_LABELS.get(axis, {})
 
     if not units or not labels:
-        return _fallback_message(axis, raw_value)
+        return None
 
     metaphor_id = random.choice(list(units.keys()))
     divisor = units[metaphor_id]
@@ -45,31 +47,21 @@ def _format_metaphor(axis: str, raw_value: float) -> str:
 
     converted = raw_value / divisor if divisor > 0 else 0
 
-    return f"🌱 Você economizou o equivalente a {converted:.1f} {label}!"
+    return f" Você economizou o equivalente a {converted:.1f} {label}!"
 
 
-def _fallback_message(axis: str, raw_value: float) -> str:
-    """Mensagem de fallback caso não haja metáforas configuradas."""
-    axis_labels = {
-        "carbon": f"Você evitou {raw_value:.2f} kg de CO₂!",
-        "water": f"Você economizou {raw_value:.2f} litros de água!",
-        "paper": f"Você salvou {raw_value:.0f} tickets de papel!",
-    }
-    return f"🌱 {axis_labels.get(axis, 'Transação processada com sucesso!')}"
-
-
-def build_message(result: dict[str, Any]) -> str:
+def build_message(result: dict[str, Any]) -> str | None:
     """
     Constrói uma mensagem personalizada com base nos resultados da transação.
 
     Seleciona aleatoriamente um eixo que teve economia (carbono, água ou papel)
     e gera uma frase usando uma metáfora lúdica aleatória daquele eixo.
-    Isso garante que o usuário veja notificações variadas a cada passagem.
+    Retorna None se não houver dados reais de economia.
     """
     savings = _extract_savings(result)
 
     if not savings:
-        return "✅ Transação processada com sucesso!"
+        return None
 
     # Escolhe um eixo aleatório dentre os que tiveram economia
     axis = random.choice(list(savings.keys()))
