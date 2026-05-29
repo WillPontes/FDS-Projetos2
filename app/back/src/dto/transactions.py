@@ -37,7 +37,6 @@ class ProcessTransactionBody(BaseModel):
 
 class TransactionResultDTO(BaseModel):
     data: dict[str, Any]
-    notification_message: str | None = None
     
     @property
     def paper_savings(self) -> float:

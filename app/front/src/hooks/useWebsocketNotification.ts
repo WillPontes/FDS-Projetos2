@@ -4,8 +4,8 @@ import { toast } from 'sonner';
 export const useWebsocketNotification = () => {
   useEffect(() => {
     const wsUrl = import.meta.env.PROD 
-      ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/transactions/ws`
-      : 'ws://localhost:8000/api/transactions/ws';
+      ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/notifications/ws`
+      : 'ws://localhost:8000/api/notifications/ws';
     
     const ws = new WebSocket(wsUrl);
 

@@ -1,28 +1,8 @@
-import asyncio
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.services.user_stats import upsert_user_stats_from_transaction
-
-
-class ConnectionManager:
-    def __init__(self):
-        self.active_connections: list[WebSocket] = []
-
-    async def connect(self, websocket: WebSocket):
-        await websocket.accept()
-        self.active_connections.append(websocket)
-
-    def disconnect(self, websocket: WebSocket):
-        if websocket in self.active_connections:
-            self.active_connections.remove(websocket)
-
-    async def broadcast(self, message: str):
-        for connection in self.active_connections:
-            await connection.send_text(message)
-
-manager = ConnectionManager()
 
 from src.database.connection import get_db
 from src.dto.transactions import (
@@ -41,6 +21,8 @@ from src.services.transactions import (
     list_transactions as list_transactions_svc,
     update_transaction as update_transaction_svc,
 )
+from src.services.notification_builder import build_message
+from src.services.realtime_notifier import notifier
 
 router = APIRouter(prefix="/transactions", tags=["Transactions"])
 
@@ -195,31 +177,14 @@ async def process_transaction(
 
     await db.commit()
 
-    from src.services.notification_builder import build_message
+    # Notificação via WebSocket (não bloqueia a resposta HTTP)
     notification_message = build_message(result)
-
-    # Broadcast the notification message via WebSocket without blocking the return
-    try:
-        asyncio.create_task(manager.broadcast(notification_message))
-    except Exception as e:
-        print(f"Error broadcasting message: {e}")
+    notifier.schedule_broadcast(notification_message)
 
     return {
         "data": {
             "result": result,
             "transaction": TransactionPublic.model_validate(transaction).model_dump(),
-        },
-        "notification_message": notification_message,
+        }
     }
 
-
-@router.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await manager.connect(websocket)
-    try:
-        while True:
-            # We only expect this channel to be a one-way notification stream for now,
-            # but we need to receive to keep the connection alive
-            data = await websocket.receive_text()
-    except WebSocketDisconnect:
-        manager.disconnect(websocket)
