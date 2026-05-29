@@ -2,12 +2,15 @@ import type { ReactNode } from "react"
 import { Sidebar } from "../Sidebar"
 import { Header } from "../Header"
 import { Footer } from "../Footer"
+import { useWebsocketNotification } from "@/hooks/useWebsocketNotification"
 
 type AppLayoutProps = {
   children: ReactNode
 }
 
 export const AppLayout = ({ children }: AppLayoutProps) => {
+  useWebsocketNotification()
+
   return (
     <div className="flex min-h-screen">
       <Sidebar />
