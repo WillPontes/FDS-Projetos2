@@ -24,6 +24,25 @@ class UserRepository:
         result = await self.session.execute(select(User))
         return list(result.scalars().all())
 
+    async def get_all_filtered(
+        self,
+        role: UserRole | None = None,
+        organization_id: int | None = None,
+    ) -> list[User]:
+        query = select(User)
+
+        if role is not None:
+            query = query.where(User.role == role)
+
+        if organization_id is not None:
+            query = query.where(
+                User.organization_id == organization_id
+            )
+
+        result = await self.session.execute(query)
+
+        return list(result.scalars().all())
+
     async def create(
         self,
         name: str,

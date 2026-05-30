@@ -19,9 +19,15 @@ UserRole = Literal[
 
 @router.get("/", response_model=list[UserPublic])
 async def get_users(
+    role: UserRole | None = None,
+    organization_id: int | None = None,
     db: AsyncSession = Depends(get_db),
 ) -> list[UserPublic]:
-    rows = await list_users(db)
+    rows = await list_users(
+        db,
+        role=role,
+        organization_id=organization_id,
+    )
 
     return [
         UserPublic.model_validate(row)
