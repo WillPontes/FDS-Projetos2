@@ -7,7 +7,6 @@ import {
   History,
   LogOut,
 } from "lucide-react";
-import { useRef } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +22,7 @@ import { USER_ROLE_LABELS } from "@/constants/current-user";
 import { useCurrentUser, useLogout } from "@/features/auth";
 import { useGetRawVehicles } from "@/features/users/hooks/useGetRawVehicles";
 import { findVehicleForUser } from "@/features/users/lib/join-users-with-vehicles";
+import { Separator } from "@/components/ui/separator";
 
 const getInitials = (name: string) =>
   name
@@ -61,13 +61,11 @@ const profileLinks = [
 
 export const UserProfilePage = () => {
   const { user, isAuthenticated } = useCurrentUser();
-  const logout = useLogout();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const { data: vehicles = [] } = useGetRawVehicles();
 
   if (!isAuthenticated || !user) {
     return (
-      <PageLayout title="Meu perfil">
+      <PageLayout title="Meu Perfil">
         <p className="text-muted-foreground">
           Faça login para acessar seu perfil.
         </p>
@@ -80,47 +78,53 @@ export const UserProfilePage = () => {
 
   return (
     <PageLayout
-      title="Meu perfil"
+      title="Meu Perfil"
       description="Visualize e gerencie suas informações pessoais."
     >
       <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
-        <Card>
-          <CardHeader className="items-center text-center">
-            <button
-              type="button"
-              className="group relative"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <Avatar className="size-24">
-                {user.avatarUrl ? (
-                  <AvatarImage src={user.avatarUrl} alt={user.name} />
-                ) : null}
-                <AvatarFallback className="text-lg">
-                  {getInitials(user.name)}
-                </AvatarFallback>
-              </Avatar>
-            </button>
-
-            <CardTitle>{user.name}</CardTitle>
-            <CardDescription>{user.email}</CardDescription>
+        <Card className="h-fit">
+          <CardHeader className="items-center text-start flex flex-row gap-4">
+            <Avatar className="size-12">
+              {user.avatarUrl ? (
+                <AvatarImage src={user.avatarUrl} alt={user.name} />
+              ) : null}
+              <AvatarFallback className="text-lg">
+                {getInitials(user.name)}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <CardTitle className="text-base">{user.name}</CardTitle>
+              <CardDescription className="text-xs">
+                {user.email}
+              </CardDescription>
+            </div>
           </CardHeader>
           <CardContent className="space-y-3 text-sm">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Perfil</span>
               <span>{USER_ROLE_LABELS[user.role]}</span>
             </div>
+
+            <Separator />
+
             <div className="flex justify-between">
               <span className="text-muted-foreground">Status</span>
               <Badge variant={status === "active" ? "success" : "secondary"}>
                 {status === "active" ? "Ativo" : "Inativo"}
               </Badge>
             </div>
+
+            <Separator />
+
             {vehicle ? (
               <>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">ID da frota</span>
                   <span>{vehicle.id_tag}</span>
                 </div>
+
+                <Separator />
+
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Placa</span>
                   <span>{vehicle.license_plate}</span>
@@ -129,15 +133,6 @@ export const UserProfilePage = () => {
             ) : (
               <p className="text-muted-foreground">Nenhum veículo vinculado.</p>
             )}
-            <Button
-              type="button"
-              variant="destructive"
-              className="mt-4 w-full"
-              onClick={logout}
-            >
-              <LogOut className="h-4 w-4" />
-              Sair
-            </Button>
           </CardContent>
         </Card>
 
