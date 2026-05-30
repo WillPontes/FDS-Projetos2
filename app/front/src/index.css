@@ -59,6 +59,11 @@
     --success-foreground: 144 61% 12%;
     --warning: 38 92% 50%;
     --warning-foreground: 26 83% 14%;
+    --chart-1: 158 64% 28%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
     --radius: 0.625rem;
   }
 
@@ -86,6 +91,11 @@
     --success-foreground: 144 61% 90%;
     --warning: 38 92% 50%;
     --warning-foreground: 26 83% 14%;
+    --chart-1: 158 55% 48%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
   }
 }
 
@@ -112,11 +122,11 @@
 
 @layer components {
   .card-surface {
-    @apply rounded-lg border border-border bg-card text-card-foreground shadow-sm;
+    @apply rounded border border-neutral-300 bg-white text-card-foreground;
   }
 
   .card-surface-lg {
-    @apply rounded-2xl border border-border bg-card text-card-foreground shadow-sm;
+    @apply rounded-2xl border border-neutral-300 bg-white text-card-foreground;
   }
 
   .page-title {
