@@ -1,22 +1,71 @@
-import { Dashboard } from "@/components/icons/Dashboard";
-import { Frotas } from "@/components/icons/Frotas";
-import { Motoristas } from "@/components/icons/Motoristas";
-import { Relatorios } from "@/components/icons/Relatorios";
-import { Veiculos } from "@/components/icons/Veiculos";
+import {
+  ChartLine,
+  FileText,
+  Home,
+  LucideIcon,
+  Map,
+  Settings,
+  Ticket,
+  Truck,
+  UserCog,
+  Users,
+} from "lucide-react";
+import type { UserRole } from "@/constants/current-user";
 
 export type NavItem = {
   to: string;
   label: string;
-  icon: React.ComponentType;
+  icon: LucideIcon;
   exact?: boolean;
+  roles?: UserRole[];
 };
 
 export const APP_NAV_ITEMS: NavItem[] = [
-  { to: "/dashboard", label: "Dashboard", icon: Dashboard },
-  { to: "/frota", label: "Frota", icon: Frotas, exact: true },
-  { to: "/relatorios", label: "Relatórios", icon: Relatorios, exact: true },
-  { to: "/veiculos", label: "Veículos", icon: Veiculos },
-  { to: "/impacto", label: "Meu impacto", icon: Motoristas },
-  { to: "/passagens", label: "Minhas passagens", icon: Motoristas },
-  { to: "/motoristas", label: "Motoristas", icon: Motoristas },
+  { to: "/", label: "Dashboard", icon: ChartLine },
+  {
+    to: "/frota",
+    label: "Frota",
+    icon: Truck,
+    exact: true,
+    roles: ["admin", "gestor_frota"],
+  },
+  {
+    to: "/relatorios",
+    label: "Relatórios",
+    icon: FileText,
+    exact: true,
+    roles: ["admin", "gestor_frota"],
+  },
+  {
+    to: "/motoristas",
+    label: "Motoristas",
+    icon: Users,
+    exact: true,
+    roles: ["admin", "gestor_frota"],
+  },
+  {
+    to: "/usuarios",
+    label: "Usuários",
+    icon: UserCog,
+    exact: true,
+    roles: ["admin"],
+  },
+  {
+    to: "/configuracoes",
+    label: "Configurações",
+    icon: Settings,
+    exact: true,
+    roles: ["admin"],
+  },
+  { to: "/impacto", label: "Meu Impacto", icon: Home },
+  { to: "/rota", label: "Calcular Rota", icon: Map },
+  { to: "/passagens", label: "Minhas Passagens", icon: Ticket },
 ];
+
+export function filterNavItemsByRole(
+  items: NavItem[],
+  role: UserRole | undefined,
+): NavItem[] {
+  if (!role) return items.filter((item) => !item.roles);
+  return items.filter((item) => !item.roles || item.roles.includes(role));
+}

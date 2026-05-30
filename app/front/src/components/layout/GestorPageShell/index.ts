@@ -1,1 +1,0 @@
-export { GestorPageShell } from "./GestorPageShell"

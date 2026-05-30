@@ -1,21 +1,25 @@
-import type { ReactNode } from "react"
-import { Sidebar } from "../Sidebar"
-import { Header } from "../Header"
-import { Footer } from "../Footer"
+import { useState, type ReactNode } from "react";
+import { Sidebar } from "../Sidebar";
+import { Header } from "../Header";
+import { Footer } from "../Footer";
 
 type AppLayoutProps = {
-  children: ReactNode
-}
+  children: ReactNode;
+};
 
 export const AppLayout = ({ children }: AppLayoutProps) => {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
     <div className="flex min-h-screen">
-      <Sidebar />
+      <Sidebar mobileOpen={mobileOpen} onMobileOpenChange={setMobileOpen} />
       <div className="flex flex-1 flex-col overflow-hidden">
-        <Header />
-        <main className="flex-1 overflow-auto p-6">{children}</main>
+        <Header onMenuClick={() => setMobileOpen(true)} />
+        <main className="flex-1 overflow-auto bg-neutral-50 p-4 md:p-8">
+          {children}
+        </main>
         <Footer />
       </div>
     </div>
-  )
-}
+  );
+};

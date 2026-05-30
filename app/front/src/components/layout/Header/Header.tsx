@@ -1,27 +1,50 @@
 import { Fragment } from "react";
-import { Link, useMatches } from "@tanstack/react-router";
-import { ROUTE_LABELS } from "@/constants";
+import { Link, useRouterState } from "@tanstack/react-router";
+import { Menu } from "lucide-react";
+import { Logo } from "@/components/icons/Logo";
+import { Button } from "@/components/ui/button";
+import { UserProfile } from "@/components/layout/UserProfile";
+import { getBreadcrumbs } from "@/lib/breadcrumbs";
 
-export const Header = () => {
-  const matches = useMatches();
-  const crumbs = matches
-    .filter((m) => m.pathname !== "/" && ROUTE_LABELS[m.pathname])
-    .map((m) => ({ label: ROUTE_LABELS[m.pathname]!, path: m.pathname }));
+type HeaderProps = {
+  onMenuClick: () => void;
+};
+
+export const Header = ({ onMenuClick }: HeaderProps) => {
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const crumbs = getBreadcrumbs(pathname);
 
   return (
-    <header className="flex h-14 items-center border-b px-6">
-      <nav className="flex items-center gap-1.5 text-sm">
+    <header className="relative flex h-14 items-center justify-between border-b px-4 md:px-6">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="md:hidden"
+        onClick={onMenuClick}
+      >
+        <Menu className="size-5" />
+        <span className="sr-only">Abrir menu</span>
+      </Button>
+
+      <Link
+        to="/"
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:hidden"
+      >
+        <Logo className="h-8 w-24" />
+      </Link>
+
+      <nav className="hidden items-center gap-1.5 text-sm md:flex">
         <Link to="/" className="text-muted-foreground hover:text-foreground">
           Início
         </Link>
         {crumbs.map((crumb, i) => (
-          <Fragment key={crumb.path}>
+          <Fragment key={crumb.to}>
             <span className="text-muted-foreground">/</span>
             {i === crumbs.length - 1 ? (
               <span className="font-medium">{crumb.label}</span>
             ) : (
               <Link
-                to={crumb.path}
+                to={crumb.to}
                 className="text-muted-foreground hover:text-foreground"
               >
                 {crumb.label}
@@ -30,6 +53,8 @@ export const Header = () => {
           </Fragment>
         ))}
       </nav>
+
+      <UserProfile />
     </header>
   );
 };
