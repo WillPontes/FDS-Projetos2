@@ -1,14 +1,6 @@
 import { Link } from "@tanstack/react-router";
-import {
-  Bell,
-  Car,
-  ChevronRight,
-  HelpCircle,
-  History,
-  LogOut,
-} from "lucide-react";
+import { Bell, Car, ChevronRight, HelpCircle, History } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -19,7 +11,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { USER_ROLE_LABELS } from "@/constants/current-user";
-import { useCurrentUser, useLogout } from "@/features/auth";
+import { useCurrentUser } from "@/features/auth";
 import { useGetRawVehicles } from "@/features/users/hooks/useGetRawVehicles";
 import { findVehicleForUser } from "@/features/users/lib/join-users-with-vehicles";
 import { Separator } from "@/components/ui/separator";
