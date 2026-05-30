@@ -1,33 +1,37 @@
-import { Link } from "@tanstack/react-router"
-import type { LucideIcon } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { APP_NAV_ITEMS } from "@/constants/nav"
+import { Link } from "@tanstack/react-router";
+import { cn } from "@/lib/utils";
+import { APP_NAV_ITEMS } from "@/constants/nav";
 
 type SidebarLinkProps = {
-  to: string
-  label: string
-  icon: LucideIcon
-  exact?: boolean
-}
+  to: string;
+  label: string;
+  icon: React.ComponentType;
+  exact?: boolean;
+};
 
-const SidebarLink = ({ to, label, icon: Icon, exact = false }: SidebarLinkProps) => {
+const SidebarLink = ({
+  to,
+  label,
+  icon: Icon,
+  exact = false,
+}: SidebarLinkProps) => {
   return (
     <Link
       to={to}
       className={cn(
-        "flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors",
-        "hover:bg-accent hover:text-accent-foreground",
+        "flex items-center gap-3 rounded-md px-3 py-2 text-sm text-black transition-colors",
+        "hover:bg-taggy-brand-accent",
       )}
       activeProps={{
-        className: "bg-accent font-medium text-accent-foreground",
+        className: "bg-taggy-brand-accent font-medium text-black",
       }}
       activeOptions={{ exact }}
     >
-      <Icon className="h-4 w-4 shrink-0" />
+      <Icon />
       <span>{label}</span>
     </Link>
-  )
-}
+  );
+};
 
 export const Sidebar = () => {
   return (
@@ -47,5 +51,5 @@ export const Sidebar = () => {
         ))}
       </nav>
     </aside>
-  )
-}
+  );
+};
