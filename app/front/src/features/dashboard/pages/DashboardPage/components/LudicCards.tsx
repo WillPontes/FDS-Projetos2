@@ -1,32 +1,23 @@
-import {
-  Trees,
-  BatteryCharging,
-  Coffee,
-} from "lucide-react"
+import { Trees, BatteryCharging, Coffee } from "lucide-react";
+import { KpiCard } from "@/features/sustainability/components/MetricCard";
 
 const ludicMetrics = [
   {
-    icon: (
-      <Trees className="h-8 w-8 text-primary" />
-    ),
+    icon: <Trees className="text-[#72C215]" size={30} />,
     value: "2,3",
-    label: "árvores preservadas",
+    title: "ÁRVORES PRESERVADAS",
   },
   {
-    icon: (
-      <BatteryCharging className="h-8 w-8 text-blue-600" />
-    ),
+    icon: <BatteryCharging className="text-[#72C215]" size={30} />,
     value: "120",
-    label: "cargas de celular economizadas",
+    title: "CARGAS DE CELULAR ECONOMIZADAS",
   },
   {
-    icon: (
-      <Coffee className="h-8 w-8 text-amber-700" />
-    ),
+    icon: <Coffee className="text-[#72C215]" size={30} />,
     value: "80",
-    label: "filtros de café poupados",
+    title: "FILTROS DE CAFÉ POUPADOS",
   },
-]
+];
 
 export const LudicCards = () => {
   return (
@@ -37,24 +28,14 @@ export const LudicCards = () => {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {ludicMetrics.map((metric) => (
-          <div
-            key={metric.label}
-            className="card-surface-lg p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
-          >
-            <div>
-              {metric.icon}
-            </div>
-
-            <h3 className="mt-4 text-3xl font-bold">
-              {metric.value}
-            </h3>
-
-            <p className="mt-2 text-muted-foreground">
-              {metric.label}
-            </p>
-          </div>
+          <KpiCard
+            key={metric.title}
+            title={metric.title}
+            value={metric.value}
+            icon={metric.icon}
+          />
         ))}
       </div>
     </section>
-  )
-}
+  );
+};

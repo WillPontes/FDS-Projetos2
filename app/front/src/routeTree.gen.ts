@@ -10,16 +10,37 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UsersRouteImport } from './routes/users'
+import { Route as RotaRouteImport } from './routes/rota'
+import { Route as RelatoriosRouteImport } from './routes/relatorios'
 import { Route as PassagensRouteImport } from './routes/passagens'
-import { Route as ImpactRouteImport } from './routes/impact'
-import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as ImpactoRouteImport } from './routes/impacto'
+import { Route as AjudaRouteImport } from './routes/ajuda'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as UsuariosIndexRouteImport } from './routes/usuarios/index'
+import { Route as PerfilIndexRouteImport } from './routes/perfil/index'
+import { Route as MotoristasIndexRouteImport } from './routes/motoristas/index'
 import { Route as FrotaIndexRouteImport } from './routes/frota/index'
-import { Route as FrotaAdicionarRouteImport } from './routes/frota/adicionar'
+import { Route as ConfiguracoesIndexRouteImport } from './routes/configuracoes/index'
+import { Route as PerfilVeiculoRouteImport } from './routes/perfil/veiculo'
+import { Route as PerfilNotificacoesRouteImport } from './routes/perfil/notificacoes'
+import { Route as FrotaNovoRouteImport } from './routes/frota/novo'
+import { Route as UsuariosEditarIdRouteImport } from './routes/usuarios/editar.$id'
+import { Route as MotoristasEditarIdRouteImport } from './routes/motoristas/editar.$id'
+import { Route as FrotaEditarIdRouteImport } from './routes/frota/editar.$id'
 
 const UsersRoute = UsersRouteImport.update({
   id: '/users',
   path: '/users',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RotaRoute = RotaRouteImport.update({
+  id: '/rota',
+  path: '/rota',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RelatoriosRoute = RelatoriosRouteImport.update({
+  id: '/relatorios',
+  path: '/relatorios',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PassagensRoute = PassagensRouteImport.update({
@@ -27,14 +48,14 @@ const PassagensRoute = PassagensRouteImport.update({
   path: '/passagens',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ImpactRoute = ImpactRouteImport.update({
-  id: '/impact',
-  path: '/impact',
+const ImpactoRoute = ImpactoRouteImport.update({
+  id: '/impacto',
+  path: '/impacto',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardRoute = DashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const AjudaRoute = AjudaRouteImport.update({
+  id: '/ajuda',
+  path: '/ajuda',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -42,83 +63,205 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UsuariosIndexRoute = UsuariosIndexRouteImport.update({
+  id: '/usuarios/',
+  path: '/usuarios/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerfilIndexRoute = PerfilIndexRouteImport.update({
+  id: '/perfil/',
+  path: '/perfil/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MotoristasIndexRoute = MotoristasIndexRouteImport.update({
+  id: '/motoristas/',
+  path: '/motoristas/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FrotaIndexRoute = FrotaIndexRouteImport.update({
   id: '/frota/',
   path: '/frota/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const FrotaAdicionarRoute = FrotaAdicionarRouteImport.update({
-  id: '/frota/adicionar',
-  path: '/frota/adicionar',
+const ConfiguracoesIndexRoute = ConfiguracoesIndexRouteImport.update({
+  id: '/configuracoes/',
+  path: '/configuracoes/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerfilVeiculoRoute = PerfilVeiculoRouteImport.update({
+  id: '/perfil/veiculo',
+  path: '/perfil/veiculo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerfilNotificacoesRoute = PerfilNotificacoesRouteImport.update({
+  id: '/perfil/notificacoes',
+  path: '/perfil/notificacoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FrotaNovoRoute = FrotaNovoRouteImport.update({
+  id: '/frota/novo',
+  path: '/frota/novo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UsuariosEditarIdRoute = UsuariosEditarIdRouteImport.update({
+  id: '/usuarios/editar/$id',
+  path: '/usuarios/editar/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MotoristasEditarIdRoute = MotoristasEditarIdRouteImport.update({
+  id: '/motoristas/editar/$id',
+  path: '/motoristas/editar/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FrotaEditarIdRoute = FrotaEditarIdRouteImport.update({
+  id: '/frota/editar/$id',
+  path: '/frota/editar/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/impact': typeof ImpactRoute
+  '/ajuda': typeof AjudaRoute
+  '/impacto': typeof ImpactoRoute
   '/passagens': typeof PassagensRoute
+  '/relatorios': typeof RelatoriosRoute
+  '/rota': typeof RotaRoute
   '/users': typeof UsersRoute
-  '/frota/adicionar': typeof FrotaAdicionarRoute
+  '/frota/novo': typeof FrotaNovoRoute
+  '/perfil/notificacoes': typeof PerfilNotificacoesRoute
+  '/perfil/veiculo': typeof PerfilVeiculoRoute
+  '/configuracoes/': typeof ConfiguracoesIndexRoute
   '/frota/': typeof FrotaIndexRoute
+  '/motoristas/': typeof MotoristasIndexRoute
+  '/perfil/': typeof PerfilIndexRoute
+  '/usuarios/': typeof UsuariosIndexRoute
+  '/frota/editar/$id': typeof FrotaEditarIdRoute
+  '/motoristas/editar/$id': typeof MotoristasEditarIdRoute
+  '/usuarios/editar/$id': typeof UsuariosEditarIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/impact': typeof ImpactRoute
+  '/ajuda': typeof AjudaRoute
+  '/impacto': typeof ImpactoRoute
   '/passagens': typeof PassagensRoute
+  '/relatorios': typeof RelatoriosRoute
+  '/rota': typeof RotaRoute
   '/users': typeof UsersRoute
-  '/frota/adicionar': typeof FrotaAdicionarRoute
+  '/frota/novo': typeof FrotaNovoRoute
+  '/perfil/notificacoes': typeof PerfilNotificacoesRoute
+  '/perfil/veiculo': typeof PerfilVeiculoRoute
+  '/configuracoes': typeof ConfiguracoesIndexRoute
   '/frota': typeof FrotaIndexRoute
+  '/motoristas': typeof MotoristasIndexRoute
+  '/perfil': typeof PerfilIndexRoute
+  '/usuarios': typeof UsuariosIndexRoute
+  '/frota/editar/$id': typeof FrotaEditarIdRoute
+  '/motoristas/editar/$id': typeof MotoristasEditarIdRoute
+  '/usuarios/editar/$id': typeof UsuariosEditarIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/dashboard': typeof DashboardRoute
-  '/impact': typeof ImpactRoute
+  '/ajuda': typeof AjudaRoute
+  '/impacto': typeof ImpactoRoute
   '/passagens': typeof PassagensRoute
+  '/relatorios': typeof RelatoriosRoute
+  '/rota': typeof RotaRoute
   '/users': typeof UsersRoute
-  '/frota/adicionar': typeof FrotaAdicionarRoute
+  '/frota/novo': typeof FrotaNovoRoute
+  '/perfil/notificacoes': typeof PerfilNotificacoesRoute
+  '/perfil/veiculo': typeof PerfilVeiculoRoute
+  '/configuracoes/': typeof ConfiguracoesIndexRoute
   '/frota/': typeof FrotaIndexRoute
+  '/motoristas/': typeof MotoristasIndexRoute
+  '/perfil/': typeof PerfilIndexRoute
+  '/usuarios/': typeof UsuariosIndexRoute
+  '/frota/editar/$id': typeof FrotaEditarIdRoute
+  '/motoristas/editar/$id': typeof MotoristasEditarIdRoute
+  '/usuarios/editar/$id': typeof UsuariosEditarIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/dashboard'
-    | '/impact'
+    | '/ajuda'
+    | '/impacto'
     | '/passagens'
+    | '/relatorios'
+    | '/rota'
     | '/users'
-    | '/frota/adicionar'
+    | '/frota/novo'
+    | '/perfil/notificacoes'
+    | '/perfil/veiculo'
+    | '/configuracoes/'
     | '/frota/'
+    | '/motoristas/'
+    | '/perfil/'
+    | '/usuarios/'
+    | '/frota/editar/$id'
+    | '/motoristas/editar/$id'
+    | '/usuarios/editar/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/dashboard'
-    | '/impact'
+    | '/ajuda'
+    | '/impacto'
     | '/passagens'
+    | '/relatorios'
+    | '/rota'
     | '/users'
-    | '/frota/adicionar'
+    | '/frota/novo'
+    | '/perfil/notificacoes'
+    | '/perfil/veiculo'
+    | '/configuracoes'
     | '/frota'
+    | '/motoristas'
+    | '/perfil'
+    | '/usuarios'
+    | '/frota/editar/$id'
+    | '/motoristas/editar/$id'
+    | '/usuarios/editar/$id'
   id:
     | '__root__'
     | '/'
-    | '/dashboard'
-    | '/impact'
+    | '/ajuda'
+    | '/impacto'
     | '/passagens'
+    | '/relatorios'
+    | '/rota'
     | '/users'
-    | '/frota/adicionar'
+    | '/frota/novo'
+    | '/perfil/notificacoes'
+    | '/perfil/veiculo'
+    | '/configuracoes/'
     | '/frota/'
+    | '/motoristas/'
+    | '/perfil/'
+    | '/usuarios/'
+    | '/frota/editar/$id'
+    | '/motoristas/editar/$id'
+    | '/usuarios/editar/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  DashboardRoute: typeof DashboardRoute
-  ImpactRoute: typeof ImpactRoute
+  AjudaRoute: typeof AjudaRoute
+  ImpactoRoute: typeof ImpactoRoute
   PassagensRoute: typeof PassagensRoute
+  RelatoriosRoute: typeof RelatoriosRoute
+  RotaRoute: typeof RotaRoute
   UsersRoute: typeof UsersRoute
-  FrotaAdicionarRoute: typeof FrotaAdicionarRoute
+  FrotaNovoRoute: typeof FrotaNovoRoute
+  PerfilNotificacoesRoute: typeof PerfilNotificacoesRoute
+  PerfilVeiculoRoute: typeof PerfilVeiculoRoute
+  ConfiguracoesIndexRoute: typeof ConfiguracoesIndexRoute
   FrotaIndexRoute: typeof FrotaIndexRoute
+  MotoristasIndexRoute: typeof MotoristasIndexRoute
+  PerfilIndexRoute: typeof PerfilIndexRoute
+  UsuariosIndexRoute: typeof UsuariosIndexRoute
+  FrotaEditarIdRoute: typeof FrotaEditarIdRoute
+  MotoristasEditarIdRoute: typeof MotoristasEditarIdRoute
+  UsuariosEditarIdRoute: typeof UsuariosEditarIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -130,6 +273,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UsersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/rota': {
+      id: '/rota'
+      path: '/rota'
+      fullPath: '/rota'
+      preLoaderRoute: typeof RotaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/relatorios': {
+      id: '/relatorios'
+      path: '/relatorios'
+      fullPath: '/relatorios'
+      preLoaderRoute: typeof RelatoriosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/passagens': {
       id: '/passagens'
       path: '/passagens'
@@ -137,18 +294,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PassagensRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/impact': {
-      id: '/impact'
-      path: '/impact'
-      fullPath: '/impact'
-      preLoaderRoute: typeof ImpactRouteImport
+    '/impacto': {
+      id: '/impacto'
+      path: '/impacto'
+      fullPath: '/impacto'
+      preLoaderRoute: typeof ImpactoRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dashboard': {
-      id: '/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardRouteImport
+    '/ajuda': {
+      id: '/ajuda'
+      path: '/ajuda'
+      fullPath: '/ajuda'
+      preLoaderRoute: typeof AjudaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -158,6 +315,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/usuarios/': {
+      id: '/usuarios/'
+      path: '/usuarios'
+      fullPath: '/usuarios/'
+      preLoaderRoute: typeof UsuariosIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perfil/': {
+      id: '/perfil/'
+      path: '/perfil'
+      fullPath: '/perfil/'
+      preLoaderRoute: typeof PerfilIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/motoristas/': {
+      id: '/motoristas/'
+      path: '/motoristas'
+      fullPath: '/motoristas/'
+      preLoaderRoute: typeof MotoristasIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/frota/': {
       id: '/frota/'
       path: '/frota'
@@ -165,11 +343,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FrotaIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/frota/adicionar': {
-      id: '/frota/adicionar'
-      path: '/frota/adicionar'
-      fullPath: '/frota/adicionar'
-      preLoaderRoute: typeof FrotaAdicionarRouteImport
+    '/configuracoes/': {
+      id: '/configuracoes/'
+      path: '/configuracoes'
+      fullPath: '/configuracoes/'
+      preLoaderRoute: typeof ConfiguracoesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perfil/veiculo': {
+      id: '/perfil/veiculo'
+      path: '/perfil/veiculo'
+      fullPath: '/perfil/veiculo'
+      preLoaderRoute: typeof PerfilVeiculoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perfil/notificacoes': {
+      id: '/perfil/notificacoes'
+      path: '/perfil/notificacoes'
+      fullPath: '/perfil/notificacoes'
+      preLoaderRoute: typeof PerfilNotificacoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/frota/novo': {
+      id: '/frota/novo'
+      path: '/frota/novo'
+      fullPath: '/frota/novo'
+      preLoaderRoute: typeof FrotaNovoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/usuarios/editar/$id': {
+      id: '/usuarios/editar/$id'
+      path: '/usuarios/editar/$id'
+      fullPath: '/usuarios/editar/$id'
+      preLoaderRoute: typeof UsuariosEditarIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/motoristas/editar/$id': {
+      id: '/motoristas/editar/$id'
+      path: '/motoristas/editar/$id'
+      fullPath: '/motoristas/editar/$id'
+      preLoaderRoute: typeof MotoristasEditarIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/frota/editar/$id': {
+      id: '/frota/editar/$id'
+      path: '/frota/editar/$id'
+      fullPath: '/frota/editar/$id'
+      preLoaderRoute: typeof FrotaEditarIdRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -177,12 +397,23 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  DashboardRoute: DashboardRoute,
-  ImpactRoute: ImpactRoute,
+  AjudaRoute: AjudaRoute,
+  ImpactoRoute: ImpactoRoute,
   PassagensRoute: PassagensRoute,
+  RelatoriosRoute: RelatoriosRoute,
+  RotaRoute: RotaRoute,
   UsersRoute: UsersRoute,
-  FrotaAdicionarRoute: FrotaAdicionarRoute,
+  FrotaNovoRoute: FrotaNovoRoute,
+  PerfilNotificacoesRoute: PerfilNotificacoesRoute,
+  PerfilVeiculoRoute: PerfilVeiculoRoute,
+  ConfiguracoesIndexRoute: ConfiguracoesIndexRoute,
   FrotaIndexRoute: FrotaIndexRoute,
+  MotoristasIndexRoute: MotoristasIndexRoute,
+  PerfilIndexRoute: PerfilIndexRoute,
+  UsuariosIndexRoute: UsuariosIndexRoute,
+  FrotaEditarIdRoute: FrotaEditarIdRoute,
+  MotoristasEditarIdRoute: MotoristasEditarIdRoute,
+  UsuariosEditarIdRoute: UsuariosEditarIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
