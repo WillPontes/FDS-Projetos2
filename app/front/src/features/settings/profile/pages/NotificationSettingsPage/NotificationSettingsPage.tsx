@@ -38,7 +38,7 @@ export const NotificationSettingsPage = () => {
     >
       <Card className="max-w-xl">
         <CardHeader>
-          <CardTitle>Preferências de notificação</CardTitle>
+          <CardTitle>Preferências de Notificação</CardTitle>
           <CardDescription>
             Escolha os canais e tipos de alerta que deseja receber.
           </CardDescription>

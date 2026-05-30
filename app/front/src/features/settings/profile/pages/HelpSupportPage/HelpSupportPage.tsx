@@ -30,14 +30,16 @@ const faqItems = [
 export const HelpSupportPage = () => {
   return (
     <PageLayout
-      title="Ajuda e suporte"
+      title="Ajuda e Suporte"
       description="Encontre respostas rápidas ou entre em contato com nossa equipe."
     >
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Perguntas frequentes</CardTitle>
-            <CardDescription>Dúvidas comuns sobre o Taggy Ecoscore.</CardDescription>
+            <CardDescription>
+              Dúvidas comuns sobre o Taggy Ecoscore.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {faqItems.map((item) => (

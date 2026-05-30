@@ -122,7 +122,7 @@ export const EditDriverPage = () => {
 
   return (
     <PageLayout
-      title="Editar motorista"
+      title="Editar Motorista"
       description="Atualize os dados do motorista e o veículo vinculado."
     >
       <section className="max-w-xl rounded border border-neutral-300 bg-white p-6">
@@ -142,7 +142,7 @@ export const EditDriverPage = () => {
           <ControlledSelect
             control={form.control}
             name="vehicleId"
-            label="Veículo vinculado"
+            label="Veículo Vinculado"
             placeholder="Selecione um veículo"
             options={[
               { value: "__none__", label: "Sem veículo" },

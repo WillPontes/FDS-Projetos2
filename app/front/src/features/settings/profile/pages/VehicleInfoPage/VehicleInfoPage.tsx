@@ -20,12 +20,12 @@ export const VehicleInfoPage = () => {
 
   return (
     <PageLayout
-      title="Informações do veículo"
+      title="Informações do Veículo"
       description="Detalhes do veículo vinculado à sua conta."
     >
       <Card className="max-w-xl">
         <CardHeader>
-          <CardTitle>Veículo vinculado</CardTitle>
+          <CardTitle>Veículo Vinculado</CardTitle>
           <CardDescription>
             Dados cadastrados na frota associados ao seu perfil.
           </CardDescription>

@@ -35,25 +35,25 @@ const getInitials = (name: string) =>
 const profileLinks = [
   {
     to: "/passagens" as const,
-    label: "Histórico de passagens",
+    label: "Histórico de Passagens",
     description: "Veja suas passagens e impacto acumulado",
     icon: History,
   },
   {
     to: "/perfil/notificacoes" as const,
-    label: "Configuração de notificações",
+    label: "Configuração de Notificações",
     description: "Gerencie alertas por e-mail e push",
     icon: Bell,
   },
   {
     to: "/perfil/veiculo" as const,
-    label: "Informações do veículo",
+    label: "Informações do Veículo",
     description: "Detalhes do veículo vinculado à sua conta",
     icon: Car,
   },
   {
     to: "/ajuda" as const,
-    label: "Ajuda e suporte",
+    label: "Ajuda e Suporte",
     description: "FAQ e canais de contato",
     icon: HelpCircle,
   },
