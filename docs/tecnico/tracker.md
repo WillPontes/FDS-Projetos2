@@ -21,7 +21,7 @@
 
 ### TE01 — Autenticação Completa (Auth)
 
-**Pré-requisito de:** toda rota protegida, US11 roles, US13 admin
+**Pré-requisito de:** toda rota protegida, US11 roles, US12 admin
 
 | ID        | Atividade                      | Tipo  | Status | O que fazer                                                                                                                                                                      |
 | --------- | ------------------------------ | ----- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -137,7 +137,7 @@
 
 > Como gerente de operações, quero comparar meu gasto real contra o prejuízo estimado sem tag para validar o ROI. O gráfico deve mostrar "Custo da Ineficiência" vs. fluidez da Taggy.
 
-> **Depende de:** AT05-US12, AT06-US12 (Transaction persistida)
+> **Depende de:** AT05-US11, AT06-US11 (Transaction persistida)
 
 | ID        | Atividade                          | Tipo  | Status | O que fazer                                                                                                                                                                                                                                                      |
 | --------- | ---------------------------------- | ----- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -150,7 +150,7 @@
 
 **Sprint 3 · Prioridade Média · Épico 4 - Jornada do Usuário · Dificuldade: Médio**
 
-> Como gestor de frota, Quero visualizar e ser notificado em tempo real sobre o status das minhas metas semanais de sustentabilidade através de alertas e mensagens personalizadas após a conclusão de transações, Para que eu possa acompanhar de forma clara o impacto ecológico gerado e me manter engajado com as metas propostas.
+> Como gestor de frota, quero visualizar e ser notificado em tempo real sobre o status das minhas metas semanais de sustentabilidade através de alertas e mensagens personalizadas após a conclusão de transações, Para que eu possa acompanhar de forma clara o impacto ecológico gerado e me manter engajado com as metas propostas.
 
 | ID        | Atividade                       | Tipo  | Status | O que fazer                                                                                                                                                         |
 | --------- | ------------------------------- | ----- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -171,7 +171,7 @@
 
 > Como motorista, quero ver o acumulado de horas economizadas por não parar em filas. Cálculo baseado na diferença entre tempo médio de cabines manuais e tempo de passagem pela Tag.
 
-> **Depende de:** AT07-US12 (UserStats model e upsert automático)
+> **Depende de:** AT07-US11 (UserStats model e upsert automático)
 
 | ID        | Atividade                           | Tipo  | Status | O que fazer                                                                                                                                                                                                                                                                                 |
 | --------- | ----------------------------------- | ----- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -216,7 +216,7 @@
 
 > Como proprietário de veículo, quero comparar o custo da mensalidade com a economia gerada para saber quando o serviço se torna "lucro". Fórmula: (Diesel + Manutenção) - Mensalidade = Saldo Real.
 
-> **Depende de:** AT05-US12, AT06-US12 (Transaction persistida para somar savings reais)
+> **Depende de:** AT05-US11, AT06-US11 (Transaction persistida para somar savings reais)
 
 | ID        | Atividade                                  | Tipo  | Status | O que fazer                                                                                                                                                                                                                                                                                                               |
 | --------- | ------------------------------------------ | ----- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
