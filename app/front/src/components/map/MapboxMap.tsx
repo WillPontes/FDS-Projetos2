@@ -61,7 +61,7 @@ export const MapboxMap = ({
       )}
     >
       <MapPin className="h-10 w-10 text-muted-foreground" />
-      <p className="max-w-xs text-sm text-muted-foreground">Indisponível</p>
+      <p className="max-w-xs text-sm text-muted-foreground">Em Breve</p>
     </div>
   );
 };
