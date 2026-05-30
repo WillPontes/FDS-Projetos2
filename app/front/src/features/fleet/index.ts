@@ -1,2 +1,3 @@
 export { FleetListPage } from "./pages/FleetListPage"
-export { FleetFormPage } from "./pages/FleetFormPage"
+export { CreateVehiclePage } from "./pages/CreateVehiclePage"
+export { EditVehiclePage } from "./pages/EditVehiclePage"
