@@ -42,7 +42,7 @@ export const EditDriverPage = () => {
   );
 
   const form = useForm<DriverFormData>({
-    resolver: zodResolver(driverFormSchema),
+    resolver: zodResolver(driverFormSchema as any),
     defaultValues: {
       name: "",
       email: "",

@@ -39,7 +39,7 @@ export const AdminAccountSection = () => {
   const [twoFactorAuth, setTwoFactorAuth] = useState(false);
 
   const passwordForm = useForm<PasswordFormData>({
-    resolver: zodResolver(passwordSchema),
+    resolver: zodResolver(passwordSchema as any),
     defaultValues: {
       currentPassword: "",
       newPassword: "",
