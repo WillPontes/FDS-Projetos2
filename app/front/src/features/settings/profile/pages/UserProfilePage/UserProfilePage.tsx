@@ -20,7 +20,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { USER_ROLE_LABELS } from "@/constants/current-user";
-import { useAuthStore, useCurrentUser, useLogout } from "@/features/auth";
+import { useCurrentUser, useLogout } from "@/features/auth";
 import { useGetRawVehicles } from "@/features/users/hooks/useGetRawVehicles";
 import { findVehicleForUser } from "@/features/users/lib/join-users-with-vehicles";
 
@@ -62,7 +62,6 @@ const profileLinks = [
 export const UserProfilePage = () => {
   const { user, isAuthenticated } = useCurrentUser();
   const logout = useLogout();
-  const updateUser = useAuthStore((state) => state.updateUser);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { data: vehicles = [] } = useGetRawVehicles();
 
@@ -78,13 +77,6 @@ export const UserProfilePage = () => {
 
   const vehicle = findVehicleForUser(user.id, vehicles);
   const status = user.status ?? "active";
-
-  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    const url = URL.createObjectURL(file);
-    updateUser({ avatarUrl: url });
-  };
 
   return (
     <PageLayout
@@ -107,17 +99,8 @@ export const UserProfilePage = () => {
                   {getInitials(user.name)}
                 </AvatarFallback>
               </Avatar>
-              <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100">
-                Alterar foto
-              </span>
             </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleAvatarChange}
-            />
+
             <CardTitle>{user.name}</CardTitle>
             <CardDescription>{user.email}</CardDescription>
           </CardHeader>
