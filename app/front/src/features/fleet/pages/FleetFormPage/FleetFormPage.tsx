@@ -4,8 +4,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ControlledInput } from "@/components/ControlledInput";
-import { ControlledSelect } from "@/components/ControlledSelect";
+import { ControlledInput } from "@/components/form/ControlledInput";
+import { ControlledSelect } from "@/components/form/ControlledSelect";
 import {
   vehicleCreateSchema,
   type VehicleFormData,

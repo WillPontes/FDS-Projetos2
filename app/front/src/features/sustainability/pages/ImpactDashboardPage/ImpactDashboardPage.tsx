@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Droplet, Leaf, Percent, Scroll } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { MetricCard } from "@/components/layout/driver/MetricCard"
+import { MetricCard } from "@/features/sustainability/components/MetricCard"
 import { useGetImpactMetrics } from "../../hooks/useGetImpactMetrics"
 import { useGetWeeklyGoal } from "../../hooks/useGetWeeklyGoal"
 

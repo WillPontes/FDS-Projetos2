@@ -1,4 +1,4 @@
-import type { SelectOption } from "@/components/ControlledSelect"
+import type { SelectOption } from "@/components/form/ControlledSelect"
 
 export const STATUS_LABELS: Record<string, string> = {
   active: "Ativo",
