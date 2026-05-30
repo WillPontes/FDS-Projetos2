@@ -1,57 +1,64 @@
-import { MetricCard } from "@/features/sustainability/components/MetricCard"
-import { PassageListItem } from "@/features/sustainability/components/PassageListItem"
-import { StatCard } from "@/features/sustainability/components/StatCard"
-import { Skeleton } from "@/components/ui/skeleton"
-import { useGetPassages } from "../../hooks/useGetPassages"
-import { useGetPassagesSummary } from "../../hooks/useGetPassagesSummary"
+import { EmptyState } from "@/components/EmptyState";
+import { PageLayout } from "@/components/layout/PageLayout";
+import { Skeleton } from "@/components/ui/skeleton";
+import { MetricCard } from "@/features/sustainability/components/MetricCard";
+import { PassageListItem } from "@/features/sustainability/components/PassageListItem";
+import { StatCard } from "@/features/sustainability/components/StatCard";
+import { useGetPassages } from "../../hooks/useGetPassages";
+import { useGetPassagesSummary } from "../../hooks/useGetPassagesSummary";
 
 export const PassagesHistoryPage = () => {
-  const { data: summary, isLoading: summaryLoading } = useGetPassagesSummary()
-  const { data: passagesData, isLoading: passagesLoading } = useGetPassages()
+  const { data: summary, isLoading: summaryLoading } = useGetPassagesSummary();
+  const { data: passagesData, isLoading: passagesLoading } = useGetPassages();
 
-  const passages = passagesData?.lastPassages ?? []
+  const passages = passagesData?.lastPassages ?? [];
 
   return (
-    <>
-      <h1 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
-        Minhas Passagens
-      </h1>
-
-      {summaryLoading ? (
-        <Skeleton className="h-32 w-full rounded-2xl" />
-      ) : (
-        <StatCard
-          label="Resumo Total"
-          passages={summary?.totalPassages ?? 0}
-          co2={summary?.totalCarbon ?? 0}
-          hours={summary?.hoursSaved ?? 0}
-        />
-      )}
-
-      <MetricCard className="mb-10 p-6">
-        <span className="metric-label mb-4 block">Últimas Passagens</span>
-        {passagesLoading ? (
-          <div className="space-y-4">
+    <PageLayout
+      title="Minhas Passagens"
+      description="Consulte o resumo das suas passagens e o histórico recente com impacto ambiental."
+    >
+      <section>
+        {summaryLoading ? (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton key={i} className="h-16 w-full" />
+              <Skeleton key={i} className="h-36 w-full rounded" />
             ))}
           </div>
-        ) : passages.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            Nenhuma passagem registrada.
-          </p>
         ) : (
-          <div className="flex flex-col">
-            {passages.map((passage, index) => (
-              <PassageListItem
-                key={passage.id}
-                passage={passage}
-                showBorder={index !== passages.length - 1}
-              />
-            ))}
-          </div>
+          <StatCard
+            label="Resumo total"
+            passages={summary?.totalPassages ?? 0}
+            co2={summary?.totalCarbon ?? 0}
+            hours={summary?.hoursSaved ?? 0}
+          />
         )}
-      </MetricCard>
-    </>
-  )
-}
+      </section>
+
+      <section>
+        {passagesLoading ? (
+          <Skeleton className="h-64 w-full rounded" />
+        ) : (
+          <MetricCard className="p-4">
+            <p className="text-xs font-medium uppercase tracking-wider text-neutral-500">
+              Últimas Passagens
+            </p>
+            {passages.length === 0 ? (
+              <EmptyState />
+            ) : (
+              <div className="flex flex-col">
+                {passages.map((passage, index) => (
+                  <PassageListItem
+                    key={passage.id}
+                    passage={passage}
+                    showBorder={index !== passages.length - 1}
+                  />
+                ))}
+              </div>
+            )}
+          </MetricCard>
+        )}
+      </section>
+    </PageLayout>
+  );
+};

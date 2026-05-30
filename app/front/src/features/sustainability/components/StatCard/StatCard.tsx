@@ -1,42 +1,47 @@
-import { MetricCard } from "../MetricCard"
+import { Clock, Leaf, Ticket } from "lucide-react";
+import { KpiCard } from "../MetricCard";
 
 type StatCardProps = {
-  label: string
-  passages: number | string
-  co2: number | string
-  hours: number | string
-}
+  label: string;
+  passages: number | string;
+  co2: number | string;
+  hours: number | string;
+};
 
 export const StatCard = ({ label, passages, co2, hours }: StatCardProps) => {
+  const metrics = [
+    {
+      title: "PASSAGENS",
+      value: passages,
+      icon: <Ticket className="text-[#72C215]" size={30} />,
+    },
+    {
+      title: "KG CO₂",
+      value: co2,
+      icon: <Leaf className="text-[#72C215]" size={30} />,
+    },
+    {
+      title: "HORAS",
+      value: hours,
+      icon: <Clock className="text-[#72C215]" size={30} />,
+    },
+  ];
+
   return (
-    <MetricCard className="p-6">
-      <span className="metric-label mb-4 block">{label}</span>
-      <div className="grid grid-cols-3 text-center">
-        <div className="flex flex-col gap-1">
-          <span className="text-3xl font-bold text-foreground md:text-4xl">
-            {passages}
-          </span>
-          <span className="text-xs font-medium text-muted-foreground">
-            Passagens
-          </span>
-        </div>
-        <div className="flex flex-col gap-1 border-x border-border">
-          <span className="text-3xl font-bold text-foreground md:text-4xl">
-            {co2}
-          </span>
-          <span className="text-xs font-medium text-muted-foreground">
-            kg CO₂
-          </span>
-        </div>
-        <div className="flex flex-col gap-1">
-          <span className="text-3xl font-bold text-foreground md:text-4xl">
-            {hours}
-          </span>
-          <span className="text-xs font-medium text-muted-foreground">
-            Horas
-          </span>
-        </div>
+    <section className="space-y-4">
+      <p className="text-xs font-medium uppercase tracking-wider text-neutral-500">
+        {label}
+      </p>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        {metrics.map((metric) => (
+          <KpiCard
+            key={metric.title}
+            title={metric.title}
+            value={metric.value}
+            icon={metric.icon}
+          />
+        ))}
       </div>
-    </MetricCard>
-  )
-}
+    </section>
+  );
+};

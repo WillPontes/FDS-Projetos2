@@ -1,1 +1,9 @@
-export { MetricCard } from "./MetricCard"
+export {
+  KpiCard,
+  MetricCard,
+  SectionCard,
+  kpiCardClass,
+  metricCardSurfaceClass,
+  sectionCardClass,
+  sectionCardLabelClass,
+} from "./MetricCard";
