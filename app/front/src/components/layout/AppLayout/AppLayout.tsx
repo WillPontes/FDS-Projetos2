@@ -2,6 +2,7 @@ import { useState, type ReactNode } from "react";
 import { Sidebar } from "../Sidebar";
 import { Header } from "../Header";
 import { Footer } from "../Footer";
+import { useWebsocketNotification } from "@/hooks/useWebsocketNotification"
 
 type AppLayoutProps = {
   children: ReactNode;
@@ -9,6 +10,7 @@ type AppLayoutProps = {
 
 export const AppLayout = ({ children }: AppLayoutProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  useWebsocketNotification()
 
   return (
     <div className="flex min-h-screen">

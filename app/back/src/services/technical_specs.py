@@ -6,6 +6,7 @@ from src.engine.exceptions import CalcEngineError
 from src.providers.official_source_provider import OfficialSourceProvider
 from src.repositories.fuel_prices_repository import FuelPricesRepository
 from src.repositories.technical_specs_repository import TechnicalSpecsRepository
+from src.dto.technical_specs import TechnicalSpecsUpdate
 
 
 def _build_provider(db: AsyncSession) -> OfficialSourceProvider:

@@ -9,8 +9,13 @@ from sqlalchemy.pool import NullPool
 from sqlmodel import SQLModel
 
 from src.models.fuel_prices import FuelPriceByUF  # noqa: F401
+from src.models.organization import Organization  # noqa: F401
 from src.models.technical_specs import TechnicalSpecs  # noqa: F401
+from src.models.transaction import Transaction  # noqa: F401
 from src.models.user import User  # noqa: F401
+from src.models.user_stats import UserStats  # noqa: F401
+from src.models.vehicle import Vehicle  # noqa: F401
+from src.models.weekly_goal import WeeklyGoal  # noqa: F401
 
 load_dotenv()
 

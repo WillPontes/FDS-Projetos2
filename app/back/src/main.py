@@ -10,10 +10,11 @@ from src.database.connection import engine
 from src.models.fuel_prices import FuelPriceByUF
 from src.models.organization import Organization
 from src.models.technical_specs import TechnicalSpecs
-from src.models.user import User
-from src.models.vehicle import Vehicle
 from src.models.transaction import Transaction
+from src.models.user import User
 from src.models.user_stats import UserStats
+from src.models.vehicle import Vehicle
+from src.models.weekly_goal import WeeklyGoal
 
 from src.routes import router
 
@@ -24,6 +25,7 @@ load_dotenv()
 async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.run_sync(SQLModel.metadata.create_all)
+
     yield
 
 
