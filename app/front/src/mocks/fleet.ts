@@ -1,0 +1,98 @@
+import type { Vehicle } from "@/features/fleet/schemas/vehicle-schema";
+
+export type MockFleetVehicle = Vehicle & {
+  fuel_type?: string;
+  installation_date?: string;
+  region?: string;
+};
+
+export const MOCK_FLEET_VEHICLES: MockFleetVehicle[] = [
+  {
+    id: 1,
+    plate: "ABC1D23",
+    model: "Volkswagen Gol",
+    year: 2022,
+    status: "active",
+    fuelType: "Flex",
+    fuel_type: "Flex",
+    installation_date: "2024-01-15",
+    region: "SP",
+  },
+  {
+    id: 2,
+    plate: "DEF4G56",
+    model: "Fiat Strada",
+    year: 2021,
+    status: "active",
+    fuelType: "Diesel",
+    fuel_type: "Diesel",
+    installation_date: "2024-02-20",
+    region: "RJ",
+  },
+  {
+    id: 3,
+    plate: "GHI7J89",
+    model: "Chevrolet Onix",
+    year: 2023,
+    status: "active",
+    fuelType: "Flex",
+    fuel_type: "Flex",
+    installation_date: "2024-03-10",
+    region: "MG",
+  },
+  {
+    id: 4,
+    plate: "JKL0M12",
+    model: "Toyota Hilux",
+    year: 2020,
+    status: "maintenance",
+    fuelType: "Diesel",
+    fuel_type: "Diesel",
+    installation_date: "2023-11-05",
+    region: "SP",
+  },
+  {
+    id: 5,
+    plate: "MNO3P45",
+    model: "Hyundai HB20",
+    year: 2022,
+    status: "active",
+    fuelType: "Flex",
+    fuel_type: "Flex",
+    installation_date: "2024-04-18",
+    region: "RS",
+  },
+  {
+    id: 6,
+    plate: "QRS6T78",
+    model: "Renault Kwid",
+    year: 2023,
+    status: "inactive",
+    fuelType: "Flex",
+    fuel_type: "Flex",
+    installation_date: "2024-05-22",
+    region: "BA",
+  },
+  {
+    id: 7,
+    plate: "UVW9X01",
+    model: "Ford Ranger",
+    year: 2021,
+    status: "active",
+    fuelType: "Diesel",
+    fuel_type: "Diesel",
+    installation_date: "2023-09-30",
+    region: "PR",
+  },
+  {
+    id: 8,
+    plate: "YZA2B34",
+    model: "Honda Civic",
+    year: 2024,
+    status: "active",
+    fuelType: "Flex",
+    fuel_type: "Flex",
+    installation_date: "2024-06-01",
+    region: "SP",
+  },
+];
