@@ -27,7 +27,7 @@ export const EditDriverPage = () => {
 
   const { data: user, isLoading, isError } = useGetUser(driverId, isValidId);
   const { data: vehicles = [] } = useGetRawVehicles();
-  const { mutate, isPending } = useUpdateUser();
+  const { mutate, isPending } = useUpdateUser({ silent: true });
 
   const driverWithVehicle = useMemo(() => {
     if (!user) return undefined;
@@ -77,6 +77,7 @@ export const EditDriverPage = () => {
       },
       {
         onSuccess: () => {
+          toast.success("Motorista atualizado.");
           if (formData.vehicleId && formData.vehicleId !== "__none__") {
             toast.info(
               "Vínculo de veículo será persistido quando a API estiver disponível.",
@@ -84,6 +85,7 @@ export const EditDriverPage = () => {
           }
           navigate({ to: "/motoristas" });
         },
+        onError: () => toast.error("Erro ao atualizar motorista."),
       },
     );
   };

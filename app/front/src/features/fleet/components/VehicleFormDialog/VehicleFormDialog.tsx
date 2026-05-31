@@ -92,19 +92,9 @@ export const VehicleFormDialog = ({
             toast.success("Veículo atualizado.");
             onClose();
           },
-          onError: () => toast.error("Erro ao atualizar veículo."),
         },
       );
     } else {
-      if (
-        !data.id_tag ||
-        !data.license_plate ||
-        !data.model ||
-        !data.fuel_type
-      ) {
-        toast.error("Preencha todos os campos obrigatórios.");
-        return;
-      }
       createVehicle(
         data as VehicleUpdateData & {
           id_tag: string;
@@ -117,7 +107,6 @@ export const VehicleFormDialog = ({
             toast.success("Veículo cadastrado.");
             onClose();
           },
-          onError: () => toast.error("Erro ao cadastrar veículo."),
         },
       );
     }

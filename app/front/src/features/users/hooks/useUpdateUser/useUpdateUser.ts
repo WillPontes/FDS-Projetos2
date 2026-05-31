@@ -4,6 +4,10 @@ import { createUser, updateUser, deleteUser } from "../../api/requests";
 import { userQueryKeys } from "../../api/query-keys";
 import type { UpdateUserPayload, User } from "../../api/types";
 
+type UserMutationOptions = {
+  silent?: boolean;
+};
+
 export const useCreateUser = () => {
   const queryClient = useQueryClient();
 
@@ -24,8 +28,9 @@ export const useCreateUser = () => {
   });
 };
 
-export const useUpdateUser = () => {
+export const useUpdateUser = (options?: UserMutationOptions) => {
   const queryClient = useQueryClient();
+  const silent = options?.silent ?? false;
 
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: UpdateUserPayload }) =>
@@ -35,10 +40,14 @@ export const useUpdateUser = () => {
         old?.map((user) => (user.id === updatedUser.id ? updatedUser : user)),
       );
       queryClient.setQueryData(userQueryKeys.detail(updatedUser.id), updatedUser);
-      toast.success("Usuário atualizado com sucesso!");
+      if (!silent) {
+        toast.success("Usuário atualizado com sucesso!");
+      }
     },
     onError: (error: Error) => {
-      toast.error(error.message || "Erro ao atualizar usuário.");
+      if (!silent) {
+        toast.error(error.message || "Erro ao atualizar usuário.");
+      }
     },
   });
 };

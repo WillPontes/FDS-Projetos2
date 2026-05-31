@@ -76,5 +76,8 @@ export const useUpdateFuelPriceMock = () => {
       });
       toast.success(`Preços de ${uf} atualizados localmente (mock).`);
     },
+    onError: (error: Error) => {
+      toast.error(error.message || "Erro ao atualizar preços.");
+    },
   });
 };

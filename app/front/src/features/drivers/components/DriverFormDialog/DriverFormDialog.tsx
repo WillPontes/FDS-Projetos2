@@ -23,7 +23,7 @@ type DriverFormDialogProps = {
 
 export const DriverFormDialog = ({ open, onClose, driver }: DriverFormDialogProps) => {
   const { data: vehicles = [] } = useGetRawVehicles();
-  const { mutate, isPending } = useUpdateUser();
+  const { mutate, isPending } = useUpdateUser({ silent: true });
   const [selectedVehicleIds, setSelectedVehicleIds] = useState<number[]>([]);
   const [savingVehicles, setSavingVehicles] = useState(false);
 
@@ -99,6 +99,7 @@ export const DriverFormDialog = ({ open, onClose, driver }: DriverFormDialogProp
                   : null;
               await updateUserVehicles(driver.id, vehicleId ? [vehicleId] : []);
             }
+            toast.success("Motorista atualizado.");
             onClose();
           } catch {
             toast.error("Erro ao atualizar veículos vinculados.");
@@ -106,6 +107,7 @@ export const DriverFormDialog = ({ open, onClose, driver }: DriverFormDialogProp
             setSavingVehicles(false);
           }
         },
+        onError: () => toast.error("Erro ao atualizar motorista."),
       },
     );
   });
