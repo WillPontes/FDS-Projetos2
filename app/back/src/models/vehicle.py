@@ -1,4 +1,4 @@
-from pydantic import ConfigDict
+from pydantic import ConfigDict, model_validator
 from sqlmodel import Field, SQLModel
 
 
@@ -33,5 +33,16 @@ class VehiclePublic(SQLModel):
     organization_id: int | None
     assigned_driver_id: int | None
     license_plate: str
+    plate: str = ""
     model: str
     fuel_type: str
+
+    @model_validator(mode="after")
+    def set_plate_alias(self) -> "VehiclePublic":
+        self.plate = self.license_plate
+        return self
+
+
+class VehicleListPublic(SQLModel):
+    items: list[VehiclePublic]
+    total: int

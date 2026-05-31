@@ -19,7 +19,10 @@ export type UserWithVehicle = User & {
   fleetOrganizationId?: number | null;
 };
 
-export type ListUsersParams = Record<string, never>;
+export type ListUsersParams = {
+  role?: UserRole;
+  organization_id?: number;
+};
 
 export type ListUsersResponse = User[];
 

@@ -1,4 +1,6 @@
-from sqlalchemy import select
+from datetime import date
+
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.dto.transactions import TransactionIn, TransactionUpdate
@@ -19,6 +21,45 @@ class TransactionRepository:
     async def get_all(self) -> list[Transaction]:
         result = await self.session.execute(select(Transaction))
 
+        return list(result.scalars().all())
+
+    async def get_by_user_paginated(
+        self,
+        user_id: int,
+        page: int = 1,
+        page_size: int = 10,
+        from_date: date | None = None,
+        to_date: date | None = None,
+    ) -> tuple[list[Transaction], int]:
+        query = select(Transaction).where(Transaction.user_id == user_id)
+        if from_date:
+            query = query.where(Transaction.created_at >= from_date)
+        if to_date:
+            query = query.where(Transaction.created_at <= to_date)
+        total_result = await self.session.execute(
+            select(func.count()).select_from(query.subquery())
+        )
+        total = total_result.scalar_one()
+        offset = (page - 1) * page_size
+        result = await self.session.execute(
+            query.order_by(Transaction.created_at.desc()).offset(offset).limit(page_size)
+        )
+        return list(result.scalars().all()), total
+
+    async def get_by_user_in_range(
+        self,
+        user_id: int,
+        from_date: date | None = None,
+        to_date: date | None = None,
+    ) -> list[Transaction]:
+        query = select(Transaction).where(Transaction.user_id == user_id)
+        if from_date:
+            query = query.where(Transaction.created_at >= from_date)
+        if to_date:
+            query = query.where(Transaction.created_at <= to_date)
+        result = await self.session.execute(
+            query.order_by(Transaction.created_at.desc())
+        )
         return list(result.scalars().all())
 
     async def create(self, transaction_in: TransactionIn) -> Transaction:

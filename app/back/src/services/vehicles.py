@@ -9,6 +9,15 @@ async def list_vehicles(session: AsyncSession) -> list[Vehicle]:
     return await VehicleRepository(session).get_all()
 
 
+async def list_vehicles_paginated(
+    session: AsyncSession,
+    page: int = 1,
+    page_size: int = 10,
+    search: str | None = None,
+) -> tuple[list[Vehicle], int]:
+    return await VehicleRepository(session).get_paginated(page, page_size, search)
+
+
 async def get_vehicle_by_id(session: AsyncSession, vehicle_id: int) -> Vehicle | None:
     return await VehicleRepository(session).get_by_id(vehicle_id)
 

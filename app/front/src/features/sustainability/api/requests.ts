@@ -1,11 +1,4 @@
 import { api } from "@/lib/http-client"
-import {
-  MOCK_IMPACT_METRICS,
-  MOCK_PASSAGES,
-  MOCK_PASSAGES_SUMMARY,
-  MOCK_WEEKLY_GOAL,
-  resolveWithMock,
-} from "@/mocks"
 import type {
   GetPassagesParams,
   ImpactMetrics,
@@ -13,51 +6,90 @@ import type {
   PassagesSummary,
   WeeklyGoal,
 } from "../schemas/sustainability-schema"
-import { paginateItems } from "@/lib/list-utils"
 
-/** §1.1 — substituir path quando endpoint existir no back */
+const USER_ID = 1
+
 export const getImpactMetrics = async (): Promise<ImpactMetrics> => {
-  return resolveWithMock(
-    () => api.get("impact/metrics").json<ImpactMetrics>(),
-    () => MOCK_IMPACT_METRICS,
-  )
+  const raw = await api
+    .get("/api/sustainability/impact", { searchParams: { user_id: USER_ID } })
+    .json<{
+      days_saved_without_queues: number
+      tree_saved: number
+      total_carbon: number
+      total_water_saved: number
+      paper_saved: number
+    }>()
+
+  return {
+    daysSavedWithoutQueues: raw.days_saved_without_queues,
+    treeSaved: raw.tree_saved,
+    totalCarbon: raw.total_carbon,
+    totalWaterSaved: raw.total_water_saved,
+    paperSaved: raw.paper_saved,
+  }
 }
 
-/** §1.2 */
 export const getWeeklyGoal = async (): Promise<WeeklyGoal> => {
-  return resolveWithMock(
-    () => api.get("goals/current").json<WeeklyGoal>(),
-    () => MOCK_WEEKLY_GOAL,
-  )
+  const raw = await api
+    .get("/api/sustainability/goal", { searchParams: { user_id: USER_ID } })
+    .json<{
+      weekly_goal: number
+      weekly_percentage: number
+    }>()
+
+  return {
+    weeklyGoal: raw.weekly_goal,
+    weeklyPercentage: raw.weekly_percentage,
+  }
 }
 
-/** §2.1 */
 export const getPassagesSummary = async (): Promise<PassagesSummary> => {
-  return resolveWithMock(
-    () => api.get("passages/summary").json<PassagesSummary>(),
-    () => MOCK_PASSAGES_SUMMARY,
-  )
+  const raw = await api
+    .get("/api/sustainability/passages/summary", { searchParams: { user_id: USER_ID } })
+    .json<{
+      total_passages: number
+      total_carbon: number
+      hours_saved: number
+    }>()
+
+  return {
+    totalPassages: raw.total_passages,
+    totalCarbon: raw.total_carbon,
+    hoursSaved: raw.hours_saved,
+  }
 }
 
-/** §2.2 */
-export const getPassages = async (
-  params: GetPassagesParams = {},
-): Promise<PassagesList> => {
+export const getPassages = async (params: GetPassagesParams = {}): Promise<PassagesList> => {
   const page = params.page ?? 1
   const pageSize = params.pageSize ?? 10
 
-  return resolveWithMock(
-    () =>
-      api
-        .get("passages", { searchParams: { page, page_size: pageSize } })
-        .json<PassagesList>(),
-    () => {
-      const { items, total } = paginateItems(MOCK_PASSAGES, page, pageSize)
-      return {
-        totalResults: total,
-        page,
-        lastPassages: items,
-      }
-    },
-  )
+  const raw = await api
+    .get("/api/sustainability/passages", {
+      searchParams: { user_id: USER_ID, page, page_size: pageSize },
+    })
+    .json<{
+      total_results: number
+      page: number
+      last_passages: Array<{
+        id: number
+        local_name: string
+        passage_datetime: string
+        carbon: string
+        water_saved: string
+        time: string
+      }>
+    }>()
+
+  return {
+    totalResults: raw.total_results,
+    page: raw.page,
+    lastPassages: raw.last_passages.map((p) => ({
+      id: p.id,
+      localName: p.local_name,
+      passageDatetime: p.passage_datetime,
+      carbon: p.carbon,
+      waterSaved: p.water_saved,
+      time: p.time,
+    })),
+  }
 }
