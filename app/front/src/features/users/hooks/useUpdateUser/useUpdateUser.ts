@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { deleteUserMock, updateUserMock } from "../../api/requests";
+import { updateUser, deleteUser } from "../../api/requests";
 import { userQueryKeys } from "../../api/query-keys";
 import type { UpdateUserPayload, User } from "../../api/types";
 
@@ -9,7 +9,7 @@ export const useUpdateUser = () => {
 
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: UpdateUserPayload }) =>
-      updateUserMock(id, data),
+      updateUser(id, data),
     onSuccess: (updatedUser) => {
       queryClient.setQueryData<User[]>(userQueryKeys.list(), (old) =>
         old?.map((user) => (user.id === updatedUser.id ? updatedUser : user)),
@@ -27,7 +27,7 @@ export const useDeleteUser = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: number) => deleteUserMock(id),
+    mutationFn: (id: number) => deleteUser(id),
     onSuccess: (_data, id) => {
       queryClient.setQueryData<User[]>(userQueryKeys.list(), (old) =>
         old?.filter((user) => user.id !== id),

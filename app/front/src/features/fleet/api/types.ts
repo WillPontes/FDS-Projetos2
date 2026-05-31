@@ -1,17 +1,11 @@
-import type { Vehicle, VehicleFormData } from "../schemas/vehicle-schema";
+import type { Vehicle, VehicleFormData, VehicleUpdateData } from "../schemas/vehicle-schema";
 
-export type { Vehicle, VehicleFormData };
+export type { Vehicle, VehicleFormData, VehicleUpdateData };
 
 export type GetVehiclesParams = {
   page?: number;
   pageSize?: number;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
   search?: string;
-  dateFrom?: string;
-  dateTo?: string;
-  fuelType?: string;
-  region?: string;
 };
 
 export type GetVehiclesResponse = {
@@ -21,7 +15,7 @@ export type GetVehiclesResponse = {
 
 export type CreateVehiclePayload = VehicleFormData;
 
-export type UpdateVehiclePayload = VehicleFormData;
+export type UpdateVehiclePayload = VehicleUpdateData;
 
 export type UpdateVehicleVariables = {
   id: number;

@@ -12,21 +12,52 @@ import {
   parseAsStringEnum,
   useQueryStates,
 } from "nuqs";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/DataTable";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { PAGE_SIZE } from "@/constants";
 import { useGetVehicles } from "../../hooks/useGetVehicles";
+import { deleteVehicle } from "../../api/requests";
+import { useQueryClient } from "@tanstack/react-query";
+import { vehicleKeys } from "../../api/query-keys";
 import type { Vehicle } from "../../schemas/vehicle-schema";
+
+const VehicleActions = ({ vehicle }: { vehicle: Vehicle }) => {
+  const queryClient = useQueryClient();
+
+  const handleDelete = async () => {
+    try {
+      await deleteVehicle(vehicle.id);
+      queryClient.invalidateQueries({ queryKey: vehicleKeys.lists() });
+      toast.success("Veículo removido.");
+    } catch {
+      toast.error("Erro ao remover veículo.");
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      <Button asChild variant="outline">
+        <Link to="/frota/editar/$id" params={{ id: String(vehicle.id) }}>
+          <Pencil className="h-4 w-4" />
+        </Link>
+      </Button>
+      <Button type="button" variant="outline" onClick={handleDelete}>
+        <Trash className="h-4 w-4" />
+      </Button>
+    </div>
+  );
+};
 
 const columns: ColumnDef<Vehicle>[] = [
   {
-    accessorKey: "id",
+    accessorKey: "id_tag",
     header: "TAG ID",
     enableSorting: true,
   },
   {
-    accessorKey: "plate",
+    accessorKey: "license_plate",
     header: "PLACA",
     enableSorting: true,
   },
@@ -41,33 +72,10 @@ const columns: ColumnDef<Vehicle>[] = [
     enableSorting: true,
   },
   {
-    accessorKey: "installation_date",
-    header: "DATA DE INSTALAÇÃO",
-    enableSorting: true,
-  },
-  {
     accessorKey: "actions",
     header: "AÇÕES",
     enableSorting: false,
-    cell: ({ row }) => {
-      const vehicle = row.original;
-      const handleDelete = () => {
-        console.log(vehicle);
-      };
-
-      return (
-        <div className="flex items-center gap-2">
-          <Button asChild variant="outline">
-            <Link to="/frota/editar/$id" params={{ id: String(vehicle.id) }}>
-              <Pencil className="h-4 w-4" />
-            </Link>
-          </Button>
-          <Button type="button" variant="outline" onClick={handleDelete}>
-            <Trash className="h-4 w-4" />
-          </Button>
-        </div>
-      );
-    },
+    cell: ({ row }) => <VehicleActions vehicle={row.original} />,
   },
 ];
 

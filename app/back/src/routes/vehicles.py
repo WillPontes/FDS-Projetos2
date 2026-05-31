@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.connection import get_db
 from src.dto.vehicle import VehicleIn, VehicleUpdate
-from src.models.vehicle import Vehicle
+from src.models.vehicle import VehicleListPublic, VehiclePublic
 from src.services.vehicles import (
-    list_vehicles as list_vehicles_svc,
+    list_vehicles_paginated as list_vehicles_paginated_svc,
     get_vehicle_by_id as get_vehicle_by_id_svc,
     create_vehicle as create_vehicle_svc,
     update_vehicle as update_vehicle_svc,
@@ -17,12 +17,18 @@ from src.services.vehicles import (
 router = APIRouter(prefix="/vehicles", tags=["vehicles"])
 
 
-@router.get("/", response_model=list[Vehicle])
-async def list_vehicles(session: AsyncSession = Depends(get_db)):
-    return await list_vehicles_svc(session)
+@router.get("/", response_model=VehicleListPublic)
+async def list_vehicles(
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=10, ge=1, le=100),
+    search: str | None = Query(default=None),
+    session: AsyncSession = Depends(get_db),
+):
+    items, total = await list_vehicles_paginated_svc(session, page, page_size, search)
+    return VehicleListPublic(items=[VehiclePublic.model_validate(v) for v in items], total=total)
 
 
-@router.get("/{vehicle_id}", response_model=Vehicle)
+@router.get("/{vehicle_id}", response_model=VehiclePublic)
 async def get_vehicle(
     vehicle_id: int,
     session: AsyncSession = Depends(get_db),
@@ -30,10 +36,10 @@ async def get_vehicle(
     vehicle = await get_vehicle_by_id_svc(session, vehicle_id)
     if not vehicle:
         raise HTTPException(status_code=404, detail="Vehicle not found")
-    return vehicle
+    return VehiclePublic.model_validate(vehicle)
 
 
-@router.post("/", response_model=Vehicle)
+@router.post("/", response_model=VehiclePublic, status_code=201)
 async def create_vehicle(
     vehicle_in: VehicleIn,
     session: AsyncSession = Depends(get_db),
@@ -46,10 +52,11 @@ async def create_vehicle(
     existing_tag = await get_vehicle_by_tag_svc(session, vehicle_in.id_tag)
     if existing_tag:
         raise HTTPException(status_code=400, detail="Tag already exists")
-    return await create_vehicle_svc(session, vehicle_in)
+    vehicle = await create_vehicle_svc(session, vehicle_in)
+    return VehiclePublic.model_validate(vehicle)
 
 
-@router.patch("/{vehicle_id}", response_model=Vehicle)
+@router.patch("/{vehicle_id}", response_model=VehiclePublic)
 async def update_vehicle(
     vehicle_id: int,
     vehicle_update: VehicleUpdate,
@@ -58,7 +65,7 @@ async def update_vehicle(
     vehicle = await update_vehicle_svc(session, vehicle_id, vehicle_update)
     if not vehicle:
         raise HTTPException(status_code=404, detail="Vehicle not found")
-    return vehicle
+    return VehiclePublic.model_validate(vehicle)
 
 
 @router.delete("/{vehicle_id}", response_model=dict)

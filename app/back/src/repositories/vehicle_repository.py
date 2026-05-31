@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.dto.vehicle import VehicleIn, VehicleUpdate
@@ -33,6 +33,28 @@ class VehicleRepository:
     async def get_all(self) -> list[Vehicle]:
         result = await self.session.execute(select(Vehicle))
         return list(result.scalars().all())
+
+    async def get_paginated(
+        self,
+        page: int = 1,
+        page_size: int = 10,
+        search: str | None = None,
+    ) -> tuple[list[Vehicle], int]:
+        query = select(Vehicle)
+        if search:
+            like = f"%{search}%"
+            query = query.where(
+                Vehicle.license_plate.ilike(like) | Vehicle.model.ilike(like)
+            )
+        total_result = await self.session.execute(
+            select(func.count()).select_from(query.subquery())
+        )
+        total = total_result.scalar_one()
+        offset = (page - 1) * page_size
+        result = await self.session.execute(
+            query.offset(offset).limit(page_size)
+        )
+        return list(result.scalars().all()), total
 
     async def create(self, vehicle_in: VehicleIn) -> Vehicle:
         vehicle = Vehicle(**vehicle_in.model_dump())

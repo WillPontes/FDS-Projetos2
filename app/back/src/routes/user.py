@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.connection import get_db
+from src.dto.user import UserUpdate
 from src.models.user import UserPublic
 from src.repositories.user_repository import UserRepository
 from src.services.user import list_users
@@ -63,3 +64,37 @@ async def create_user(
     await db.commit()
 
     return UserPublic.model_validate(user)
+
+
+@router.patch("/{user_id}", response_model=UserPublic)
+async def update_user(
+    user_id: int,
+    payload: UserUpdate,
+    db: AsyncSession = Depends(get_db),
+) -> UserPublic:
+    repository = UserRepository(db)
+
+    user = await repository.update(
+        id=user_id,
+        name=payload.name,
+        email=payload.email,
+        role=payload.role,
+        organization_id=payload.organization_id,
+    )
+
+    if user is None:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+
+    return UserPublic.model_validate(user)
+
+
+@router.delete("/{user_id}", status_code=204)
+async def delete_user(
+    user_id: int,
+    db: AsyncSession = Depends(get_db),
+) -> None:
+    repository = UserRepository(db)
+    deleted = await repository.delete(user_id)
+
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado.")
