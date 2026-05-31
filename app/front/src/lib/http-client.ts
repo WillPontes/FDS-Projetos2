@@ -1,7 +1,10 @@
 import ky, { isHTTPError } from "ky";
 import { useAuthStore } from "@/features/auth/auth-store";
 
+const apiBaseUrl = import.meta.env.VITE_API_URL?.replace(/\/$/, "");
+
 export const api = ky.create({
+  ...(apiBaseUrl ? { prefixUrl: apiBaseUrl } : {}),
   timeout: false,
   retry: 1,
   hooks: {

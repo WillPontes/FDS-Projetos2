@@ -9,9 +9,10 @@ export const useWebsocketNotification = (userId: number | null) => {
   useEffect(() => {
     if (userId === null) return;
 
-    const wsUrl = import.meta.env.PROD 
-      ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/notifications/ws?user_id=${userId}`
-      : `ws://localhost:8000/api/notifications/ws?user_id=${userId}`;
+    const apiBase = import.meta.env.VITE_API_URL?.replace(/\/$/, "");
+    const wsUrl = apiBase
+      ? `${apiBase.replace(/^http/, "ws")}/api/notifications/ws?user_id=${userId}`
+      : `${window.location.protocol === "https:" ? "wss:" : "ws:"}//${window.location.host}/api/notifications/ws?user_id=${userId}`;
     
     const ws = new WebSocket(wsUrl);
 

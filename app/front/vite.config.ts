@@ -4,11 +4,15 @@ import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { fileURLToPath } from "url";
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, rootDir, "");
+  const apiTarget = env.VITE_API_URL || "http://localhost:8000";
+
+  return {
   plugins: [tanstackRouter(), react(), tailwindcss()],
   resolve: {
     alias: {
@@ -18,7 +22,8 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      "/api": { target: "http://localhost:8000", changeOrigin: true },
+      "/api": { target: apiTarget, changeOrigin: true },
     },
   },
+};
 });

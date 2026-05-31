@@ -6,7 +6,8 @@ export type ExportParams = {
 }
 
 export function buildExportUrl(params: ExportParams = {}): string {
-  const url = new URL("/api/reports/export", window.location.origin)
+  const base = import.meta.env.VITE_API_URL?.replace(/\/$/, "") || window.location.origin
+  const url = new URL("/api/reports/export", base)
   url.searchParams.set("user_id", String(USER_ID))
   if (params.fromDate) url.searchParams.set("from_date", params.fromDate)
   if (params.toDate) url.searchParams.set("to_date", params.toDate)
