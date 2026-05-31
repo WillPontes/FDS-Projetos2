@@ -5,6 +5,7 @@ import { ArrowLeft, Car, DollarSign, Fuel, Leaf, Link2, Ticket, Unlink, Users } 
 import { format } from "date-fns";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { ActionHintPopover } from "@/components/ActionHintPopover";
 import { DataTable, entityIdColumn } from "@/components/DataTable";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { FilterInput } from "@/components/ui/FilterInput";
@@ -55,12 +56,27 @@ const makeVehicleColumns = (
     enableSorting: false,
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
-        <Button asChild variant="outline" size="sm">
-          <Link to="/frota/$id" params={{ id: String(row.original.id) }}>Ver</Link>
-        </Button>
-        <Button variant="outline" size="sm" onClick={() => onUnlink(row.original)}>
-          <Unlink className="h-3 w-3" />
-        </Button>
+        <ActionHintPopover label="Ver detalhes do veículo">
+          <Button asChild variant="outline" size="sm">
+            <Link
+              to="/frota/$id"
+              params={{ id: String(row.original.id) }}
+              aria-label="Ver detalhes do veículo"
+            >
+              Ver
+            </Link>
+          </Button>
+        </ActionHintPopover>
+        <ActionHintPopover label="Desvincular veículo da frota">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onUnlink(row.original)}
+            aria-label="Desvincular veículo da frota"
+          >
+            <Unlink className="h-3 w-3" />
+          </Button>
+        </ActionHintPopover>
       </div>
     ),
   },
@@ -78,9 +94,16 @@ const makeDriverColumns = (
     header: "AÇÕES",
     enableSorting: false,
     cell: ({ row }) => (
-      <Button variant="outline" size="sm" onClick={() => onUnlink(row.original)}>
-        <Unlink className="h-3 w-3" />
-      </Button>
+      <ActionHintPopover label="Desvincular motorista da frota">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onUnlink(row.original)}
+          aria-label="Desvincular motorista da frota"
+        >
+          <Unlink className="h-3 w-3" />
+        </Button>
+      </ActionHintPopover>
     ),
   },
 ];

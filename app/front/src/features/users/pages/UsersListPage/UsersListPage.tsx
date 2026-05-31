@@ -32,6 +32,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ActionHintPopover } from "@/components/ActionHintPopover";
 import { DataTable, entityIdColumn } from "@/components/DataTable";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { PAGE_SIZE } from "@/constants";
@@ -76,12 +77,16 @@ const columns = (onDelete: (user: User) => void, onEdit: (user: User) => void): 
       const user = row.original;
       return (
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => onEdit(user)}>
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button type="button" variant="outline" size="sm" onClick={() => onDelete(user)}>
-            <Trash className="h-4 w-4" />
-          </Button>
+          <ActionHintPopover label="Editar usuário">
+            <Button variant="outline" size="sm" onClick={() => onEdit(user)} aria-label="Editar usuário">
+              <Pencil className="h-4 w-4" />
+            </Button>
+          </ActionHintPopover>
+          <ActionHintPopover label="Excluir usuário">
+            <Button type="button" variant="outline" size="sm" onClick={() => onDelete(user)} aria-label="Excluir usuário">
+              <Trash className="h-4 w-4" />
+            </Button>
+          </ActionHintPopover>
         </div>
       );
     },

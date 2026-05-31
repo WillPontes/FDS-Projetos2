@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Pencil, Plus, Trash } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { ActionHintPopover } from "@/components/ActionHintPopover";
 import { DataTable, entityIdColumn } from "@/components/DataTable";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { FilterInput } from "@/components/ui/FilterInput";
@@ -146,25 +147,37 @@ export const OrganizationsPage = () => {
       enableSorting: false,
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
-          <Button asChild variant="outline" size="sm">
-            <Link to="/organizacoes/$id" params={{ id: String(row.original.id) }}>
-              Ver
-            </Link>
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setEditTarget(row.original)}
-          >
-            <Pencil className="h-3 w-3" />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => deleteMutation.mutate(row.original.id)}
-          >
-            <Trash className="h-3 w-3" />
-          </Button>
+          <ActionHintPopover label="Ver detalhes da organização">
+            <Button asChild variant="outline" size="sm">
+              <Link
+                to="/organizacoes/$id"
+                params={{ id: String(row.original.id) }}
+                aria-label="Ver detalhes da organização"
+              >
+                Ver
+              </Link>
+            </Button>
+          </ActionHintPopover>
+          <ActionHintPopover label="Editar organização">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setEditTarget(row.original)}
+              aria-label="Editar organização"
+            >
+              <Pencil className="h-3 w-3" />
+            </Button>
+          </ActionHintPopover>
+          <ActionHintPopover label="Excluir organização">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => deleteMutation.mutate(row.original.id)}
+              aria-label="Excluir organização"
+            >
+              <Trash className="h-3 w-3" />
+            </Button>
+          </ActionHintPopover>
         </div>
       ),
     },

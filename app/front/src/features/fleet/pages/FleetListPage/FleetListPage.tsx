@@ -14,6 +14,7 @@ import {
 } from "nuqs";
 import { useState } from "react";
 import { toast } from "sonner";
+import { ActionHintPopover } from "@/components/ActionHintPopover";
 import { Button } from "@/components/ui/button";
 import { DataTable, entityIdColumn } from "@/components/DataTable";
 import { FilterInput } from "@/components/ui/FilterInput";
@@ -48,15 +49,27 @@ const VehicleActions = ({
   };
   return (
     <div className="flex items-center gap-2">
-      <Button asChild variant="outline" size="sm">
-        <Link to="/frota/$id" params={{ id: String(vehicle.id) }}>Ver</Link>
-      </Button>
-      <Button variant="outline" size="sm" onClick={() => onEdit(vehicle)}>
-        <Pencil className="h-4 w-4" />
-      </Button>
-      <Button type="button" variant="outline" size="sm" onClick={handleDelete}>
-        <Trash className="h-4 w-4" />
-      </Button>
+      <ActionHintPopover label="Ver detalhes do veículo">
+        <Button asChild variant="outline" size="sm">
+          <Link
+            to="/frota/$id"
+            params={{ id: String(vehicle.id) }}
+            aria-label="Ver detalhes do veículo"
+          >
+            Ver
+          </Link>
+        </Button>
+      </ActionHintPopover>
+      <ActionHintPopover label="Editar veículo">
+        <Button variant="outline" size="sm" onClick={() => onEdit(vehicle)} aria-label="Editar veículo">
+          <Pencil className="h-4 w-4" />
+        </Button>
+      </ActionHintPopover>
+      <ActionHintPopover label="Excluir veículo">
+        <Button type="button" variant="outline" size="sm" onClick={handleDelete} aria-label="Excluir veículo">
+          <Trash className="h-4 w-4" />
+        </Button>
+      </ActionHintPopover>
     </div>
   );
 };

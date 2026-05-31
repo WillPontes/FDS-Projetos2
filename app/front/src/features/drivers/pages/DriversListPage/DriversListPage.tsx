@@ -27,6 +27,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ActionHintPopover } from "@/components/ActionHintPopover";
 import { DataTable, entityIdColumn } from "@/components/DataTable";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { PAGE_SIZE } from "@/constants";
@@ -91,25 +92,33 @@ const columns = (
       const driver = row.original;
       return (
         <div className="flex items-center gap-2">
-          <Button asChild variant="outline" size="sm">
-            <Link
-              to="/motoristas/$id"
-              params={{ id: String(driver.id) }}
+          <ActionHintPopover label="Ver detalhes do motorista">
+            <Button asChild variant="outline" size="sm">
+              <Link
+                to="/motoristas/$id"
+                params={{ id: String(driver.id) }}
+                aria-label="Ver detalhes do motorista"
+              >
+                Ver
+              </Link>
+            </Button>
+          </ActionHintPopover>
+          <ActionHintPopover label="Editar motorista">
+            <Button variant="outline" size="sm" onClick={() => onEdit(driver)} aria-label="Editar motorista">
+              <Pencil className="h-4 w-4" />
+            </Button>
+          </ActionHintPopover>
+          <ActionHintPopover label="Excluir motorista">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => onDelete(driver)}
+              aria-label="Excluir motorista"
             >
-              Ver
-            </Link>
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => onEdit(driver)}>
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => onDelete(driver)}
-          >
-            <Trash className="h-4 w-4" />
-          </Button>
+              <Trash className="h-4 w-4" />
+            </Button>
+          </ActionHintPopover>
         </div>
       );
     },

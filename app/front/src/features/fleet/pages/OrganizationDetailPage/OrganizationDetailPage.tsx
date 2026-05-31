@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { ActionHintPopover } from "@/components/ActionHintPopover";
 import { DataTable, entityIdColumn } from "@/components/DataTable";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { FilterInput } from "@/components/ui/FilterInput";
@@ -56,9 +57,16 @@ const makeUserColumns = (onUnlink: (user: User) => void): ColumnDef<User>[] => [
     header: "AÇÕES",
     enableSorting: false,
     cell: ({ row }) => (
-      <Button variant="outline" size="sm" onClick={() => onUnlink(row.original)}>
-        <Unlink className="h-3 w-3" />
-      </Button>
+      <ActionHintPopover label="Desvincular usuário da organização">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onUnlink(row.original)}
+          aria-label="Desvincular usuário da organização"
+        >
+          <Unlink className="h-3 w-3" />
+        </Button>
+      </ActionHintPopover>
     ),
   },
 ];
