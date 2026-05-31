@@ -7,11 +7,9 @@ import type {
   WeeklyGoal,
 } from "../schemas/sustainability-schema"
 
-const USER_ID = 1
-
-export const getImpactMetrics = async (): Promise<ImpactMetrics> => {
+export const getImpactMetrics = async (userId: number): Promise<ImpactMetrics> => {
   const raw = await api
-    .get("/api/sustainability/impact", { searchParams: { user_id: USER_ID } })
+    .get("/api/sustainability/impact", { searchParams: { user_id: userId } })
     .json<{
       days_saved_without_queues: number
       tree_saved: number
@@ -29,9 +27,9 @@ export const getImpactMetrics = async (): Promise<ImpactMetrics> => {
   }
 }
 
-export const getWeeklyGoal = async (): Promise<WeeklyGoal> => {
+export const getWeeklyGoal = async (userId: number): Promise<WeeklyGoal> => {
   const raw = await api
-    .get("/api/sustainability/goal", { searchParams: { user_id: USER_ID } })
+    .get("/api/sustainability/goal", { searchParams: { user_id: userId } })
     .json<{
       weekly_goal: number
       weekly_percentage: number
@@ -43,9 +41,18 @@ export const getWeeklyGoal = async (): Promise<WeeklyGoal> => {
   }
 }
 
-export const getPassagesSummary = async (): Promise<PassagesSummary> => {
+export const getPassagesSummary = async (
+  userId: number,
+  params?: Pick<GetPassagesParams, "fromDate" | "toDate">,
+): Promise<PassagesSummary> => {
   const raw = await api
-    .get("/api/sustainability/passages/summary", { searchParams: { user_id: USER_ID } })
+    .get("/api/sustainability/passages/summary", {
+      searchParams: {
+        user_id: userId,
+        ...(params?.fromDate && { from_date: params.fromDate }),
+        ...(params?.toDate && { to_date: params.toDate }),
+      },
+    })
     .json<{
       total_passages: number
       total_carbon: number
@@ -59,13 +66,22 @@ export const getPassagesSummary = async (): Promise<PassagesSummary> => {
   }
 }
 
-export const getPassages = async (params: GetPassagesParams = {}): Promise<PassagesList> => {
+export const getPassages = async (
+  userId: number,
+  params: GetPassagesParams = {},
+): Promise<PassagesList> => {
   const page = params.page ?? 1
   const pageSize = params.pageSize ?? 10
 
   const raw = await api
     .get("/api/sustainability/passages", {
-      searchParams: { user_id: USER_ID, page, page_size: pageSize },
+      searchParams: {
+        user_id: userId,
+        page,
+        page_size: pageSize,
+        ...(params.fromDate && { from_date: params.fromDate }),
+        ...(params.toDate && { to_date: params.toDate }),
+      },
     })
     .json<{
       total_results: number

@@ -47,4 +47,6 @@ export type PassagesList = z.infer<typeof passagesListSchema>
 export type GetPassagesParams = {
   page?: number
   pageSize?: number
+  fromDate?: string
+  toDate?: string
 }

@@ -12,6 +12,7 @@ type UseGetUsersFilteredParams = {
   pageSize?: number;
   search?: string;
   role?: UserRole | "all";
+  organizationId?: number | "all";
   sortBy?: string;
   sortOrder?: "asc" | "desc";
 };
@@ -21,6 +22,7 @@ export const useGetUsersFiltered = ({
   pageSize = 10,
   search,
   role = "all",
+  organizationId,
   sortBy,
   sortOrder = "asc",
 }: UseGetUsersFilteredParams = {}) => {
@@ -35,6 +37,10 @@ export const useGetUsersFiltered = ({
       items = items.filter((user) => user.role === role);
     }
 
+    if (organizationId != null && organizationId !== "all") {
+      items = items.filter((user) => user.organization_id === organizationId);
+    }
+
     items = filterBySearch(items, search, (user) => [user.name, user.email]);
 
     items = sortItems(items, sortBy, sortOrder, (user, key) => {
@@ -45,7 +51,7 @@ export const useGetUsersFiltered = ({
     });
 
     return paginateItems(items, page, pageSize);
-  }, [query.data, search, role, sortBy, sortOrder, page, pageSize]);
+  }, [query.data, search, role, organizationId, sortBy, sortOrder, page, pageSize]);
 
   return {
     data,

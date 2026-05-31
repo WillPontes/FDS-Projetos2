@@ -7,15 +7,21 @@ export const vehicleCreateSchema = z.object({
   license_plate: z.string().min(7, "Placa deve ter ao menos 7 caracteres"),
   model: z.string().min(1, "Modelo é obrigatório"),
   fuel_type: fuelTypeEnum,
+  organization_id: z.number().nullable().optional(),
+  fleet_id: z.number().nullable().optional(),
 })
 
-export const vehicleUpdateSchema = vehicleCreateSchema.partial()
+export const vehicleUpdateSchema = vehicleCreateSchema.partial().extend({
+  organization_id: z.number().nullable().optional(),
+  fleet_id: z.number().nullable().optional(),
+})
 
 export const vehicleSchema = z.object({
   id: z.number(),
   id_tag: z.string(),
   user_id: z.number(),
   organization_id: z.number().nullable(),
+  fleet_id: z.number().nullable(),
   assigned_driver_id: z.number().nullable(),
   license_plate: z.string(),
   plate: z.string(),

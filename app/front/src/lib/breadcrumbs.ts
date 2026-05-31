@@ -3,54 +3,118 @@ export type BreadcrumbItem = {
   to: string;
 };
 
+export type BreadcrumbContext = {
+  entityNames?: Record<string, string>;
+};
+
 function normalizePathname(pathname: string): string {
   if (pathname === "/") return "/";
   return pathname.replace(/\/+$/, "") || "/";
 }
 
-function matchDynamic(
-  pathname: string,
-  prefix: string,
-): string | undefined {
+function matchDynamic(pathname: string, prefix: string): string | undefined {
   const normalized = normalizePathname(pathname);
   if (normalized === prefix) return normalized;
   if (normalized.startsWith(`${prefix}/`)) return normalized;
   return undefined;
 }
 
-export function getBreadcrumbs(pathname: string): BreadcrumbItem[] {
+function dynamicIdSegment(path: string, prefix: string): string | undefined {
+  const matched = matchDynamic(path, prefix);
+  if (!matched || matched === prefix) return undefined;
+  const rest = matched.slice(prefix.length + 1);
+  const id = rest.split("/")[0];
+  return id && /^\d+$/.test(id) ? id : undefined;
+}
+
+export function getBreadcrumbs(
+  pathname: string,
+  context?: BreadcrumbContext,
+): BreadcrumbItem[] {
   const path = normalizePathname(pathname);
+  const names = context?.entityNames ?? {};
 
   if (path === "/") {
     return [{ label: "Dashboard", to: "/" }];
   }
 
+  const orgId = dynamicIdSegment(path, "/organizacoes");
+  if (orgId) {
+    const name = names[`org-${orgId}`] ?? `Organização #${orgId}`;
+    if (path.endsWith("/editar")) {
+      return [
+        { label: "Organizações", to: "/organizacoes" },
+        { label: name, to: `/organizacoes/${orgId}` },
+        { label: "Editar", to: path },
+      ];
+    }
+    return [
+      { label: "Organizações", to: "/organizacoes" },
+      { label: name, to: path },
+    ];
+  }
+
+  if (path === "/organizacoes") {
+    return [{ label: "Organizações", to: "/organizacoes" }];
+  }
+
+  const fleetId = dynamicIdSegment(path, "/frotas");
+  if (fleetId) {
+    const name = names[`fleet-${fleetId}`] ?? `Frota #${fleetId}`;
+    return [
+      { label: "Frotas", to: "/frotas" },
+      { label: name, to: path },
+    ];
+  }
+
+  if (path === "/frotas") {
+    return [{ label: "Frotas", to: "/frotas" }];
+  }
+
+  const vehicleId = dynamicIdSegment(path, "/frota");
+  if (vehicleId && !path.includes("/editar") && path !== "/frota/novo") {
+    const name = names[`vehicle-${vehicleId}`] ?? `Veículo #${vehicleId}`;
+    return [
+      { label: "Veículos", to: "/frota" },
+      { label: name, to: path },
+    ];
+  }
+
   if (matchDynamic(path, "/frota/editar")) {
     return [
-      { label: "Frota", to: "/frota" },
+      { label: "Veículos", to: "/frota" },
       { label: "Editar Veículo", to: path },
     ];
   }
 
   if (path === "/frota/novo") {
     return [
-      { label: "Frota", to: "/frota" },
+      { label: "Veículos", to: "/frota" },
       { label: "Cadastrar Veículo", to: "/frota/novo" },
     ];
   }
 
-  if (path === "/frota" || path === "/frota/") {
-    return [{ label: "Frota", to: "/frota" }];
+  if (path === "/frota") {
+    return [{ label: "Veículos", to: "/frota" }];
   }
 
-  if (matchDynamic(path, "/motoristas/editar")) {
+  const driverId = dynamicIdSegment(path, "/motoristas");
+  if (driverId) {
+    const name = names[`driver-${driverId}`] ?? `Motorista #${driverId}`;
+    if (path.includes("/editar")) {
+      return [
+        { label: "Motoristas", to: "/motoristas" },
+        { label: name, to: `/motoristas/${driverId}` },
+        { label: "Editar", to: path },
+      ];
+    }
     return [
       { label: "Motoristas", to: "/motoristas" },
-      { label: "Editar Motorista", to: path },
+      { label: name, to: path },
     ];
   }
 
-  if (path === "/motoristas" || path === "/motoristas/") {
+  if (path === "/motoristas") {
     return [{ label: "Motoristas", to: "/motoristas" }];
   }
 
@@ -61,7 +125,7 @@ export function getBreadcrumbs(pathname: string): BreadcrumbItem[] {
     ];
   }
 
-  if (path === "/usuarios" || path === "/usuarios/") {
+  if (path === "/usuarios") {
     return [{ label: "Usuários", to: "/usuarios" }];
   }
 
@@ -79,7 +143,7 @@ export function getBreadcrumbs(pathname: string): BreadcrumbItem[] {
     ];
   }
 
-  if (path === "/perfil" || path === "/perfil/") {
+  if (path === "/perfil") {
     return [{ label: "Meu Perfil", to: "/perfil" }];
   }
 
@@ -90,7 +154,6 @@ export function getBreadcrumbs(pathname: string): BreadcrumbItem[] {
     "/impacto": { label: "Meu Impacto", to: "/impacto" },
     "/ajuda": { label: "Ajuda e Suporte", to: "/ajuda" },
     "/configuracoes": { label: "Configurações Gerais", to: "/configuracoes" },
-    "/users": { label: "Usuários", to: "/users" },
   };
 
   const single = singleSegmentRoutes[path];

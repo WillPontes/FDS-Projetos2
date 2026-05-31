@@ -14,12 +14,6 @@ import {
 import { useCreateVehicle } from "../../hooks/useCreateVehicle";
 import { VEHICLE_FUEL_OPTIONS } from "../../constants";
 
-const FUEL_OPTIONS = [
-  { label: "Diesel S10", value: "diesel_s10" },
-  { label: "Gasolina C", value: "gasolina_c" },
-  { label: "Etanol", value: "etanol" },
-];
-
 export const CreateVehiclePage = () => {
   const navigate = useNavigate();
   const { mutate, isPending } = useCreateVehicle();
@@ -72,7 +66,7 @@ export const CreateVehiclePage = () => {
             control={form.control}
             name="fuel_type"
             label="Tipo de combustível"
-            options={FUEL_OPTIONS}
+            options={VEHICLE_FUEL_OPTIONS}
           />
           <FormActions>
             <Button

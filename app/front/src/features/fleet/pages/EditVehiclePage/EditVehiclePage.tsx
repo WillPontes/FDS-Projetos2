@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
 import { toast } from "sonner";
@@ -7,19 +7,18 @@ import { Button } from "@/components/ui/button";
 import { ControlledInput } from "@/components/form/ControlledInput";
 import { ControlledSelect } from "@/components/form/ControlledSelect";
 import { FormActions } from "@/components/form/FormActions";
+import { Label } from "@/components/ui/label";
 import { PageLayout } from "@/components/layout/PageLayout";
+import { OrganizationsCombobox } from "../../components/OrganizationsCombobox/OrganizationsCombobox";
 import {
   vehicleUpdateSchema,
   type VehicleUpdateData,
 } from "../../schemas/vehicle-schema";
 import { useGetVehicle } from "../../hooks/useGetVehicle";
 import { useUpdateVehicle } from "../../hooks/useUpdateVehicle";
+import { VEHICLE_FUEL_OPTIONS } from "../../constants";
 
-const FUEL_OPTIONS = [
-  { label: "Diesel S10", value: "diesel_s10" },
-  { label: "Gasolina C", value: "gasolina_c" },
-  { label: "Etanol", value: "etanol" },
-];
+const VALID_FUEL_TYPES = VEHICLE_FUEL_OPTIONS.map((o) => o.value);
 
 export const EditVehiclePage = () => {
   const navigate = useNavigate();
@@ -37,6 +36,7 @@ export const EditVehiclePage = () => {
       license_plate: "",
       model: "",
       fuel_type: "gasolina_c",
+      organization_id: null,
     },
   });
 
@@ -47,7 +47,10 @@ export const EditVehiclePage = () => {
       id_tag: data.id_tag,
       license_plate: data.license_plate,
       model: data.model,
-      fuel_type: data.fuel_type as "diesel_s10" | "gasolina_c" | "etanol",
+      fuel_type: VALID_FUEL_TYPES.includes(data.fuel_type)
+        ? (data.fuel_type as "diesel_s10" | "gasolina_c" | "etanol")
+        : undefined,
+      organization_id: data.organization_id ?? null,
     });
   }, [data, form]);
 
@@ -129,8 +132,22 @@ export const EditVehiclePage = () => {
             control={form.control}
             name="fuel_type"
             label="Tipo de combustível"
-            options={FUEL_OPTIONS}
+            options={VEHICLE_FUEL_OPTIONS}
           />
+          <div className="space-y-1">
+            <Label>Frota</Label>
+            <Controller
+              control={form.control}
+              name="organization_id"
+              render={({ field }) => (
+                <OrganizationsCombobox
+                  value={field.value ?? undefined}
+                  onValueChange={(v) => field.onChange(v ?? null)}
+                  placeholder="Sem frota"
+                />
+              )}
+            />
+          </div>
           <FormActions>
             <Button
               type="button"

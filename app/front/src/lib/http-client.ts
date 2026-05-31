@@ -1,9 +1,18 @@
 import ky, { isHTTPError } from "ky";
+import { useAuthStore } from "@/features/auth/auth-store";
 
 export const api = ky.create({
   timeout: false,
   retry: 1,
   hooks: {
+    beforeRequest: [
+      ({ request }) => {
+        const userId = useAuthStore.getState().user?.id;
+        if (userId != null) {
+          request.headers.set("X-User-Id", String(userId));
+        }
+      },
+    ],
     beforeError: [
       async (state) => {
         const { error } = state

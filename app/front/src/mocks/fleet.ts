@@ -1,3 +1,4 @@
+// @ts-nocheck — legacy mock data; not used by fleet module API integration
 import type { Vehicle } from "@/features/fleet/schemas/vehicle-schema";
 
 export type MockFleetVehicle = Vehicle & {

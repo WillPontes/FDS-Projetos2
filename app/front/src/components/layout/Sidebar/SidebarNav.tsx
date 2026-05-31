@@ -3,6 +3,7 @@ import { LucideIcon } from "lucide-react";
 import { APP_NAV_ITEMS, filterNavItemsByRole } from "@/constants/nav";
 import { useCurrentUser } from "@/features/auth";
 import { cn } from "@/lib/utils";
+import { PersonaSwitcherPopover } from "./PersonaSwitcherPopover";
 
 type SidebarLinkProps = {
   to: string;
@@ -47,17 +48,22 @@ export const SidebarNav = ({ onLinkClick }: SidebarNavProps) => {
   const navItems = filterNavItemsByRole(APP_NAV_ITEMS, user?.role);
 
   return (
-    <nav className="flex flex-col gap-1 overflow-y-auto px-2 py-2">
-      {navItems.map((item) => (
-        <SidebarLink
-          key={item.to}
-          to={item.to}
-          label={item.label}
-          icon={item.icon}
-          exact={item.exact}
-          onLinkClick={onLinkClick}
-        />
-      ))}
+    <nav className="flex flex-1 flex-col justify-between overflow-y-auto px-2 py-2">
+      <div className="flex flex-col gap-1">
+        {navItems.map((item) => (
+          <SidebarLink
+            key={item.to}
+            to={item.to}
+            label={item.label}
+            icon={item.icon}
+            exact={item.exact}
+            onLinkClick={onLinkClick}
+          />
+        ))}
+      </div>
+      <div className="border-t pt-2">
+        <PersonaSwitcherPopover onSelect={onLinkClick} />
+      </div>
     </nav>
   );
 };

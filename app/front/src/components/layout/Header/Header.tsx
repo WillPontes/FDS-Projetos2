@@ -33,8 +33,8 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
         <Logo className="h-8 w-24" />
       </Link>
 
-      <nav className="hidden items-center gap-1.5 text-sm md:flex">
-        <Link to="/" className="text-muted-foreground hover:text-foreground">
+      <nav className="flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto text-sm md:max-w-[60%]">
+        <Link to="/" className="shrink-0 text-muted-foreground hover:text-foreground">
           Início
         </Link>
         {crumbs.map((crumb, i) => (
