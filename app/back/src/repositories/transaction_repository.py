@@ -23,15 +23,99 @@ class TransactionRepository:
 
         return list(result.scalars().all())
 
+    async def get_by_organization_paginated(
+        self,
+        organization_id: int,
+        page: int = 1,
+        page_size: int = 10,
+        context: str | None = None,
+        uf: str | None = None,
+        from_date: date | None = None,
+        to_date: date | None = None,
+    ) -> tuple[list[Transaction], int]:
+        query = select(Transaction).where(Transaction.organization_id == organization_id)
+        if context:
+            query = query.where(Transaction.context == context)
+        if uf:
+            query = query.where(Transaction.uf == uf)
+        if from_date:
+            query = query.where(Transaction.created_at >= from_date)
+        if to_date:
+            query = query.where(Transaction.created_at <= to_date)
+        total_result = await self.session.execute(
+            select(func.count()).select_from(query.subquery())
+        )
+        total = total_result.scalar_one()
+        offset = (page - 1) * page_size
+        result = await self.session.execute(
+            query.order_by(Transaction.created_at.desc()).offset(offset).limit(page_size)
+        )
+        return list(result.scalars().all()), total
+
     async def get_by_user_paginated(
         self,
         user_id: int,
         page: int = 1,
         page_size: int = 10,
+        plate: str | None = None,
+        context: str | None = None,
+        uf: str | None = None,
         from_date: date | None = None,
         to_date: date | None = None,
     ) -> tuple[list[Transaction], int]:
         query = select(Transaction).where(Transaction.user_id == user_id)
+        if plate:
+            query = query.where(Transaction.plate.ilike(f"%{plate}%"))
+        if context:
+            query = query.where(Transaction.context == context)
+        if uf:
+            query = query.where(Transaction.uf == uf)
+        if from_date:
+            query = query.where(Transaction.created_at >= from_date)
+        if to_date:
+            query = query.where(Transaction.created_at <= to_date)
+        total_result = await self.session.execute(
+            select(func.count()).select_from(query.subquery())
+        )
+        total = total_result.scalar_one()
+        offset = (page - 1) * page_size
+        result = await self.session.execute(
+            query.order_by(Transaction.created_at.desc()).offset(offset).limit(page_size)
+        )
+        return list(result.scalars().all()), total
+
+    async def get_by_vehicle_ids_paginated(
+        self,
+        vehicle_ids: list[int],
+        page: int = 1,
+        page_size: int = 10,
+    ) -> tuple[list[Transaction], int]:
+        query = select(Transaction).where(Transaction.vehicle_id.in_(vehicle_ids))
+        total_result = await self.session.execute(
+            select(func.count()).select_from(query.subquery())
+        )
+        total = total_result.scalar_one()
+        offset = (page - 1) * page_size
+        result = await self.session.execute(
+            query.order_by(Transaction.created_at.desc()).offset(offset).limit(page_size)
+        )
+        return list(result.scalars().all()), total
+
+    async def get_by_vehicle_paginated(
+        self,
+        vehicle_id: int,
+        page: int = 1,
+        page_size: int = 10,
+        context: str | None = None,
+        uf: str | None = None,
+        from_date: date | None = None,
+        to_date: date | None = None,
+    ) -> tuple[list[Transaction], int]:
+        query = select(Transaction).where(Transaction.vehicle_id == vehicle_id)
+        if context:
+            query = query.where(Transaction.context == context)
+        if uf:
+            query = query.where(Transaction.uf == uf)
         if from_date:
             query = query.where(Transaction.created_at >= from_date)
         if to_date:

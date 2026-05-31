@@ -15,6 +15,10 @@ class Vehicle(SQLModel, table=True):
         default=None,
         foreign_key="organizations.id",
     )
+    fleet_id: int | None = Field(
+        default=None,
+        foreign_key="fleets.id",
+    )
     assigned_driver_id: int | None = Field(
         default=None,
         foreign_key="users.id",
@@ -31,6 +35,7 @@ class VehiclePublic(SQLModel):
     id_tag: str
     user_id: int
     organization_id: int | None
+    fleet_id: int | None = None
     assigned_driver_id: int | None
     license_plate: str
     plate: str = ""
