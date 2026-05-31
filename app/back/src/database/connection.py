@@ -8,12 +8,16 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlmodel import SQLModel
 
+from src.database.url import normalize_async_database_url
+
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if not DATABASE_URL:
     raise RuntimeError("DATABASE_URL não foi definida no arquivo .env")
+
+DATABASE_URL = normalize_async_database_url(DATABASE_URL)
 
 engine = create_async_engine(
     DATABASE_URL,
