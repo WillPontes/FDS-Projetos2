@@ -30,7 +30,7 @@ export const EditVehiclePage = () => {
   const { mutate, isPending } = useUpdateVehicle();
 
   const form = useForm<VehicleUpdateData>({
-    resolver: zodResolver(vehicleUpdateSchema),
+    resolver: zodResolver(vehicleUpdateSchema as any),
     defaultValues: {
       id_tag: "",
       license_plate: "",

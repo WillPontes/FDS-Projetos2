@@ -3,7 +3,12 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { ControlledInput } from "@/components/form/ControlledInput";
 import { ControlledSelect } from "@/components/form/ControlledSelect";
@@ -11,7 +16,11 @@ import { FleetsCombobox } from "../FleetsCombobox/FleetsCombobox";
 import { VEHICLE_FUEL_OPTIONS } from "../../constants";
 import { useCreateVehicle } from "../../hooks/useCreateVehicle";
 import { useUpdateVehicle } from "../../hooks/useUpdateVehicle";
-import { vehicleUpdateSchema, type VehicleUpdateData, type Vehicle } from "../../schemas/vehicle-schema";
+import {
+  vehicleUpdateSchema,
+  type VehicleUpdateData,
+  type Vehicle,
+} from "../../schemas/vehicle-schema";
 
 const VALID_FUEL = ["diesel_s10", "gasolina_c", "etanol"] as const;
 
@@ -36,7 +45,7 @@ export const VehicleFormDialog = ({
   const isPending = isCreating || isUpdating;
 
   const form = useForm<VehicleUpdateData>({
-    resolver: zodResolver(vehicleUpdateSchema),
+    resolver: zodResolver(vehicleUpdateSchema as any),
     defaultValues: {
       id_tag: "",
       license_plate: "",
@@ -54,8 +63,10 @@ export const VehicleFormDialog = ({
         id_tag: vehicle.id_tag,
         license_plate: vehicle.license_plate,
         model: vehicle.model,
-        fuel_type: VALID_FUEL.includes(vehicle.fuel_type as typeof VALID_FUEL[number])
-          ? (vehicle.fuel_type as typeof VALID_FUEL[number])
+        fuel_type: VALID_FUEL.includes(
+          vehicle.fuel_type as (typeof VALID_FUEL)[number],
+        )
+          ? (vehicle.fuel_type as (typeof VALID_FUEL)[number])
           : "gasolina_c",
         fleet_id: vehicle.fleet_id ?? null,
         organization_id: vehicle.organization_id ?? null,
@@ -77,32 +88,51 @@ export const VehicleFormDialog = ({
       updateVehicle(
         { id: vehicle!.id, data },
         {
-          onSuccess: () => { toast.success("Veículo atualizado."); onClose(); },
+          onSuccess: () => {
+            toast.success("Veículo atualizado.");
+            onClose();
+          },
           onError: () => toast.error("Erro ao atualizar veículo."),
         },
       );
     } else {
-      if (!data.id_tag || !data.license_plate || !data.model || !data.fuel_type) {
+      if (
+        !data.id_tag ||
+        !data.license_plate ||
+        !data.model ||
+        !data.fuel_type
+      ) {
         toast.error("Preencha todos os campos obrigatórios.");
         return;
       }
       createVehicle(
-        data as VehicleUpdateData & { id_tag: string; license_plate: string; model: string; fuel_type: string },
+        data as VehicleUpdateData & {
+          id_tag: string;
+          license_plate: string;
+          model: string;
+          fuel_type: string;
+        },
         {
-          onSuccess: () => { toast.success("Veículo cadastrado."); onClose(); },
+          onSuccess: () => {
+            toast.success("Veículo cadastrado.");
+            onClose();
+          },
           onError: () => toast.error("Erro ao cadastrar veículo."),
         },
       );
     }
   });
 
-  const orgIdForFleet = form.watch("organization_id") ?? defaultOrganizationId ?? undefined;
+  const orgIdForFleet =
+    form.watch("organization_id") ?? defaultOrganizationId ?? undefined;
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Editar Veículo" : "Cadastrar Veículo"}</DialogTitle>
+          <DialogTitle>
+            {isEdit ? "Editar Veículo" : "Cadastrar Veículo"}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={onSubmit} className="space-y-4">
           <ControlledInput
@@ -145,7 +175,12 @@ export const VehicleFormDialog = ({
             />
           </div>
           <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="outline" onClick={onClose} disabled={isPending}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              disabled={isPending}
+            >
               Cancelar
             </Button>
             <Button type="submit" disabled={isPending}>
