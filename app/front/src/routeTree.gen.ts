@@ -18,12 +18,18 @@ import { Route as AjudaRouteImport } from './routes/ajuda'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UsuariosIndexRouteImport } from './routes/usuarios/index'
 import { Route as PerfilIndexRouteImport } from './routes/perfil/index'
+import { Route as OrganizacoesIndexRouteImport } from './routes/organizacoes/index'
 import { Route as MotoristasIndexRouteImport } from './routes/motoristas/index'
+import { Route as FrotasIndexRouteImport } from './routes/frotas/index'
 import { Route as FrotaIndexRouteImport } from './routes/frota/index'
 import { Route as ConfiguracoesIndexRouteImport } from './routes/configuracoes/index'
 import { Route as PerfilVeiculoRouteImport } from './routes/perfil/veiculo'
 import { Route as PerfilNotificacoesRouteImport } from './routes/perfil/notificacoes'
+import { Route as OrganizacoesIdRouteImport } from './routes/organizacoes/$id'
+import { Route as MotoristasIdRouteImport } from './routes/motoristas/$id'
+import { Route as FrotasFleetIdRouteImport } from './routes/frotas/$fleetId'
 import { Route as FrotaNovoRouteImport } from './routes/frota/novo'
+import { Route as FrotaIdRouteImport } from './routes/frota/$id'
 import { Route as UsuariosEditarIdRouteImport } from './routes/usuarios/editar.$id'
 import { Route as MotoristasEditarIdRouteImport } from './routes/motoristas/editar.$id'
 import { Route as FrotaEditarIdRouteImport } from './routes/frota/editar.$id'
@@ -73,9 +79,19 @@ const PerfilIndexRoute = PerfilIndexRouteImport.update({
   path: '/perfil/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrganizacoesIndexRoute = OrganizacoesIndexRouteImport.update({
+  id: '/organizacoes/',
+  path: '/organizacoes/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MotoristasIndexRoute = MotoristasIndexRouteImport.update({
   id: '/motoristas/',
   path: '/motoristas/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FrotasIndexRoute = FrotasIndexRouteImport.update({
+  id: '/frotas/',
+  path: '/frotas/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FrotaIndexRoute = FrotaIndexRouteImport.update({
@@ -98,9 +114,29 @@ const PerfilNotificacoesRoute = PerfilNotificacoesRouteImport.update({
   path: '/perfil/notificacoes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrganizacoesIdRoute = OrganizacoesIdRouteImport.update({
+  id: '/organizacoes/$id',
+  path: '/organizacoes/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MotoristasIdRoute = MotoristasIdRouteImport.update({
+  id: '/motoristas/$id',
+  path: '/motoristas/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FrotasFleetIdRoute = FrotasFleetIdRouteImport.update({
+  id: '/frotas/$fleetId',
+  path: '/frotas/$fleetId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FrotaNovoRoute = FrotaNovoRouteImport.update({
   id: '/frota/novo',
   path: '/frota/novo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FrotaIdRoute = FrotaIdRouteImport.update({
+  id: '/frota/$id',
+  path: '/frota/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const UsuariosEditarIdRoute = UsuariosEditarIdRouteImport.update({
@@ -127,12 +163,18 @@ export interface FileRoutesByFullPath {
   '/relatorios': typeof RelatoriosRoute
   '/rota': typeof RotaRoute
   '/users': typeof UsersRoute
+  '/frota/$id': typeof FrotaIdRoute
   '/frota/novo': typeof FrotaNovoRoute
+  '/frotas/$fleetId': typeof FrotasFleetIdRoute
+  '/motoristas/$id': typeof MotoristasIdRoute
+  '/organizacoes/$id': typeof OrganizacoesIdRoute
   '/perfil/notificacoes': typeof PerfilNotificacoesRoute
   '/perfil/veiculo': typeof PerfilVeiculoRoute
   '/configuracoes/': typeof ConfiguracoesIndexRoute
   '/frota/': typeof FrotaIndexRoute
+  '/frotas/': typeof FrotasIndexRoute
   '/motoristas/': typeof MotoristasIndexRoute
+  '/organizacoes/': typeof OrganizacoesIndexRoute
   '/perfil/': typeof PerfilIndexRoute
   '/usuarios/': typeof UsuariosIndexRoute
   '/frota/editar/$id': typeof FrotaEditarIdRoute
@@ -147,12 +189,18 @@ export interface FileRoutesByTo {
   '/relatorios': typeof RelatoriosRoute
   '/rota': typeof RotaRoute
   '/users': typeof UsersRoute
+  '/frota/$id': typeof FrotaIdRoute
   '/frota/novo': typeof FrotaNovoRoute
+  '/frotas/$fleetId': typeof FrotasFleetIdRoute
+  '/motoristas/$id': typeof MotoristasIdRoute
+  '/organizacoes/$id': typeof OrganizacoesIdRoute
   '/perfil/notificacoes': typeof PerfilNotificacoesRoute
   '/perfil/veiculo': typeof PerfilVeiculoRoute
   '/configuracoes': typeof ConfiguracoesIndexRoute
   '/frota': typeof FrotaIndexRoute
+  '/frotas': typeof FrotasIndexRoute
   '/motoristas': typeof MotoristasIndexRoute
+  '/organizacoes': typeof OrganizacoesIndexRoute
   '/perfil': typeof PerfilIndexRoute
   '/usuarios': typeof UsuariosIndexRoute
   '/frota/editar/$id': typeof FrotaEditarIdRoute
@@ -168,12 +216,18 @@ export interface FileRoutesById {
   '/relatorios': typeof RelatoriosRoute
   '/rota': typeof RotaRoute
   '/users': typeof UsersRoute
+  '/frota/$id': typeof FrotaIdRoute
   '/frota/novo': typeof FrotaNovoRoute
+  '/frotas/$fleetId': typeof FrotasFleetIdRoute
+  '/motoristas/$id': typeof MotoristasIdRoute
+  '/organizacoes/$id': typeof OrganizacoesIdRoute
   '/perfil/notificacoes': typeof PerfilNotificacoesRoute
   '/perfil/veiculo': typeof PerfilVeiculoRoute
   '/configuracoes/': typeof ConfiguracoesIndexRoute
   '/frota/': typeof FrotaIndexRoute
+  '/frotas/': typeof FrotasIndexRoute
   '/motoristas/': typeof MotoristasIndexRoute
+  '/organizacoes/': typeof OrganizacoesIndexRoute
   '/perfil/': typeof PerfilIndexRoute
   '/usuarios/': typeof UsuariosIndexRoute
   '/frota/editar/$id': typeof FrotaEditarIdRoute
@@ -190,12 +244,18 @@ export interface FileRouteTypes {
     | '/relatorios'
     | '/rota'
     | '/users'
+    | '/frota/$id'
     | '/frota/novo'
+    | '/frotas/$fleetId'
+    | '/motoristas/$id'
+    | '/organizacoes/$id'
     | '/perfil/notificacoes'
     | '/perfil/veiculo'
     | '/configuracoes/'
     | '/frota/'
+    | '/frotas/'
     | '/motoristas/'
+    | '/organizacoes/'
     | '/perfil/'
     | '/usuarios/'
     | '/frota/editar/$id'
@@ -210,12 +270,18 @@ export interface FileRouteTypes {
     | '/relatorios'
     | '/rota'
     | '/users'
+    | '/frota/$id'
     | '/frota/novo'
+    | '/frotas/$fleetId'
+    | '/motoristas/$id'
+    | '/organizacoes/$id'
     | '/perfil/notificacoes'
     | '/perfil/veiculo'
     | '/configuracoes'
     | '/frota'
+    | '/frotas'
     | '/motoristas'
+    | '/organizacoes'
     | '/perfil'
     | '/usuarios'
     | '/frota/editar/$id'
@@ -230,12 +296,18 @@ export interface FileRouteTypes {
     | '/relatorios'
     | '/rota'
     | '/users'
+    | '/frota/$id'
     | '/frota/novo'
+    | '/frotas/$fleetId'
+    | '/motoristas/$id'
+    | '/organizacoes/$id'
     | '/perfil/notificacoes'
     | '/perfil/veiculo'
     | '/configuracoes/'
     | '/frota/'
+    | '/frotas/'
     | '/motoristas/'
+    | '/organizacoes/'
     | '/perfil/'
     | '/usuarios/'
     | '/frota/editar/$id'
@@ -251,12 +323,18 @@ export interface RootRouteChildren {
   RelatoriosRoute: typeof RelatoriosRoute
   RotaRoute: typeof RotaRoute
   UsersRoute: typeof UsersRoute
+  FrotaIdRoute: typeof FrotaIdRoute
   FrotaNovoRoute: typeof FrotaNovoRoute
+  FrotasFleetIdRoute: typeof FrotasFleetIdRoute
+  MotoristasIdRoute: typeof MotoristasIdRoute
+  OrganizacoesIdRoute: typeof OrganizacoesIdRoute
   PerfilNotificacoesRoute: typeof PerfilNotificacoesRoute
   PerfilVeiculoRoute: typeof PerfilVeiculoRoute
   ConfiguracoesIndexRoute: typeof ConfiguracoesIndexRoute
   FrotaIndexRoute: typeof FrotaIndexRoute
+  FrotasIndexRoute: typeof FrotasIndexRoute
   MotoristasIndexRoute: typeof MotoristasIndexRoute
+  OrganizacoesIndexRoute: typeof OrganizacoesIndexRoute
   PerfilIndexRoute: typeof PerfilIndexRoute
   UsuariosIndexRoute: typeof UsuariosIndexRoute
   FrotaEditarIdRoute: typeof FrotaEditarIdRoute
@@ -329,11 +407,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PerfilIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/organizacoes/': {
+      id: '/organizacoes/'
+      path: '/organizacoes'
+      fullPath: '/organizacoes/'
+      preLoaderRoute: typeof OrganizacoesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/motoristas/': {
       id: '/motoristas/'
       path: '/motoristas'
       fullPath: '/motoristas/'
       preLoaderRoute: typeof MotoristasIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/frotas/': {
+      id: '/frotas/'
+      path: '/frotas'
+      fullPath: '/frotas/'
+      preLoaderRoute: typeof FrotasIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/frota/': {
@@ -364,11 +456,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PerfilNotificacoesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/organizacoes/$id': {
+      id: '/organizacoes/$id'
+      path: '/organizacoes/$id'
+      fullPath: '/organizacoes/$id'
+      preLoaderRoute: typeof OrganizacoesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/motoristas/$id': {
+      id: '/motoristas/$id'
+      path: '/motoristas/$id'
+      fullPath: '/motoristas/$id'
+      preLoaderRoute: typeof MotoristasIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/frotas/$fleetId': {
+      id: '/frotas/$fleetId'
+      path: '/frotas/$fleetId'
+      fullPath: '/frotas/$fleetId'
+      preLoaderRoute: typeof FrotasFleetIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/frota/novo': {
       id: '/frota/novo'
       path: '/frota/novo'
       fullPath: '/frota/novo'
       preLoaderRoute: typeof FrotaNovoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/frota/$id': {
+      id: '/frota/$id'
+      path: '/frota/$id'
+      fullPath: '/frota/$id'
+      preLoaderRoute: typeof FrotaIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/usuarios/editar/$id': {
@@ -403,12 +523,18 @@ const rootRouteChildren: RootRouteChildren = {
   RelatoriosRoute: RelatoriosRoute,
   RotaRoute: RotaRoute,
   UsersRoute: UsersRoute,
+  FrotaIdRoute: FrotaIdRoute,
   FrotaNovoRoute: FrotaNovoRoute,
+  FrotasFleetIdRoute: FrotasFleetIdRoute,
+  MotoristasIdRoute: MotoristasIdRoute,
+  OrganizacoesIdRoute: OrganizacoesIdRoute,
   PerfilNotificacoesRoute: PerfilNotificacoesRoute,
   PerfilVeiculoRoute: PerfilVeiculoRoute,
   ConfiguracoesIndexRoute: ConfiguracoesIndexRoute,
   FrotaIndexRoute: FrotaIndexRoute,
+  FrotasIndexRoute: FrotasIndexRoute,
   MotoristasIndexRoute: MotoristasIndexRoute,
+  OrganizacoesIndexRoute: OrganizacoesIndexRoute,
   PerfilIndexRoute: PerfilIndexRoute,
   UsuariosIndexRoute: UsuariosIndexRoute,
   FrotaEditarIdRoute: FrotaEditarIdRoute,

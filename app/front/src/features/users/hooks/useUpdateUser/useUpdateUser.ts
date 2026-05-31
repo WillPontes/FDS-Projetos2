@@ -1,8 +1,28 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { updateUser, deleteUser } from "../../api/requests";
+import { createUser, updateUser, deleteUser } from "../../api/requests";
 import { userQueryKeys } from "../../api/query-keys";
 import type { UpdateUserPayload, User } from "../../api/types";
+
+export const useCreateUser = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: {
+      name: string;
+      email: string;
+      role?: string;
+      organization_id?: number | null;
+    }) => createUser(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: userQueryKeys.all });
+      toast.success("Usuário criado com sucesso!");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Erro ao criar usuário.");
+    },
+  });
+};
 
 export const useUpdateUser = () => {
   const queryClient = useQueryClient();

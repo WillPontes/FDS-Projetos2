@@ -1,11 +1,13 @@
-import { Link, Navigate } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { Navigate } from "@tanstack/react-router";
+import { UserFormDialog } from "../../components/UserFormDialog/UserFormDialog";
 import type {
   ColumnDef,
   OnChangeFn,
   PaginationState,
   SortingState,
 } from "@tanstack/react-table";
-import { Pencil, Trash } from "lucide-react";
+import { Pencil, Plus, Trash } from "lucide-react";
 import { useState } from "react";
 import {
   parseAsInteger,
@@ -30,16 +32,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DataTable } from "@/components/DataTable";
+import { DataTable, entityIdColumn } from "@/components/DataTable";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { PAGE_SIZE } from "@/constants";
 import { useCurrentUser } from "@/features/auth";
+import { getOrganizations } from "@/features/fleet/api/requests";
 import type { User } from "../../api/types";
 import { USER_ROLE_LABELS, USER_ROLE_OPTIONS } from "../../constants";
 import { useGetUsersFiltered } from "../../hooks/useGetUsersFiltered";
 import { useDeleteUser } from "../../hooks/useUpdateUser";
 
-const columns = (onDelete: (user: User) => void): ColumnDef<User>[] => [
+const columns = (onDelete: (user: User) => void, onEdit: (user: User) => void): ColumnDef<User>[] => [
+  entityIdColumn<User>(),
   {
     accessorKey: "name",
     header: "Nome",
@@ -72,17 +76,10 @@ const columns = (onDelete: (user: User) => void): ColumnDef<User>[] => [
       const user = row.original;
       return (
         <div className="flex items-center gap-2">
-          <Button asChild variant="outline" size="sm">
-            <Link to="/usuarios/editar/$id" params={{ id: String(user.id) }}>
-              <Pencil className="h-4 w-4" />
-            </Link>
+          <Button variant="outline" size="sm" onClick={() => onEdit(user)}>
+            <Pencil className="h-4 w-4" />
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => onDelete(user)}
-          >
+          <Button type="button" variant="outline" size="sm" onClick={() => onDelete(user)}>
             <Trash className="h-4 w-4" />
           </Button>
         </div>
@@ -102,15 +99,19 @@ const usersSearchParams = {
     "gestor_frota",
     "admin",
   ] as const).withDefault("all"),
+  org: parseAsInteger,
 };
 
 export const UsersListPage = () => {
   const { user, isAuthenticated } = useCurrentUser();
-  const [{ page, sort, order, search, role }, setParams] = useQueryStates(
+  const { data: orgs } = useQuery({ queryKey: ["organizations"], queryFn: getOrganizations });
+  const [{ page, sort, order, search, role, org }, setParams] = useQueryStates(
     usersSearchParams,
     { history: "replace" },
   );
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
+  const [userToEdit, setUserToEdit] = useState<User | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
   const { mutate: deleteUser, isPending: isDeleting } = useDeleteUser();
 
   const pagination: PaginationState = {
@@ -126,6 +127,7 @@ export const UsersListPage = () => {
     pageSize: PAGE_SIZE,
     search: search ?? undefined,
     role,
+    organizationId: org ?? "all",
     sortBy: sort ?? undefined,
     sortOrder: order,
   });
@@ -187,13 +189,10 @@ export const UsersListPage = () => {
             <Select
               value={role}
               onValueChange={(value) =>
-                setParams({
-                  role: value as typeof role,
-                  page: 1,
-                })
+                setParams({ role: value as typeof role, page: 1 })
               }
             >
-              <SelectTrigger className="w-full md:w-48">
+              <SelectTrigger className="w-full md:w-44">
                 <SelectValue placeholder="Filtrar por perfil" />
               </SelectTrigger>
               <SelectContent>
@@ -204,10 +203,32 @@ export const UsersListPage = () => {
                 ))}
               </SelectContent>
             </Select>
+            <Select
+              value={org != null ? String(org) : "all"}
+              onValueChange={(v) =>
+                setParams({ org: v === "all" ? null : Number(v), page: 1 })
+              }
+            >
+              <SelectTrigger className="w-full md:w-44">
+                <SelectValue placeholder="Todas as organizações" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas as organizações</SelectItem>
+                {orgs?.map((o) => (
+                  <SelectItem key={o.id} value={String(o.id)}>
+                    {o.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button onClick={() => setCreateOpen(true)} className="shrink-0">
+              <Plus className="mr-1 h-4 w-4" />
+              Novo Usuário
+            </Button>
           </section>
 
           <DataTable
-            columns={columns(setUserToDelete)}
+            columns={columns(setUserToDelete, setUserToEdit)}
             data={data?.items ?? []}
             isLoading={isLoading}
             pageCount={pageCount}
@@ -218,6 +239,19 @@ export const UsersListPage = () => {
           />
         </>
       )}
+
+      {userToEdit && (
+        <UserFormDialog
+          open={!!userToEdit}
+          onClose={() => setUserToEdit(null)}
+          user={userToEdit}
+        />
+      )}
+
+      <UserFormDialog
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+      />
 
       <Dialog
         open={userToDelete != null}

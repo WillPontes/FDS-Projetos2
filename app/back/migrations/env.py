@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from sqlalchemy.pool import NullPool
 from sqlmodel import SQLModel
 
+from src.models.fleet import Fleet, FleetUser  # noqa: F401
 from src.models.fuel_prices import FuelPriceByUF  # noqa: F401
 from src.models.organization import Organization  # noqa: F401
 from src.models.technical_specs import TechnicalSpecs  # noqa: F401

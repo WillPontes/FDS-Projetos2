@@ -28,6 +28,7 @@ class UserRepository:
         self,
         role: UserRole | None = None,
         organization_id: int | None = None,
+        search: str | None = None,
     ) -> list[User]:
         query = select(User)
 
@@ -38,6 +39,9 @@ class UserRepository:
             query = query.where(
                 User.organization_id == organization_id
             )
+
+        if search:
+            query = query.where(User.name.ilike(f"%{search}%"))
 
         result = await self.session.execute(query)
 
@@ -69,6 +73,7 @@ class UserRepository:
         email: str | None = None,
         role: UserRole | None = None,
         organization_id: int | None = None,
+        set_organization_id: bool = False,
     ) -> Optional[User]:
         user = await self.get_by_id(id)
 
@@ -84,7 +89,7 @@ class UserRepository:
         if role is not None:
             user.role = role
 
-        if organization_id is not None:
+        if set_organization_id:
             user.organization_id = organization_id
 
         await self.session.flush()

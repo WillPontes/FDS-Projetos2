@@ -15,13 +15,14 @@ import {
 import type { DateRange } from "react-day-picker";
 import { Download } from "lucide-react";
 
-import { DataTable } from "@/components/DataTable";
+import { DataTable, entityIdColumn } from "@/components/DataTable";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
 import { PAGE_SIZE } from "@/constants";
 import { DashboardDateRangePicker } from "@/features/dashboard/pages/DashboardPage/components/DashboardDateRangePicker";
 import { DashboardFuelSelect } from "@/features/dashboard/pages/DashboardPage/components/DashboardFuelSelect";
 import { useGetVehicles } from "@/features/fleet/hooks/useGetVehicles";
+import { OrganizationsCombobox } from "@/features/fleet/components/OrganizationsCombobox/OrganizationsCombobox";
 import type { Vehicle } from "@/features/fleet/schemas/vehicle-schema";
 import { DEFAULT_REGION } from "@/features/reports/constants";
 import { buildExportUrl } from "../../api/requests";
@@ -31,35 +32,22 @@ type ReportFilters = {
   dateRange: DateRange | undefined;
   fuelType: string | undefined;
   region: string;
+  organizationId: number | undefined;
 };
 
 const defaultFilters: ReportFilters = {
   dateRange: undefined,
   fuelType: undefined,
   region: DEFAULT_REGION,
+  organizationId: undefined,
 };
 
 const columns: ColumnDef<Vehicle>[] = [
-  {
-    accessorKey: "id_tag",
-    header: "SÉRIE DA TAG",
-    enableSorting: true,
-  },
-  {
-    accessorKey: "license_plate",
-    header: "PLACA VINCULADA",
-    enableSorting: true,
-  },
-  {
-    accessorKey: "model",
-    header: "MODELO DO VEÍCULO",
-    enableSorting: true,
-  },
-  {
-    accessorKey: "fuel_type",
-    header: "TIPO DE COMBUSTÍVEL",
-    enableSorting: true,
-  },
+  entityIdColumn<Vehicle>(),
+  { accessorKey: "id_tag", header: "SÉRIE DA TAG", enableSorting: true },
+  { accessorKey: "license_plate", header: "PLACA VINCULADA", enableSorting: true },
+  { accessorKey: "model", header: "MODELO DO VEÍCULO", enableSorting: true },
+  { accessorKey: "fuel_type", header: "TIPO DE COMBUSTÍVEL", enableSorting: true },
 ];
 
 const reportsSearchParams = {
@@ -84,7 +72,11 @@ export const ReportsPage = () => {
   const pagination: PaginationState = { pageIndex: page - 1, pageSize: PAGE_SIZE };
   const sorting: SortingState = sort ? [{ id: sort, desc: order === "desc" }] : [];
 
-  const { data, isLoading } = useGetVehicles({ page, pageSize: PAGE_SIZE });
+  const { data, isLoading } = useGetVehicles({
+    page,
+    pageSize: PAGE_SIZE,
+    organizationId: appliedFilters.organizationId,
+  });
 
   const filteredItems = useMemo(
     () => filterVehicles(data?.items ?? [], appliedFilters.fuelType),
@@ -127,7 +119,7 @@ export const ReportsPage = () => {
   return (
     <PageLayout
       title="Relatórios"
-      description="Gere relatórios de veículos com filtros por período, combustível e região."
+      description="Gere relatórios de veículos com filtros por período, combustível, frota e região."
     >
       <section className="space-y-4 rounded border border-neutral-300 bg-white p-4">
         <h2 className="font-semibold">Gerar relatórios</h2>
@@ -150,6 +142,12 @@ export const ReportsPage = () => {
               value={draftFilters.region}
               onValueChange={(region) =>
                 setDraftFilters((prev) => ({ ...prev, region }))
+              }
+            />
+            <OrganizationsCombobox
+              value={draftFilters.organizationId}
+              onValueChange={(v) =>
+                setDraftFilters((prev) => ({ ...prev, organizationId: v }))
               }
             />
           </div>

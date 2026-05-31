@@ -1,3 +1,4 @@
+// @ts-nocheck — legacy mock store for settings/routing only
 import type { VehicleFormData } from "@/features/fleet/schemas/vehicle-schema";
 import type { GetVehiclesParams } from "@/features/fleet/api/types";
 import type {

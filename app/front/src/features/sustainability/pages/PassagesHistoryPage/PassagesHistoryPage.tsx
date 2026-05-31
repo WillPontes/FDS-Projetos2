@@ -1,6 +1,10 @@
+import { useMemo, useState } from "react";
+import { format } from "date-fns";
+import type { DateRange } from "react-day-picker";
 import { EmptyState } from "@/components/EmptyState";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DashboardDateRangePicker } from "@/features/dashboard/pages/DashboardPage/components/DashboardDateRangePicker";
 import { MetricCard } from "@/features/sustainability/components/MetricCard";
 import { PassageListItem } from "@/features/sustainability/components/PassageListItem";
 import { StatCard } from "@/features/sustainability/components/StatCard";
@@ -8,8 +12,22 @@ import { useGetPassages } from "../../hooks/useGetPassages";
 import { useGetPassagesSummary } from "../../hooks/useGetPassagesSummary";
 
 export const PassagesHistoryPage = () => {
-  const { data: summary, isLoading: summaryLoading } = useGetPassagesSummary();
-  const { data: passagesData, isLoading: passagesLoading } = useGetPassages();
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+
+  const dateParams = useMemo(
+    () => ({
+      fromDate: dateRange?.from ? format(dateRange.from, "yyyy-MM-dd") : undefined,
+      toDate: dateRange?.to ? format(dateRange.to, "yyyy-MM-dd") : undefined,
+    }),
+    [dateRange],
+  );
+
+  const { data: summary, isLoading: summaryLoading } = useGetPassagesSummary(dateParams);
+  const { data: passagesData, isLoading: passagesLoading } = useGetPassages({
+    page: 1,
+    pageSize: 20,
+    ...dateParams,
+  });
 
   const passages = passagesData?.lastPassages ?? [];
 
@@ -18,6 +36,10 @@ export const PassagesHistoryPage = () => {
       title="Minhas Passagens"
       description="Consulte o resumo das suas passagens e o histórico recente com impacto ambiental."
     >
+      <section className="flex items-center gap-2">
+        <DashboardDateRangePicker date={dateRange} onDateChange={setDateRange} />
+      </section>
+
       <section>
         {summaryLoading ? (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">

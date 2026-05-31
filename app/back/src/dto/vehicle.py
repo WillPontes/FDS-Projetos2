@@ -14,6 +14,7 @@ class VehicleIn(SQLModel):
     id_tag: str
     user_id: int
     organization_id: int | None = None
+    fleet_id: int | None = None
     assigned_driver_id: int | None = None
     license_plate: str
     model: str
@@ -24,6 +25,7 @@ class VehicleUpdate(SQLModel):
     id_tag: str | None = None
     user_id: int | None = None
     organization_id: int | None = None
+    fleet_id: int | None = None
     assigned_driver_id: int | None = None
     license_plate: str | None = None
     model: str | None = None

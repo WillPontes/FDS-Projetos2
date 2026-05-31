@@ -39,13 +39,25 @@ class VehicleRepository:
         page: int = 1,
         page_size: int = 10,
         search: str | None = None,
+        organization_id: int | None = None,
+        fleet_id: int | None = None,
+        fuel_type: str | None = None,
+        sem_frota: bool | None = None,
     ) -> tuple[list[Vehicle], int]:
         query = select(Vehicle)
+        if sem_frota:
+            query = query.where(Vehicle.fleet_id.is_(None))
+        elif fleet_id is not None:
+            query = query.where(Vehicle.fleet_id == fleet_id)
+        elif organization_id is not None:
+            query = query.where(Vehicle.organization_id == organization_id)
         if search:
             like = f"%{search}%"
             query = query.where(
-                Vehicle.license_plate.ilike(like) | Vehicle.model.ilike(like)
+                Vehicle.license_plate.ilike(like) | Vehicle.model.ilike(like) | Vehicle.id_tag.ilike(like)
             )
+        if fuel_type:
+            query = query.where(Vehicle.fuel_type == fuel_type)
         total_result = await self.session.execute(
             select(func.count()).select_from(query.subquery())
         )

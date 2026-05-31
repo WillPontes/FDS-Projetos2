@@ -1,6 +1,6 @@
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.connection import get_db
@@ -16,6 +16,7 @@ from src.services.goals import increment_current_week_goal_progress
 from src.services.notification_builder import build_message
 from src.services.realtime_notifier import notifier
 from src.services.technical_specs import get_all_specs
+from src.repositories.transaction_repository import TransactionRepository
 from src.services.transactions import (
     create_transaction as create_transaction_svc,
     delete_transaction as delete_transaction_svc,
@@ -28,16 +29,40 @@ from src.services.user_stats import upsert_user_stats_from_transaction
 router = APIRouter(prefix="/transactions", tags=["Transactions"])
 
 
-@router.get("/", response_model=list[TransactionPublic])
+@router.get("/")
 async def list_transactions(
+    vehicle_id: int | None = Query(default=None),
+    user_id: int | None = Query(default=None),
+    organization_id: int | None = Query(default=None),
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=20, ge=1, le=100),
+    plate: str | None = Query(default=None),
+    context: str | None = Query(default=None),
+    uf: str | None = Query(default=None),
+    from_date: str | None = Query(default=None),
+    to_date: str | None = Query(default=None),
     db: AsyncSession = Depends(get_db),
 ):
-    transactions = await list_transactions_svc(db)
-
-    return [
-        TransactionPublic.model_validate(transaction)
-        for transaction in transactions
-    ]
+    from datetime import date as date_type
+    parsed_from = date_type.fromisoformat(from_date) if from_date else None
+    parsed_to = date_type.fromisoformat(to_date) if to_date else None
+    repo = TransactionRepository(db)
+    if vehicle_id is not None:
+        items, total = await repo.get_by_vehicle_paginated(vehicle_id, page, page_size, context=context, uf=uf, from_date=parsed_from, to_date=parsed_to)
+    elif user_id is not None:
+        items, total = await repo.get_by_user_paginated(user_id, page, page_size, plate=plate, context=context, uf=uf, from_date=parsed_from, to_date=parsed_to)
+    elif organization_id is not None:
+        items, total = await repo.get_by_organization_paginated(organization_id, page, page_size, context=context, uf=uf, from_date=parsed_from, to_date=parsed_to)
+    else:
+        transactions = await list_transactions_svc(db)
+        return {
+            "items": [TransactionPublic.model_validate(t) for t in transactions],
+            "total": len(transactions),
+        }
+    return {
+        "items": [TransactionPublic.model_validate(t) for t in items],
+        "total": total,
+    }
 
 
 @router.get("/{transaction_id}", response_model=TransactionPublic)

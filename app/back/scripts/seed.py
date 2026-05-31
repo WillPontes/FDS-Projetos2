@@ -28,6 +28,7 @@ from sqlmodel import select  # noqa: E402
 
 from src.database.connection import AsyncSessionLocal  # noqa: E402
 from src.models.fuel_prices import FuelPriceByUF  # noqa: E402
+from src.models.fleet import Fleet, FleetUser
 from src.models.organization import Organization  # noqa: E402
 from src.models.technical_specs import default_ludic_metaphor_units  # noqa: E402
 from src.models.transaction import Transaction  # noqa: E402
@@ -56,7 +57,9 @@ async def reset_all(db):
         "weekly_goals",
         "user_stats",
         "transactions",
+        "fleet_users",
         "vehicles",
+        "fleets",
         "users",
         "organizations",
         "fuel_prices_by_uf",
@@ -142,6 +145,7 @@ async def seed_users(db, orgs: list[Organization]) -> list[User]:
         User(name="Fernanda Gestora", email="fernanda@frotaexpress.com.br", role=UserRole.gestor_frota, organization_id=orgs[1].id),
         User(name="João Motorista", email="joao@logisticaabc.com.br", role=UserRole.motorista, organization_id=orgs[0].id),
         User(name="Ana Motorista", email="ana@frotaexpress.com.br", role=UserRole.motorista, organization_id=orgs[1].id),
+        User(name="Pedro Motorista", email="pedro.comum@taggy.com.br", role=UserRole.motorista, organization_id=None),
     ]
     users = []
     for u in users_data:
@@ -156,12 +160,42 @@ async def seed_users(db, orgs: list[Organization]) -> list[User]:
     return users
 
 
-async def seed_vehicles(db, users: list[User], orgs: list[Organization]) -> list[Vehicle]:
+async def seed_fleets(db, orgs: list[Organization]) -> list[Fleet]:
+    fleets_data = [
+        Fleet(name="Frota Principal ABC", organization_id=orgs[0].id),
+        Fleet(name="Frota Secundária ABC", organization_id=orgs[0].id),
+        Fleet(name="Frota Express Norte", organization_id=orgs[1].id),
+    ]
+    fleets = []
+    for f in fleets_data:
+        existing = (
+            await db.execute(
+                select(Fleet).where(
+                    Fleet.name == f.name,
+                    Fleet.organization_id == f.organization_id,
+                )
+            )
+        ).first()
+        if existing:
+            fleets.append(existing[0])
+        else:
+            db.add(f)
+            await db.flush()
+            fleets.append(f)
+    print(f"  fleets: {[f.id for f in fleets]}")
+    return fleets
+
+
+async def seed_vehicles(
+    db, users: list[User], orgs: list[Organization], fleets: list[Fleet]
+) -> list[Vehicle]:
+    pedro = next(u for u in users if u.email == "pedro.comum@taggy.com.br")
     vehicles_data = [
         Vehicle(
             id_tag="TAG-001-ABC",
             user_id=users[1].id,
             organization_id=orgs[0].id,
+            fleet_id=fleets[0].id,
             assigned_driver_id=users[3].id,
             license_plate="ABC-1234",
             model="Volkswagen Delivery 9.170",
@@ -171,6 +205,7 @@ async def seed_vehicles(db, users: list[User], orgs: list[Organization]) -> list
             id_tag="TAG-002-DEF",
             user_id=users[1].id,
             organization_id=orgs[0].id,
+            fleet_id=fleets[0].id,
             assigned_driver_id=None,
             license_plate="DEF-5678",
             model="Mercedes-Benz Atego 1719",
@@ -180,19 +215,31 @@ async def seed_vehicles(db, users: list[User], orgs: list[Organization]) -> list
             id_tag="TAG-003-GHI",
             user_id=users[2].id,
             organization_id=orgs[1].id,
+            fleet_id=fleets[2].id,
             assigned_driver_id=users[4].id,
             license_plate="GHI-9012",
             model="Fiat Cronos 1.3",
             fuel_type="gasolina_c",
         ),
         Vehicle(
-            id_tag="TAG-004-JKL",
-            user_id=users[0].id,
+            id_tag="TAG-005-MNO",
+            user_id=pedro.id,
             organization_id=None,
-            assigned_driver_id=None,
-            license_plate="JKL-3456",
-            model="Toyota Corolla Cross Flex",
+            fleet_id=None,
+            assigned_driver_id=pedro.id,
+            license_plate="MNO-7890",
+            model="Honda Civic Flex",
             fuel_type="etanol",
+        ),
+        Vehicle(
+            id_tag="TAG-006-PQR",
+            user_id=pedro.id,
+            organization_id=None,
+            fleet_id=None,
+            assigned_driver_id=pedro.id,
+            license_plate="PQR-1122",
+            model="Hyundai HB20",
+            fuel_type="gasolina_c",
         ),
     ]
     vehicles = []
@@ -206,6 +253,28 @@ async def seed_vehicles(db, users: list[User], orgs: list[Organization]) -> list
             vehicles.append(v)
     print(f"  vehicles: {[v.id for v in vehicles]}")
     return vehicles
+
+
+async def seed_fleet_users(db, users: list[User], fleets: list[Fleet]) -> None:
+    links = [
+        (fleets[0].id, users[1].id),
+        (fleets[0].id, users[3].id),
+        (fleets[2].id, users[2].id),
+        (fleets[2].id, users[4].id),
+    ]
+    for fleet_id, user_id in links:
+        existing = (
+            await db.execute(
+                select(FleetUser).where(
+                    FleetUser.fleet_id == fleet_id,
+                    FleetUser.user_id == user_id,
+                )
+            )
+        ).first()
+        if not existing:
+            db.add(FleetUser(fleet_id=fleet_id, user_id=user_id))
+    await db.flush()
+    print(f"  fleet_users: {len(links)} links")
 
 
 async def seed_transactions(db, users: list[User], vehicles: list[Vehicle], orgs: list[Organization]) -> None:
@@ -390,7 +459,9 @@ async def seed_all(reset: bool = False):
             await seed_fuel_prices(db)
             orgs = await seed_organizations(db)
             users = await seed_users(db, orgs)
-            vehicles = await seed_vehicles(db, users, orgs)
+            fleets = await seed_fleets(db, orgs)
+            vehicles = await seed_vehicles(db, users, orgs, fleets)
+            await seed_fleet_users(db, users, fleets)
             await seed_transactions(db, users, vehicles, orgs)
             await seed_user_stats(db, users)
             await seed_weekly_goals(db, users)
