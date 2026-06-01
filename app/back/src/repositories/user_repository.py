@@ -3,6 +3,7 @@ from typing import Literal, Optional
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.models.fleet import FleetUser
 from src.models.user import User
 
 UserRole = Literal["motorista", "gestor_frota", "admin"]
@@ -29,6 +30,7 @@ class UserRepository:
         role: UserRole | None = None,
         organization_id: int | None = None,
         search: str | None = None,
+        fleet_id: int | None = None,
     ) -> list[User]:
         query = select(User)
 
@@ -39,6 +41,11 @@ class UserRepository:
             query = query.where(
                 User.organization_id == organization_id
             )
+
+        if fleet_id is not None:
+            query = query.join(
+                FleetUser, FleetUser.user_id == User.id
+            ).where(FleetUser.fleet_id == fleet_id)
 
         if search:
             query = query.where(
@@ -60,6 +67,7 @@ class UserRepository:
         organization_id: int | None = None,
         search: str | None = None,
         linkable_to_organization_id: int | None = None,
+        fleet_id: int | None = None,
     ) -> tuple[list[User], int]:
         query = select(User)
 
@@ -70,6 +78,11 @@ class UserRepository:
             query = query.where(
                 User.organization_id == organization_id
             )
+
+        if fleet_id is not None:
+            query = query.join(
+                FleetUser, FleetUser.user_id == User.id
+            ).where(FleetUser.fleet_id == fleet_id)
 
         if linkable_to_organization_id is not None:
             query = query.where(
@@ -101,12 +114,14 @@ class UserRepository:
         self,
         name: str,
         email: str,
+        password_hash: str,
         role: UserRole = "motorista",
         organization_id: int | None = None,
     ) -> User:
         user = User(
             name=name,
             email=email,
+            password_hash=password_hash,
             role=role,
             organization_id=organization_id,
         )
@@ -124,6 +139,9 @@ class UserRepository:
         role: UserRole | None = None,
         organization_id: int | None = None,
         set_organization_id: bool = False,
+        email_alerts: bool | None = None,
+        push_alerts: bool | None = None,
+        weekly_report: bool | None = None,
     ) -> Optional[User]:
         user = await self.get_by_id(id)
 
@@ -141,6 +159,15 @@ class UserRepository:
 
         if set_organization_id:
             user.organization_id = organization_id
+
+        if email_alerts is not None:
+            user.email_alerts = email_alerts
+
+        if push_alerts is not None:
+            user.push_alerts = push_alerts
+
+        if weekly_report is not None:
+            user.weekly_report = weekly_report
 
         await self.session.flush()
 

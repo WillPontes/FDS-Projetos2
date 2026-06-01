@@ -6,6 +6,16 @@ export const VEHICLE_FUEL_OPTIONS: SelectOption[] = [
   { label: "Etanol", value: "etanol" },
 ];
 
+export const VEHICLE_CATEGORY_OPTIONS: SelectOption[] = [
+  { label: "Leve", value: "leve" },
+  { label: "Pesado", value: "pesado" },
+];
+
+export const VEHICLE_CATEGORY_LABELS: Record<string, string> = {
+  leve: "Leve",
+  pesado: "Pesado",
+};
+
 export const STATUS_LABELS: Record<string, string> = {
   active: "Ativo",
   inactive: "Inativo",

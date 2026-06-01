@@ -7,6 +7,7 @@ CALC_ENGINE_FAILED = "Não foi possível processar os dados técnicos. Verifique
 ACCESS_DENIED = "Acesso negado."
 
 USER_NOT_FOUND = "Usuário não encontrado."
+INVALID_CREDENTIALS = "E-mail ou senha inválidos."
 USER_EMAIL_EXISTS = "Já existe um usuário com este email."
 DRIVER_VEHICLES_ONLY = "Apenas motoristas podem ter veículos vinculados."
 DRIVER_SINGLE_VEHICLE = "Motorista de org só pode ter um veículo."

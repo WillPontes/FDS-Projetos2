@@ -39,6 +39,13 @@ export const APP_NAV_ITEMS: NavItem[] = [
     roles: ["admin", "gestor_frota"],
   },
   {
+    to: "/passagens-auditoria",
+    label: "Passagens",
+    icon: Ticket,
+    exact: true,
+    roles: ["admin", "gestor_frota"],
+  },
+  {
     to: "/relatorios",
     label: "Relatórios",
     icon: FileText,

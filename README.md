@@ -59,6 +59,20 @@ Este screencast percorre o protótipo do Taggy: principais telas e fluxos e como
 
 [![Screencast do protótipo Taggy — clique para abrir no YouTube](docs/images/thumb.jpeg)](https://www.youtube.com/watch?v=7lFrXswsO0k)
 
+<a id="screencast-historias-implementadas"></a>
+
+## Screencast das histórias implementadas (entrega FDS)
+
+Demonstração em vídeo das **3 user stories implementadas** neste repositório, conforme requisito de entrega da disciplina.
+
+**Pasta no Google Drive:** [FDS - Screencast](https://drive.google.com/drive/folders/12x8hIs7ZXKy2VtTU_YdSx5BtF_kX-Ija)
+
+| US | Título | Screencast |
+| :- | :----- | :--------- |
+| US01 | Tradução Lúdica de Impacto | [Assistir no Drive](https://drive.google.com/file/d/10ZD-K-8rpnYV4RibiJvxrPCGJ0WZR28a/view?usp=drive_link) |
+| US03 | Cálculo de Economia de Papel Térmico | [Assistir no Drive](https://drive.google.com/file/d/1zNLM5iOX1i-TXT7cJoYgcF2hXq2Kzqln/view?usp=drive_link) |
+| US05 | Gestão de Inventário de Frota | [Assistir no Drive](https://drive.google.com/file/d/1Pt1Fyj8XqtrQjxNnE_FwDTwYFRu9WD0o/view?usp=drive_link) |
+
 ---
 
 ## Sketches e storyboards do protótipo
@@ -194,6 +208,22 @@ Coluna _Backlog (Sprint)_ no Trello: **US10**, **US11**.
 
 ---
 
+## Bugtracker (GitHub Issues)
+
+Registro de bugs identificados durante o desenvolvimento e resolvidos no repositório. Acompanhe e abra novos issues em: [GitHub Issues — Taggy-Ecoscore](https://github.com/WillPontes/Taggy-Ecoscore/issues).
+
+<img src="docs/images/bugtracker.png" alt="Bugtracker — issues fechadas no GitHub (#28 a #32)" width="440" />
+
+| Issue | Título | Status |
+| :---- | :----- | :----- |
+| [#28](https://github.com/WillPontes/Taggy-Ecoscore/issues/28) | Mensagens de erro não estão sendo exibidas | Fechada |
+| [#29](https://github.com/WillPontes/Taggy-Ecoscore/issues/29) | Dashboard exibindo dados sem filtro | Fechada |
+| [#30](https://github.com/WillPontes/Taggy-Ecoscore/issues/30) | Dashboard inconsistente visualmente com o mockup | Fechada |
+| [#31](https://github.com/WillPontes/Taggy-Ecoscore/issues/31) | Conflito de migrations no banco de dados de produção | Fechada |
+| [#32](https://github.com/WillPontes/Taggy-Ecoscore/issues/32) | Front-end quebra ao trocar de usuário e navegar para rota de frotas | Fechada |
+
+---
+
 ## Links importantes
 
 Referências usadas no dia a dia do projeto — código, desenho da solução, modelagem e acompanhamento do backlog.
@@ -202,8 +232,10 @@ Referências usadas no dia a dia do projeto — código, desenho da solução, m
 | :---------------------- | :---------------------------------------------------------------------------------------------------------- |
 | Código                  | [GitHub](https://github.com/WillPontes/FDS-Projetos2)                                                       |
 | Backlog e Sprints       | [Trello](https://trello.com/b/alfFb7dV/cesar-projetos-2)                                                    |
+| Bugtracker              | [GitHub Issues](https://github.com/WillPontes/Taggy-Ecoscore/issues)                                        |
 | Wireframes              | [Figma](https://www.figma.com/design/ME63dOBQJ943GhMTh00W4g/Wireframe?node-id=0-1&p=f&t=KS4WtIegdrdhUasH-0) |
-| Screencast              | [YouTube](https://www.youtube.com/watch?v=7lFrXswsO0k)                                                      |
+| Screencast (protótipo)               | [YouTube](https://www.youtube.com/watch?v=7lFrXswsO0k)                                                      |
+| Screencast (histórias implementadas) | [Google Drive — US01, US03, US05](https://drive.google.com/drive/folders/12x8hIs7ZXKy2VtTU_YdSx5BtF_kX-Ija) |
 | Diagramas de Atividades | [Google Drive](https://drive.google.com/file/d/1XGv4y-BJ-yUia8EKnrTdb78NESRhesFB/view?usp=drive_link)       |
 
 ---

@@ -44,9 +44,12 @@ services:
 
     volumes:
       - ./src:/app/src
+      - ./pyproject.toml:/app/pyproject.toml
+      - ./uv.lock:/app/uv.lock
 
     command: >
-      sh -c "uv run alembic upgrade head &&
+      sh -c "uv sync --frozen --no-dev &&
+      uv run alembic upgrade head &&
       uv run uvicorn src.main:app
       --host 0.0.0.0
       --port 8000

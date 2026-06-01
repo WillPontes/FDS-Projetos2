@@ -184,6 +184,10 @@ export async function createVehicle(data: CreateVehiclePayload): Promise<Vehicle
         license_plate: data.license_plate,
         model: data.model,
         fuel_type: data.fuel_type,
+        category: data.category,
+        ...(data.average_autonomy_km != null && {
+          average_autonomy_km: data.average_autonomy_km,
+        }),
         user_id: currentUserId(),
         ...(data.organization_id != null && { organization_id: data.organization_id }),
         ...(data.fleet_id != null && { fleet_id: data.fleet_id }),
@@ -204,6 +208,10 @@ export async function updateVehicle(id: number, data: UpdateVehiclePayload): Pro
         ...(data.license_plate && { license_plate: data.license_plate }),
         ...(data.model && { model: data.model }),
         ...(data.fuel_type && { fuel_type: data.fuel_type }),
+        ...(data.category && { category: data.category }),
+        ...("average_autonomy_km" in data && {
+          average_autonomy_km: data.average_autonomy_km,
+        }),
         ...("organization_id" in data && { organization_id: data.organization_id }),
         ...("fleet_id" in data && { fleet_id: data.fleet_id }),
       },

@@ -9,6 +9,8 @@ FuelType = Literal[
     "etanol",
 ]
 
+VehicleCategory = Literal["leve", "pesado"]
+
 
 class VehicleIn(SQLModel):
     id_tag: str
@@ -19,6 +21,8 @@ class VehicleIn(SQLModel):
     license_plate: str
     model: str
     fuel_type: FuelType
+    category: VehicleCategory = "leve"
+    average_autonomy_km: float | None = None
 
 
 class VehicleUpdate(SQLModel):
@@ -30,3 +34,5 @@ class VehicleUpdate(SQLModel):
     license_plate: str | None = None
     model: str | None = None
     fuel_type: FuelType | None = None
+    category: VehicleCategory | None = None
+    average_autonomy_km: float | None = None

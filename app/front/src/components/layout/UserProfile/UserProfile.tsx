@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { USER_ROLE_LABELS } from "@/constants/current-user";
-import { useAuthStore, useCurrentUser, useLogout } from "@/features/auth";
+import { useCurrentUser, useLogout } from "@/features/auth";
 
 const getInitials = (name: string) =>
   name
@@ -24,12 +24,10 @@ const getInitials = (name: string) =>
 export const UserProfile = () => {
   const { user, isAuthenticated } = useCurrentUser();
   const logout = useLogout();
-  const login = useAuthStore((state) => state.login);
-
   if (!isAuthenticated || !user) {
     return (
-      <Button type="button" variant="outline" size="sm" onClick={() => login()}>
-        Entrar (mock)
+      <Button type="button" variant="outline" size="sm" asChild>
+        <Link to="/login">Entrar</Link>
       </Button>
     );
   }

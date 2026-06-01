@@ -130,6 +130,46 @@ class TransactionRepository:
         )
         return list(result.scalars().all()), total
 
+    async def get_paginated(
+        self,
+        page: int = 1,
+        page_size: int = 10,
+        organization_id: int | None = None,
+        vehicle_id: int | None = None,
+        user_id: int | None = None,
+        plate: str | None = None,
+        context: str | None = None,
+        uf: str | None = None,
+        from_date: date | None = None,
+        to_date: date | None = None,
+    ) -> tuple[list[Transaction], int]:
+        query = select(Transaction)
+        if organization_id is not None:
+            query = query.where(Transaction.organization_id == organization_id)
+        if vehicle_id is not None:
+            query = query.where(Transaction.vehicle_id == vehicle_id)
+        if user_id is not None:
+            query = query.where(Transaction.user_id == user_id)
+        if plate:
+            query = query.where(Transaction.plate.ilike(f"%{plate}%"))
+        if context:
+            query = query.where(Transaction.context == context)
+        if uf:
+            query = query.where(Transaction.uf == uf)
+        if from_date:
+            query = query.where(Transaction.created_at >= from_date)
+        if to_date:
+            query = query.where(Transaction.created_at <= to_date)
+        total_result = await self.session.execute(
+            select(func.count()).select_from(query.subquery())
+        )
+        total = total_result.scalar_one()
+        offset = (page - 1) * page_size
+        result = await self.session.execute(
+            query.order_by(Transaction.created_at.desc()).offset(offset).limit(page_size)
+        )
+        return list(result.scalars().all()), total
+
     async def get_by_user_in_range(
         self,
         user_id: int,

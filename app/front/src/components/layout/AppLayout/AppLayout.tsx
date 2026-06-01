@@ -6,11 +6,12 @@ import { useWebsocketNotification } from "@/hooks/useWebsocketNotification"
 
 type AppLayoutProps = {
   children: ReactNode;
+  userId?: number | null;
 };
 
-export const AppLayout = ({ children }: AppLayoutProps) => {
+export const AppLayout = ({ children, userId = null }: AppLayoutProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  useWebsocketNotification(null)
+  useWebsocketNotification(userId ?? null);
 
   return (
     <div className="flex h-screen overflow-hidden">

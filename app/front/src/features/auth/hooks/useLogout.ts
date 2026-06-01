@@ -7,6 +7,6 @@ export const useLogout = () => {
 
   return () => {
     logout();
-    navigate({ to: "/" });
+    navigate({ to: "/login" });
   };
 };

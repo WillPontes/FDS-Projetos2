@@ -28,14 +28,14 @@ export const UfSelect = ({
     onValueChange={(v) => onValueChange(v === "all" ? undefined : v)}
   >
     <SelectTrigger
-      className="w-28"
+      className="w-20"
       clearable
       hasValue={value != null}
       onClear={() => onValueChange(undefined)}
     >
       <SelectValue placeholder={placeholder} />
     </SelectTrigger>
-    <SelectContent>
+    <SelectContent className="max-h-48 [&>div:nth-child(2)]:!h-auto [&>div:nth-child(2)]:max-h-40">
       <SelectItem value="all">Todas</SelectItem>
       {UF_OPTIONS.map((uf) => (
         <SelectItem key={uf} value={uf}>

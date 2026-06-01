@@ -1,10 +1,13 @@
-import { Outlet } from "@tanstack/react-router"
-import { AppLayout } from "../AppLayout"
+import { Outlet } from "@tanstack/react-router";
+import { useCurrentUser } from "@/features/auth";
+import { AppLayout } from "../AppLayout";
 
 export const AppShell = () => {
+  const { user } = useCurrentUser();
+
   return (
-    <AppLayout>
+    <AppLayout userId={user?.id ?? null}>
       <Outlet />
     </AppLayout>
-  )
-}
+  );
+};

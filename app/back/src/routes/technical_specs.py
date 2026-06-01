@@ -10,6 +10,7 @@ from src.services.technical_specs import (
     get_technical_specs_bundle,
     post_technical_specs_update,
 )
+from src.services.mcti_sync_service import sync_emission_factors_from_mcti
 from src.dto.technical_specs import TechnicalSpecsUpdate, TechnicalSpecsDTO
 
 
@@ -23,6 +24,19 @@ async def get_technical_specs(db: AsyncSession = Depends(get_db)) -> dict[str, A
     except CalcEngineError as e:
         raise HTTPException(status_code=422, detail=err.CALC_ENGINE_FAILED) from e
     return {"data": specs}
+
+
+@router.post("/sync-mcti", response_model=dict[str, Any])
+async def sync_mcti_emission_factors(
+    db: AsyncSession = Depends(get_db),
+) -> dict[str, Any]:
+    try:
+        result = await sync_emission_factors_from_mcti(db)
+        return {"status": "ok", **result}
+    except RuntimeError as e:
+        raise HTTPException(status_code=502, detail=str(e)) from e
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e)) from e
 
 
 @router.post("/update", response_model=TechnicalSpecsDTO)

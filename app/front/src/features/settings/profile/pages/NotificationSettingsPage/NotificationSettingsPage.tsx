@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,25 +12,50 @@ import {
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { PageLayout } from "@/components/layout/PageLayout";
-import {
-  loadNotificationSettings,
-  saveNotificationSettings,
-  type NotificationSettings,
-} from "../../../api/requests";
+import { useCurrentUser } from "@/features/auth";
+import type { NotificationSettings } from "@/features/users/api/types";
+import { getToastErrorMessage } from "@/lib/api-error";
+import { useNotificationSettings } from "../../../hooks/useNotificationSettings";
 
 export const NotificationSettingsPage = () => {
-  const [settings, setSettings] = useState<NotificationSettings>(
-    loadNotificationSettings(),
-  );
+  const { user } = useCurrentUser();
+  const { query, mutation } = useNotificationSettings(user?.id);
+  const [settings, setSettings] = useState<NotificationSettings | null>(null);
 
   useEffect(() => {
-    saveNotificationSettings(settings);
-  }, [settings]);
+    if (query.data) {
+      setSettings(query.data);
+    }
+  }, [query.data]);
 
   const handleSave = () => {
-    saveNotificationSettings(settings);
-    toast.success("Preferências de notificação salvas!");
+    if (!settings || user?.id == null) return;
+    mutation.mutate(settings, {
+      onSuccess: () => {
+        toast.success("Preferências de notificação salvas!");
+      },
+      onError: (error) => {
+        toast.error(
+          getToastErrorMessage(error, {
+            fallback: "Erro ao salvar preferências.",
+          }),
+        );
+      },
+    });
   };
+
+  if (query.isLoading || !settings) {
+    return (
+      <PageLayout
+        title="Notificações"
+        description="Configure como deseja receber alertas e relatórios."
+      >
+        <div className="flex justify-center py-12">
+          <Loader2 className="size-8 animate-spin text-muted-foreground" />
+        </div>
+      </PageLayout>
+    );
+  }
 
   return (
     <PageLayout
@@ -54,7 +80,9 @@ export const NotificationSettingsPage = () => {
             <Switch
               checked={settings.emailAlerts}
               onCheckedChange={(checked) =>
-                setSettings((prev) => ({ ...prev, emailAlerts: checked }))
+                setSettings((prev) =>
+                  prev ? { ...prev, emailAlerts: checked } : prev,
+                )
               }
             />
           </div>
@@ -68,7 +96,9 @@ export const NotificationSettingsPage = () => {
             <Switch
               checked={settings.pushAlerts}
               onCheckedChange={(checked) =>
-                setSettings((prev) => ({ ...prev, pushAlerts: checked }))
+                setSettings((prev) =>
+                  prev ? { ...prev, pushAlerts: checked } : prev,
+                )
               }
             />
           </div>
@@ -82,12 +112,25 @@ export const NotificationSettingsPage = () => {
             <Switch
               checked={settings.weeklyReport}
               onCheckedChange={(checked) =>
-                setSettings((prev) => ({ ...prev, weeklyReport: checked }))
+                setSettings((prev) =>
+                  prev ? { ...prev, weeklyReport: checked } : prev,
+                )
               }
             />
           </div>
-          <Button type="button" onClick={handleSave}>
-            Salvar preferências
+          <Button
+            type="button"
+            onClick={handleSave}
+            disabled={mutation.isPending}
+          >
+            {mutation.isPending ? (
+              <>
+                <Loader2 className="size-4 animate-spin" />
+                Salvando...
+              </>
+            ) : (
+              "Salvar preferências"
+            )}
           </Button>
         </CardContent>
       </Card>

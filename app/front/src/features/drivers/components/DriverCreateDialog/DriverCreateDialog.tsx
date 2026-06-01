@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { OrganizationsCombobox } from "@/features/fleet/components/OrganizationsCombobox/OrganizationsCombobox";
 import { createUser } from "@/features/users/api/requests";
+import { DEFAULT_USER_PASSWORD } from "@/features/users/constants";
 import { userQueryKeys } from "@/features/users/api/query-keys";
 
 type DriverCreateDialogProps = {
@@ -26,12 +27,14 @@ export const DriverCreateDialog = ({ open, onClose }: DriverCreateDialogProps) =
       createUser({
         name,
         email,
+        password: DEFAULT_USER_PASSWORD,
         role: "motorista",
         organization_id: organizationId ?? null,
       }),
     onSuccess: () => {
       toast.success("Motorista cadastrado.");
       queryClient.invalidateQueries({ queryKey: userQueryKeys.all });
+      queryClient.invalidateQueries({ queryKey: ["drivers"] });
       setName("");
       setEmail("");
       setOrganizationId(undefined);

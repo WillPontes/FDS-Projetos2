@@ -10,10 +10,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { ControlledInput } from "@/components/form/ControlledInput";
 import { ControlledSelect } from "@/components/form/ControlledSelect";
 import { FleetsRelationSelect } from "@/components/form/relation-selects";
-import { VEHICLE_FUEL_OPTIONS } from "../../constants";
+import {
+  VEHICLE_CATEGORY_OPTIONS,
+  VEHICLE_FUEL_OPTIONS,
+} from "../../constants";
 import { useCreateVehicle } from "../../hooks/useCreateVehicle";
 import { useUpdateVehicle } from "../../hooks/useUpdateVehicle";
 import {
@@ -23,6 +27,7 @@ import {
 } from "../../schemas/vehicle-schema";
 
 const VALID_FUEL = ["diesel_s10", "gasolina_c", "etanol"] as const;
+const VALID_CATEGORY = ["leve", "pesado"] as const;
 
 type VehicleFormDialogProps = {
   open: boolean;
@@ -51,6 +56,8 @@ export const VehicleFormDialog = ({
       license_plate: "",
       model: "",
       fuel_type: "gasolina_c",
+      category: "leve",
+      average_autonomy_km: null,
       fleet_id: defaultFleetId ?? null,
       organization_id: defaultOrganizationId ?? null,
     },
@@ -68,6 +75,12 @@ export const VehicleFormDialog = ({
         )
           ? (vehicle.fuel_type as (typeof VALID_FUEL)[number])
           : "gasolina_c",
+        category: VALID_CATEGORY.includes(
+          vehicle.category as (typeof VALID_CATEGORY)[number],
+        )
+          ? (vehicle.category as (typeof VALID_CATEGORY)[number])
+          : "leve",
+        average_autonomy_km: vehicle.average_autonomy_km ?? null,
         fleet_id: vehicle.fleet_id ?? null,
         organization_id: vehicle.organization_id ?? null,
       });
@@ -77,6 +90,8 @@ export const VehicleFormDialog = ({
         license_plate: "",
         model: "",
         fuel_type: "gasolina_c",
+        category: "leve",
+        average_autonomy_km: null,
         fleet_id: defaultFleetId ?? null,
         organization_id: defaultOrganizationId ?? null,
       });
@@ -96,11 +111,14 @@ export const VehicleFormDialog = ({
       );
     } else {
       createVehicle(
-        data as VehicleUpdateData & {
-          id_tag: string;
-          license_plate: string;
-          model: string;
-          fuel_type: string;
+        {
+          ...data,
+          id_tag: data.id_tag!,
+          license_plate: data.license_plate!,
+          model: data.model!,
+          fuel_type: data.fuel_type!,
+          category: data.category ?? "leve",
+          average_autonomy_km: data.average_autonomy_km ?? null,
         },
         {
           onSuccess: () => {
@@ -147,6 +165,32 @@ export const VehicleFormDialog = ({
             name="fuel_type"
             label="Tipo de combustível"
             options={VEHICLE_FUEL_OPTIONS}
+          />
+          <ControlledSelect
+            control={form.control}
+            name="category"
+            label="Categoria"
+            options={VEHICLE_CATEGORY_OPTIONS}
+          />
+          <Controller
+            control={form.control}
+            name="average_autonomy_km"
+            render={({ field, fieldState }) => (
+              <div className="space-y-1">
+                <Label htmlFor="average_autonomy_km">Autonomia média (km/L)</Label>
+                <Input
+                  id="average_autonomy_km"
+                  type="number"
+                  placeholder="Opcional"
+                  value={field.value ?? ""}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    field.onChange(val === "" ? null : Number(val));
+                  }}
+                  aria-invalid={!!fieldState.error}
+                />
+              </div>
+            )}
           />
           <div className="space-y-1">
             <Label>Frota</Label>

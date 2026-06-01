@@ -26,6 +26,8 @@ class Vehicle(SQLModel, table=True):
     license_plate: str = Field(unique=True)
     model: str
     fuel_type: str
+    category: str = Field(default="leve")
+    average_autonomy_km: float | None = Field(default=None)
 
 
 class VehiclePublic(SQLModel):
@@ -41,6 +43,8 @@ class VehiclePublic(SQLModel):
     plate: str = ""
     model: str
     fuel_type: str
+    category: str
+    average_autonomy_km: float | None = None
 
     @model_validator(mode="after")
     def set_plate_alias(self) -> "VehiclePublic":

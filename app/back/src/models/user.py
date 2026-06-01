@@ -19,12 +19,18 @@ class User(SQLModel, table=True):
 
     email: str = Field(unique=True)
 
+    password_hash: str
+
     role: UserRole = UserRole.motorista
 
     organization_id: int | None = Field(
         default=None,
         foreign_key="organizations.id",
     )
+
+    email_alerts: bool = Field(default=True)
+    push_alerts: bool = Field(default=False)
+    weekly_report: bool = Field(default=True)
 
 
 class UserPublic(SQLModel):
@@ -37,3 +43,7 @@ class UserPublic(SQLModel):
     role: UserRole
 
     organization_id: int | None
+
+    email_alerts: bool
+    push_alerts: bool
+    weekly_report: bool

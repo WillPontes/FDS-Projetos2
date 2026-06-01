@@ -37,6 +37,9 @@ from src.models.user_stats import UserStats  # noqa: E402
 from src.models.vehicle import Vehicle  # noqa: E402
 from src.models.weekly_goal import WeeklyGoal  # noqa: E402
 from src.repositories.technical_specs_repository import TechnicalSpecsRepository  # noqa: E402
+from src.services.password import hash_password  # noqa: E402
+
+SEED_DEFAULT_PASSWORD = "taggy123"
 
 
 def utc_now() -> datetime:
@@ -139,19 +142,22 @@ async def seed_organizations(db) -> list[Organization]:
 
 
 async def seed_users(db, orgs: list[Organization]) -> list[User]:
+    password_hash = hash_password(SEED_DEFAULT_PASSWORD)
     users_data = [
-        User(name="Admin Sistema", email="admin@taggy.com.br", role=UserRole.admin, organization_id=None),
-        User(name="Carlos Gestor", email="carlos@logisticaabc.com.br", role=UserRole.gestor_frota, organization_id=orgs[0].id),
-        User(name="Fernanda Gestora", email="fernanda@frotaexpress.com.br", role=UserRole.gestor_frota, organization_id=orgs[1].id),
-        User(name="João Motorista", email="joao@logisticaabc.com.br", role=UserRole.motorista, organization_id=orgs[0].id),
-        User(name="Ana Motorista", email="ana@frotaexpress.com.br", role=UserRole.motorista, organization_id=orgs[1].id),
-        User(name="Pedro Motorista", email="pedro.comum@taggy.com.br", role=UserRole.motorista, organization_id=None),
+        User(name="Admin Sistema", email="admin@taggy.com.br", password_hash=password_hash, role=UserRole.admin, organization_id=None),
+        User(name="Carlos Gestor", email="carlos@logisticaabc.com.br", password_hash=password_hash, role=UserRole.gestor_frota, organization_id=orgs[0].id),
+        User(name="Fernanda Gestora", email="fernanda@frotaexpress.com.br", password_hash=password_hash, role=UserRole.gestor_frota, organization_id=orgs[1].id),
+        User(name="João Motorista", email="joao@logisticaabc.com.br", password_hash=password_hash, role=UserRole.motorista, organization_id=orgs[0].id),
+        User(name="Ana Motorista", email="ana@frotaexpress.com.br", password_hash=password_hash, role=UserRole.motorista, organization_id=orgs[1].id),
+        User(name="Pedro Motorista", email="pedro.comum@taggy.com.br", password_hash=password_hash, role=UserRole.motorista, organization_id=None),
     ]
     users = []
     for u in users_data:
         existing = (await db.execute(select(User).where(User.email == u.email))).first()
         if existing:
-            users.append(existing[0])
+            row = existing[0]
+            row.password_hash = password_hash
+            users.append(row)
         else:
             db.add(u)
             await db.flush()
@@ -200,6 +206,7 @@ async def seed_vehicles(
             license_plate="ABC-1234",
             model="Volkswagen Delivery 9.170",
             fuel_type="diesel_s10",
+            category="pesado",
         ),
         Vehicle(
             id_tag="TAG-002-DEF",
@@ -210,6 +217,7 @@ async def seed_vehicles(
             license_plate="DEF-5678",
             model="Mercedes-Benz Atego 1719",
             fuel_type="diesel_s10",
+            category="pesado",
         ),
         Vehicle(
             id_tag="TAG-003-GHI",
@@ -220,6 +228,7 @@ async def seed_vehicles(
             license_plate="GHI-9012",
             model="Fiat Cronos 1.3",
             fuel_type="gasolina_c",
+            category="leve",
         ),
         Vehicle(
             id_tag="TAG-005-MNO",
@@ -230,6 +239,7 @@ async def seed_vehicles(
             license_plate="MNO-7890",
             model="Honda Civic Flex",
             fuel_type="etanol",
+            category="leve",
         ),
         Vehicle(
             id_tag="TAG-006-PQR",
@@ -240,6 +250,7 @@ async def seed_vehicles(
             license_plate="PQR-1122",
             model="Hyundai HB20",
             fuel_type="gasolina_c",
+            category="leve",
         ),
     ]
     vehicles = []

@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { getToastErrorMessage } from "@/lib/api-error";
+import { DEFAULT_USER_PASSWORD } from "../../constants";
 import { createUser, updateUser, deleteUser } from "../../api/requests";
 import { userQueryKeys } from "../../api/query-keys";
 import type { UpdateUserPayload, User } from "../../api/types";
@@ -18,7 +19,11 @@ export const useCreateUser = () => {
       email: string;
       role?: string;
       organization_id?: number | null;
-    }) => createUser(data),
+    }) =>
+      createUser({
+        ...data,
+        password: DEFAULT_USER_PASSWORD,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userQueryKeys.all });
       toast.success("Usuário criado com sucesso!");

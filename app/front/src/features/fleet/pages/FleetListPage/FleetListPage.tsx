@@ -16,6 +16,10 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { getToastErrorMessage } from "@/lib/api-error";
 import { ActionHintPopover } from "@/components/ActionHintPopover";
+import {
+  FleetsRelationSelect,
+  OrganizationsRelationSelect,
+} from "@/components/form/relation-selects";
 import { Button } from "@/components/ui/button";
 import { DataTable, entityIdColumn } from "@/components/DataTable";
 import { FilterInput } from "@/components/ui/FilterInput";
@@ -84,6 +88,8 @@ const fleetSearchParams = {
   search: parseAsString,
   fuel_type: parseAsString,
   sem_frota: parseAsStringEnum(["all", "yes", "no"] as const).withDefault("all"),
+  org: parseAsInteger,
+  fleet: parseAsInteger,
 };
 
 const SEM_FROTA_OPTIONS = [
@@ -95,15 +101,24 @@ const SEM_FROTA_OPTIONS = [
 export const FleetListPage = () => {
   const { user } = useCurrentUser();
   const isAdmin = user?.role === "admin";
-  const [{ page, sort, order, search, fuel_type, sem_frota }, setParams] = useQueryStates(
-    fleetSearchParams,
-    { history: "replace" },
-  );
+  const [{ page, sort, order, search, fuel_type, sem_frota, org, fleet }, setParams] =
+    useQueryStates(fleetSearchParams, { history: "replace" });
   const [createOpen, setCreateOpen] = useState(false);
   const [editVehicle, setEditVehicle] = useState<Vehicle | null>(null);
 
-  const organizationId =
-    user?.role === "gestor_frota" ? user.organization_id ?? undefined : undefined;
+  const scopedOrgId =
+    user?.role === "gestor_frota"
+      ? (user.organization_id ?? undefined)
+      : isAdmin
+        ? (org ?? undefined)
+        : undefined;
+
+  const fleetFilterOrgId =
+    user?.role === "gestor_frota"
+      ? (user.organization_id ?? undefined)
+      : isAdmin
+        ? (org ?? undefined)
+        : undefined;
 
   const semFrotaParam =
     isAdmin && sem_frota === "yes" ? true : isAdmin && sem_frota === "no" ? false : undefined;
@@ -118,7 +133,8 @@ export const FleetListPage = () => {
     sortOrder: order,
     search: search ?? undefined,
     fuelType: fuel_type ?? undefined,
-    organizationId,
+    organizationId: scopedOrgId,
+    fleetId: fleet ?? undefined,
     semFrota: semFrotaParam,
   });
 
@@ -141,6 +157,13 @@ export const FleetListPage = () => {
     { accessorKey: "model", header: "MODELO", enableSorting: true },
     { accessorKey: "fuel_type", header: "TIPO DE COMBUSTÍVEL", enableSorting: true },
     {
+      accessorKey: "category",
+      header: "CATEGORIA",
+      enableSorting: true,
+      cell: ({ row }) =>
+        row.original.category === "pesado" ? "Pesado" : "Leve",
+    },
+    {
       id: "actions",
       header: "AÇÕES",
       enableSorting: false,
@@ -155,14 +178,14 @@ export const FleetListPage = () => {
       title="Veículos"
       description="Consulte e gerencie os veículos da frota."
     >
-      <section className="flex items-center gap-4">
+      <section className="flex flex-col gap-4 lg:flex-row lg:items-center">
         <FilterInput
           placeholder="Buscar por placa, modelo ou TAG"
           value={search ?? ""}
           onChange={(e) => setParams({ search: e.target.value, page: 1 })}
-          className="w-full"
+          className="lg:flex-1"
         />
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <FilterSelect
             value={fuel_type ?? "all"}
             onValueChange={(v) => setParams({ fuel_type: v === "all" ? null : v, page: 1 })}
@@ -171,11 +194,32 @@ export const FleetListPage = () => {
             className="w-44"
           />
           {isAdmin && (
+            <OrganizationsRelationSelect
+              value={org ?? undefined}
+              onValueChange={(value) =>
+                setParams({ org: value ?? null, fleet: null, page: 1 })
+              }
+              placeholder="Todas as organizações"
+              emptyLabel="Todas as organizações"
+              className="w-52"
+            />
+          )}
+          <FleetsRelationSelect
+            value={fleet ?? undefined}
+            onValueChange={(value) =>
+              setParams({ fleet: value ?? null, page: 1 })
+            }
+            organizationId={fleetFilterOrgId}
+            placeholder="Todas as frotas"
+            noneLabel="Todas as frotas"
+            className="w-44"
+          />
+          {isAdmin && (
             <FilterSelect
               value={sem_frota}
               onValueChange={(v) => setParams({ sem_frota: v as typeof sem_frota, page: 1 })}
               options={SEM_FROTA_OPTIONS}
-              placeholder="Frota"
+              placeholder="Sem frota"
               className="w-36"
             />
           )}
@@ -200,7 +244,7 @@ export const FleetListPage = () => {
       <VehicleFormDialog
         open={createOpen}
         onClose={() => setCreateOpen(false)}
-        defaultOrganizationId={organizationId}
+        defaultOrganizationId={scopedOrgId}
       />
       <VehicleFormDialog
         open={!!editVehicle}

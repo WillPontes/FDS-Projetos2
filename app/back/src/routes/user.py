@@ -12,6 +12,7 @@ from src.middleware.dev_auth import apply_org_scope_for_gestor, get_current_user
 from src.models.user import User, UserPublic, UserRole
 from src.models.vehicle import Vehicle
 from src.repositories.user_repository import UserRepository
+from src.services.password import hash_password
 from src.services.user import list_users
 
 router = APIRouter(prefix="/users", tags=["Users"])
@@ -33,6 +34,7 @@ async def get_users(
     page_size: int = Query(default=20, ge=1, le=100),
     paginate: bool = Query(default=False),
     linkable_to_organization_id: int | None = None,
+    fleet_id: int | None = Query(default=None),
     db: AsyncSession = Depends(get_db),
     current_user: User | None = Depends(get_current_user_dev),
 ):
@@ -40,7 +42,12 @@ async def get_users(
     repo = UserRepository(db)
 
     if paginate:
-        if current_user and current_user.role == UserRole.gestor_frota and role == "motorista":
+        if (
+            fleet_id is None
+            and current_user
+            and current_user.role == UserRole.gestor_frota
+            and role == "motorista"
+        ):
             org_drivers, org_total = await repo.get_paginated(
                 page, page_size, role="motorista", organization_id=org_scope, search=search
             )
@@ -61,6 +68,7 @@ async def get_users(
             organization_id=org_scope,
             search=search,
             linkable_to_organization_id=linkable_to_organization_id,
+            fleet_id=fleet_id,
         )
         return {
             "items": [UserPublic.model_validate(row) for row in users],
@@ -97,6 +105,7 @@ async def get_user_by_id(
 async def create_user(
     name: str,
     email: str,
+    password: str,
     role: UserRoleLiteral = "motorista",
     organization_id: int | None = None,
     db: AsyncSession = Depends(get_db),
@@ -105,7 +114,13 @@ async def create_user(
     existing_user = await repository.get_by_email(email)
     if existing_user:
         raise HTTPException(status_code=409, detail=err.USER_EMAIL_EXISTS)
-    user = await repository.create(name=name, email=email, role=role, organization_id=organization_id)
+    user = await repository.create(
+        name=name,
+        email=email,
+        password_hash=hash_password(password),
+        role=role,
+        organization_id=organization_id,
+    )
     await db.commit()
     return UserPublic.model_validate(user)
 
@@ -133,6 +148,9 @@ async def update_user(
         role=data.get("role"),
         organization_id=data["organization_id"] if "organization_id" in data else None,
         set_organization_id="organization_id" in data,
+        email_alerts=data.get("email_alerts"),
+        push_alerts=data.get("push_alerts"),
+        weekly_report=data.get("weekly_report"),
     )
     if user is None:
         raise HTTPException(status_code=404, detail=err.USER_NOT_FOUND)

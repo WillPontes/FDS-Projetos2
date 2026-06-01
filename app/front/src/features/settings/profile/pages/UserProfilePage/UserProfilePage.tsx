@@ -68,7 +68,10 @@ export const UserProfilePage = () => {
     return (
       <PageLayout title="Meu Perfil">
         <p className="text-muted-foreground">
-          Faça login para acessar seu perfil.
+          <Link to="/login" className="text-primary underline-offset-4 hover:underline">
+            Faça login
+          </Link>{" "}
+          para acessar seu perfil.
         </p>
       </PageLayout>
     );

@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 
+from src.routes.auth import router as auth_router
 from src.routes.fleet import router as fleet_router
 from src.routes.dashboard import router as dashboard_router
 from src.routes.fuel_prices import router as fuel_prices_router
@@ -18,6 +19,7 @@ from src.routes.vehicles import router as vehicles_router
 router = APIRouter()
 
 router.include_router(health_router)
+router.include_router(auth_router)
 router.include_router(dashboard_router)
 router.include_router(user_router)
 router.include_router(vehicles_router)

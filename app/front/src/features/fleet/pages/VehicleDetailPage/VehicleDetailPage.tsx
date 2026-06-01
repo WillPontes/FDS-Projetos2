@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import type { ColumnDef, OnChangeFn, PaginationState } from "@tanstack/react-table";
 import { ArrowLeft, Coins, Fuel, Leaf, Scroll, Ticket } from "lucide-react";
 import { format } from "date-fns";
@@ -22,6 +22,8 @@ import { TransactionFilters } from "@/components/TransactionFilters/TransactionF
 import type { TransactionFilterState } from "@/components/TransactionFilters/TransactionFilters";
 import { getVehicle, getVehicleTransactionsFiltered, getVehicleSummary } from "../../api/requests";
 import type { VehicleTransaction } from "../../api/types";
+import { VehicleFormDialog } from "../../components/VehicleFormDialog/VehicleFormDialog";
+import { VEHICLE_CATEGORY_LABELS } from "../../constants";
 
 type VehicleDetailPageProps = {
   vehicleId: number;
@@ -82,8 +84,10 @@ const fuelLabels: Record<string, string> = {
 
 export const VehicleDetailPage = ({ vehicleId }: VehicleDetailPageProps) => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [txPage, setTxPage] = useState(1);
   const [txFilters, setTxFilters] = useState<TransactionFilterState>({});
+  const [editOpen, setEditOpen] = useState(false);
 
   const { data: vehicle, isLoading: vehicleLoading } = useQuery({
     queryKey: ["vehicles", vehicleId],
@@ -142,14 +146,39 @@ export const VehicleDetailPage = ({ vehicleId }: VehicleDetailPageProps) => {
           label="Combustível"
           value={vehicle?.fuel_type ? fuelLabels[vehicle.fuel_type] ?? vehicle.fuel_type : undefined}
         />
+        <InfoRow
+          label="Categoria"
+          value={
+            vehicle?.category
+              ? VEHICLE_CATEGORY_LABELS[vehicle.category] ?? vehicle.category
+              : undefined
+          }
+        />
+        <InfoRow
+          label="Autonomia média (km/L)"
+          value={
+            vehicle?.average_autonomy_km != null
+              ? String(vehicle.average_autonomy_km)
+              : undefined
+          }
+        />
         <div className="mt-3 flex justify-end">
-          <Button asChild variant="outline" size="sm">
-            <Link to="/frota/editar/$id" params={{ id: String(vehicleId) }}>
-              Editar veículo
-            </Link>
+          <Button variant="outline" size="sm" onClick={() => setEditOpen(true)}>
+            Editar veículo
           </Button>
         </div>
       </SectionCard>
+
+      {vehicle && (
+        <VehicleFormDialog
+          open={editOpen}
+          onClose={() => {
+            setEditOpen(false);
+            queryClient.invalidateQueries({ queryKey: ["vehicles", vehicleId] });
+          }}
+          vehicle={vehicle}
+        />
+      )}
 
       <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5">
         <KpiCard

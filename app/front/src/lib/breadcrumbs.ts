@@ -72,25 +72,11 @@ export function getBreadcrumbs(
   }
 
   const vehicleId = dynamicIdSegment(path, "/frota");
-  if (vehicleId && !path.includes("/editar") && path !== "/frota/novo") {
+  if (vehicleId) {
     const name = names[`vehicle-${vehicleId}`] ?? `Veículo #${vehicleId}`;
     return [
       { label: "Veículos", to: "/frota" },
       { label: name, to: path },
-    ];
-  }
-
-  if (matchDynamic(path, "/frota/editar")) {
-    return [
-      { label: "Veículos", to: "/frota" },
-      { label: "Editar Veículo", to: path },
-    ];
-  }
-
-  if (path === "/frota/novo") {
-    return [
-      { label: "Veículos", to: "/frota" },
-      { label: "Cadastrar Veículo", to: "/frota/novo" },
     ];
   }
 
@@ -101,13 +87,6 @@ export function getBreadcrumbs(
   const driverId = dynamicIdSegment(path, "/motoristas");
   if (driverId) {
     const name = names[`driver-${driverId}`] ?? `Motorista #${driverId}`;
-    if (path.includes("/editar")) {
-      return [
-        { label: "Motoristas", to: "/motoristas" },
-        { label: name, to: `/motoristas/${driverId}` },
-        { label: "Editar", to: path },
-      ];
-    }
     return [
       { label: "Motoristas", to: "/motoristas" },
       { label: name, to: path },
@@ -151,6 +130,7 @@ export function getBreadcrumbs(
     "/relatorios": { label: "Relatórios", to: "/relatorios" },
     "/rota": { label: "Calcular Rota", to: "/rota" },
     "/passagens": { label: "Minhas Passagens", to: "/passagens" },
+    "/passagens-auditoria": { label: "Passagens", to: "/passagens-auditoria" },
     "/impacto": { label: "Meu Impacto", to: "/impacto" },
     "/ajuda": { label: "Ajuda e Suporte", to: "/ajuda" },
     "/configuracoes": { label: "Configurações Gerais", to: "/configuracoes" },

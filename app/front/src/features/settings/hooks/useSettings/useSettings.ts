@@ -4,6 +4,7 @@ import { getToastErrorMessage } from "@/lib/api-error";
 import {
   getFuelPrices,
   getTechnicalSpecsBundle,
+  syncEmissionFactors,
   syncFuelPrices,
   updateFuelPriceMock,
   updateTechnicalSpecs,
@@ -45,23 +46,24 @@ export const useUpdateTechnicalSpecs = () => {
   });
 };
 
+export const useSyncEmissionFactors = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: syncEmissionFactors,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: settingsQueryKeys.technicalSpecs(),
+      });
+    },
+  });
+};
+
 export const useSyncFuelPrices = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: syncFuelPrices,
     onSuccess: (data) => {
       queryClient.setQueryData(settingsQueryKeys.fuelPrices(), data);
-      queryClient.invalidateQueries({
-        queryKey: settingsQueryKeys.technicalSpecs(),
-      });
-      toast.success("Preços sincronizados com a ANP!");
-    },
-    onError: (error) => {
-      toast.error(
-        getToastErrorMessage(error, {
-          fallback: "Erro ao sincronizar preços.",
-        }),
-      );
     },
   });
 };

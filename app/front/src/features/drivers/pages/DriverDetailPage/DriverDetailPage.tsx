@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import type { ColumnDef, OnChangeFn, PaginationState } from "@tanstack/react-table";
 import { ArrowLeft, Coins, Fuel, Leaf, Scroll, Ticket } from "lucide-react";
 import { format } from "date-fns";
 import { useState } from "react";
+import { DriverFormDialog } from "../../components/DriverFormDialog/DriverFormDialog";
 import { DataTable, entityIdColumn } from "@/components/DataTable";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
@@ -87,6 +88,7 @@ export const DriverDetailPage = ({ driverId }: DriverDetailPageProps) => {
   const navigate = useNavigate();
   const [txPage, setTxPage] = useState(1);
   const [txFilters, setTxFilters] = useState<TransactionFilterState>({});
+  const [editOpen, setEditOpen] = useState(false);
 
   const { data: driver, isLoading: driverLoading } = useQuery({
     queryKey: ["users", driverId],
@@ -146,13 +148,19 @@ export const DriverDetailPage = ({ driverId }: DriverDetailPageProps) => {
           value={driver?.role ? roleLabels[driver.role] ?? driver.role : undefined}
         />
         <div className="mt-3 flex justify-end">
-          <Button asChild variant="outline" size="sm">
-            <Link to="/motoristas/editar/$id" params={{ id: String(driverId) }}>
-              Editar motorista
-            </Link>
+          <Button variant="outline" size="sm" onClick={() => setEditOpen(true)}>
+            Editar motorista
           </Button>
         </div>
       </SectionCard>
+
+      {driver && driver.role === "motorista" && (
+        <DriverFormDialog
+          open={editOpen}
+          onClose={() => setEditOpen(false)}
+          driver={driver}
+        />
+      )}
 
       <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5">
         <KpiCard

@@ -8,6 +8,15 @@ const ROLE_FALLBACK: Record<UserRole, string> = {
   motorista: "/impacto",
 };
 
+export function requireAuth() {
+  return () => {
+    const { isAuthenticated, user } = useAuthStore.getState();
+    if (!isAuthenticated || !user) {
+      throw redirect({ to: "/login" });
+    }
+  };
+}
+
 export function requireRoles(roles: UserRole[], fallback?: string) {
   return () => {
     const user = useAuthStore.getState().user;

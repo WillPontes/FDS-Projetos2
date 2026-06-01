@@ -10,6 +10,7 @@ dependencies = [
     "python-dotenv>=1.0",
     "pydantic-settings>=2.7",
     "PyJWT>=2.9",
+    "bcrypt>=4.2",
     "google-cloud-bigquery",
     "openpyxl>=3.1",
 ]

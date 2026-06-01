@@ -84,6 +84,21 @@ export async function syncFuelPrices(): Promise<Record<string, FuelPriceByUF>> {
   );
 }
 
+export async function syncEmissionFactors(): Promise<{
+  status: string;
+  updated: Pick<
+    TechnicalSpecs,
+    | "emission_factor_diesel_s10"
+    | "emission_factor_gasolina_c"
+    | "emission_factor_etanol"
+  >;
+  source_url: string;
+}> {
+  return api
+    .post("/api/technical-specs/sync-mcti")
+    .json();
+}
+
 export async function updateFuelPriceMock(
   uf: string,
   payload: Partial<FuelPriceByUF>,
@@ -128,34 +143,4 @@ export function saveAdminAccountSettings(settings: AdminAccountSettings): void {
   localStorage.setItem(ADMIN_SETTINGS_KEY, JSON.stringify(settings));
 }
 
-export type NotificationSettings = {
-  emailAlerts: boolean;
-  pushAlerts: boolean;
-  weeklyReport: boolean;
-};
-
-const NOTIFICATION_SETTINGS_KEY = "taggy-notification-settings";
-
-export function loadNotificationSettings(): NotificationSettings {
-  try {
-    const raw = localStorage.getItem(NOTIFICATION_SETTINGS_KEY);
-    if (!raw) {
-      return {
-        emailAlerts: true,
-        pushAlerts: false,
-        weeklyReport: true,
-      };
-    }
-    return JSON.parse(raw) as NotificationSettings;
-  } catch {
-    return {
-      emailAlerts: true,
-      pushAlerts: false,
-      weeklyReport: true,
-    };
-  }
-}
-
-export function saveNotificationSettings(settings: NotificationSettings): void {
-  localStorage.setItem(NOTIFICATION_SETTINGS_KEY, JSON.stringify(settings));
-}
+export type { NotificationSettings } from "@/features/users/api/types";

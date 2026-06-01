@@ -4,6 +4,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.connection import get_db
+from src.middleware.dev_auth import apply_org_scope_for_gestor, get_current_user_dev
+from src.models.user import User
 from src.errors import messages as err
 from src.dto.transactions import (
     ProcessTransactionBody,
@@ -22,7 +24,6 @@ from src.services.transactions import (
     create_transaction as create_transaction_svc,
     delete_transaction as delete_transaction_svc,
     get_transaction_by_id as get_transaction_by_id_svc,
-    list_transactions as list_transactions_svc,
     update_transaction as update_transaction_svc,
 )
 from src.services.user_stats import upsert_user_stats_from_transaction
@@ -42,24 +43,42 @@ async def list_transactions(
     uf: str | None = Query(default=None),
     from_date: str | None = Query(default=None),
     to_date: str | None = Query(default=None),
+    paginate: bool = Query(default=False),
     db: AsyncSession = Depends(get_db),
+    current_user: User | None = Depends(get_current_user_dev),
 ):
     from datetime import date as date_type
     parsed_from = date_type.fromisoformat(from_date) if from_date else None
     parsed_to = date_type.fromisoformat(to_date) if to_date else None
+    org_scope = apply_org_scope_for_gestor(current_user, organization_id)
     repo = TransactionRepository(db)
     if vehicle_id is not None:
         items, total = await repo.get_by_vehicle_paginated(vehicle_id, page, page_size, context=context, uf=uf, from_date=parsed_from, to_date=parsed_to)
     elif user_id is not None:
         items, total = await repo.get_by_user_paginated(user_id, page, page_size, plate=plate, context=context, uf=uf, from_date=parsed_from, to_date=parsed_to)
+    elif paginate or org_scope is not None or plate or context or uf or parsed_from or parsed_to:
+        items, total = await repo.get_paginated(
+            page,
+            page_size,
+            organization_id=org_scope,
+            plate=plate,
+            context=context,
+            uf=uf,
+            from_date=parsed_from,
+            to_date=parsed_to,
+        )
     elif organization_id is not None:
         items, total = await repo.get_by_organization_paginated(organization_id, page, page_size, context=context, uf=uf, from_date=parsed_from, to_date=parsed_to)
     else:
-        transactions = await list_transactions_svc(db)
-        return {
-            "items": [TransactionPublic.model_validate(t) for t in transactions],
-            "total": len(transactions),
-        }
+        items, total = await repo.get_paginated(
+            page,
+            page_size,
+            plate=plate,
+            context=context,
+            uf=uf,
+            from_date=parsed_from,
+            to_date=parsed_to,
+        )
     return {
         "items": [TransactionPublic.model_validate(t) for t in items],
         "total": total,

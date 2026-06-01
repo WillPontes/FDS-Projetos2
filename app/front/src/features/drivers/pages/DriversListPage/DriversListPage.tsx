@@ -28,9 +28,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ActionHintPopover } from "@/components/ActionHintPopover";
+import {
+  FleetsRelationSelect,
+  OrganizationsRelationSelect,
+} from "@/components/form/relation-selects";
 import { DataTable, entityIdColumn } from "@/components/DataTable";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { PAGE_SIZE } from "@/constants";
+import { useCurrentUser } from "@/features/auth";
 import type { UserWithVehicle } from "@/features/users/api/types";
 import { useDeleteUser } from "@/features/users/hooks/useUpdateUser";
 import { useGetDrivers } from "../../hooks/useGetDrivers";
@@ -119,10 +124,14 @@ const driversSearchParams = {
   sort: parseAsString,
   order: parseAsStringEnum(["asc", "desc"] as const).withDefault("asc"),
   search: parseAsString,
+  org: parseAsInteger,
+  fleet: parseAsInteger,
 };
 
 export const DriversListPage = () => {
-  const [{ page, sort, order, search }, setParams] = useQueryStates(
+  const { user } = useCurrentUser();
+  const isAdmin = user?.role === "admin";
+  const [{ page, sort, order, search, org, fleet }, setParams] = useQueryStates(
     driversSearchParams,
     { history: "replace" },
   );
@@ -139,10 +148,26 @@ export const DriversListPage = () => {
     ? [{ id: sort, desc: order === "desc" }]
     : [];
 
+  const scopedOrgId =
+    user?.role === "gestor_frota"
+      ? (user.organization_id ?? undefined)
+      : isAdmin
+        ? (org ?? undefined)
+        : undefined;
+
+  const fleetFilterOrgId =
+    user?.role === "gestor_frota"
+      ? (user.organization_id ?? undefined)
+      : isAdmin
+        ? (org ?? undefined)
+        : undefined;
+
   const { data, isLoading, isError, error } = useGetDrivers({
     page,
     pageSize: PAGE_SIZE,
     search: search ?? undefined,
+    organizationId: scopedOrgId,
+    fleetId: fleet ?? undefined,
     sortBy: sort ?? undefined,
     sortOrder: order,
   });
@@ -183,19 +208,42 @@ export const DriversListPage = () => {
         </p>
       ) : (
         <>
-          <section className="flex items-center gap-4">
+          <section className="flex flex-col gap-4 lg:flex-row lg:items-center">
             <FilterInput
               placeholder="Buscar por nome ou placa"
               value={search ?? ""}
               onChange={(e) =>
                 setParams({ search: e.target.value || null, page: 1 })
               }
-              className="w-full"
+              className="lg:flex-1"
             />
-            <Button onClick={() => setCreateOpen(true)}>
-              <Plus className="mr-1 h-4 w-4" />
-              Cadastrar Motorista
-            </Button>
+            <div className="flex flex-wrap items-center gap-2">
+              {isAdmin && (
+                <OrganizationsRelationSelect
+                  value={org ?? undefined}
+                  onValueChange={(value) =>
+                    setParams({ org: value ?? null, fleet: null, page: 1 })
+                  }
+                  placeholder="Todas as organizações"
+                  emptyLabel="Todas as organizações"
+                  className="w-52"
+                />
+              )}
+              <FleetsRelationSelect
+                value={fleet ?? undefined}
+                onValueChange={(value) =>
+                  setParams({ fleet: value ?? null, page: 1 })
+                }
+                organizationId={fleetFilterOrgId}
+                placeholder="Todas as frotas"
+                noneLabel="Todas as frotas"
+                className="w-44"
+              />
+              <Button onClick={() => setCreateOpen(true)}>
+                <Plus className="mr-1 h-4 w-4" />
+                Cadastrar Motorista
+              </Button>
+            </div>
           </section>
 
           <DataTable

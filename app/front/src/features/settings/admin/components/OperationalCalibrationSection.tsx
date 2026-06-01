@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Lock, LockOpen, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import {
   useGetFuelPrices,
   useGetTechnicalSpecs,
+  useSyncEmissionFactors,
   useSyncFuelPrices,
   useUpdateFuelPriceMock,
   useUpdateTechnicalSpecs,
@@ -52,10 +54,16 @@ const SPEC_FIELDS: {
 
 export const OperationalCalibrationSection = () => {
   const { data: bundle, isLoading, isError } = useGetTechnicalSpecs();
-  const { data: fuelPrices = {} } = useGetFuelPrices();
+  const {
+    data: fuelPrices = {},
+    isFetching: isFuelFetching,
+  } = useGetFuelPrices();
   const { mutate: updateSpecs, isPending: isSavingSpecs } =
     useUpdateTechnicalSpecs();
-  const { mutate: syncPrices, isPending: isSyncing } = useSyncFuelPrices();
+  const { mutateAsync: syncPricesAsync, isPending: isSyncing } =
+    useSyncFuelPrices();
+  const { mutateAsync: syncMctiAsync, isPending: isSyncingMcti } =
+    useSyncEmissionFactors();
   const { mutate: updateFuelPrice } = useUpdateFuelPriceMock();
 
   const [specValues, setSpecValues] = useState<Record<string, string>>({});
@@ -101,16 +109,33 @@ export const OperationalCalibrationSection = () => {
   }, [bundle]);
 
   useEffect(() => {
-    const source = Object.keys(fuelPrices).length
-      ? fuelPrices
-      : (bundle?.fuel_prices_by_uf ?? {});
-    setLocalFuelPrices(source);
-  }, [fuelPrices, bundle]);
+    if (Object.keys(fuelPrices).length) {
+      setLocalFuelPrices(fuelPrices);
+    }
+  }, [fuelPrices]);
 
   const ufs = useMemo(
     () => Object.keys(localFuelPrices).sort(),
     [localFuelPrices],
   );
+
+  const handleSyncPrices = () => {
+    toast.promise(syncPricesAsync(), {
+      loading: "Sincronizando preços com a ANP...",
+      success: "Preços sincronizados com a ANP!",
+      error: (err) =>
+        err instanceof Error ? err.message : "Erro ao sincronizar preços.",
+    });
+  };
+
+  const handleSyncMcti = () => {
+    toast.promise(syncMctiAsync(), {
+      loading: "Sincronizando fatores MCTI...",
+      success: "Fatores MCTI atualizados!",
+      error: (err) =>
+        err instanceof Error ? err.message : "Erro ao sincronizar fatores MCTI.",
+    });
+  };
 
   const handleSaveSpecs = () => {
     if (!bundle?.specs) return;
@@ -177,11 +202,22 @@ export const OperationalCalibrationSection = () => {
   return (
     <div className="space-y-6">
       <Card>
-        <CardHeader>
-          <CardTitle>Especificações Técnicas</CardTitle>
-          <CardDescription>
-            Fatores de emissão, baselines e parâmetros da CalcEngine.
-          </CardDescription>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Especificações Técnicas</CardTitle>
+            <CardDescription>
+              Fatores de emissão, baselines e parâmetros da CalcEngine.
+            </CardDescription>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            disabled={isSyncingMcti}
+            onClick={handleSyncMcti}
+          >
+            <RefreshCw className={cn("h-4 w-4", isSyncingMcti && "animate-spin")} />
+            Sincronizar MCTI
+          </Button>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
@@ -251,13 +287,19 @@ export const OperationalCalibrationSection = () => {
             type="button"
             variant="outline"
             disabled={isSyncing}
-            onClick={() => syncPrices()}
+            onClick={handleSyncPrices}
           >
-            <RefreshCw className="h-4 w-4" />
+            <RefreshCw className={cn("h-4 w-4", isSyncing && "animate-spin")} />
             Sincronizar ANP
           </Button>
         </CardHeader>
         <CardContent className="overflow-x-auto">
+          <div className="relative">
+            {(isSyncing || isFuelFetching) && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center rounded bg-background/60">
+                <RefreshCw className="h-5 w-5 animate-spin text-muted-foreground" />
+              </div>
+            )}
           <table className="w-full min-w-[640px] text-sm">
             <thead>
               <tr className="border-b text-left">
@@ -359,6 +401,7 @@ export const OperationalCalibrationSection = () => {
               })}
             </tbody>
           </table>
+          </div>
         </CardContent>
       </Card>
     </div>

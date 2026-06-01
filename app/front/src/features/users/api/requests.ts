@@ -18,6 +18,7 @@ export async function getUsers(
         ...(params?.organization_id != null && {
           organization_id: params.organization_id,
         }),
+        ...(params?.fleet_id != null && { fleet_id: params.fleet_id }),
         ...(params?.search && { search: params.search }),
         ...(params?.paginate && { paginate: "true" }),
         ...(params?.page != null && { page: params.page }),
@@ -40,6 +41,7 @@ export async function getUsersPaginated(
         ...(params?.organization_id != null && {
           organization_id: params.organization_id,
         }),
+        ...(params?.fleet_id != null && { fleet_id: params.fleet_id }),
         ...(params?.linkable_to_organization_id != null && {
           linkable_to_organization_id: params.linkable_to_organization_id,
         }),
@@ -53,14 +55,14 @@ export async function getUsersPaginated(
   return normalizePaginatedResponse<User>(res);
 }
 
-export async function getUserById(id: number): Promise<User | undefined> {
-  const users = await api.get("/api/users/").json<ListUsersResponse>();
-  return users.find((user) => user.id === id);
+export async function getUserById(id: number): Promise<User> {
+  return api.get(`/api/users/${id}`).json<User>();
 }
 
 export async function createUser(data: {
   name: string;
   email: string;
+  password: string;
   role?: string;
   organization_id?: number | null;
 }): Promise<User> {
@@ -69,6 +71,7 @@ export async function createUser(data: {
       searchParams: {
         name: data.name,
         email: data.email,
+        password: data.password,
         role: data.role ?? "motorista",
         ...(data.organization_id != null && { organization_id: data.organization_id }),
       },

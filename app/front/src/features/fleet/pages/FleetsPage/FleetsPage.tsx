@@ -1,58 +1,49 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { ChevronRight, Plus } from "lucide-react";
-import { useState, useMemo } from "react";
+import type {
+  ColumnDef,
+  OnChangeFn,
+  PaginationState,
+  SortingState,
+} from "@tanstack/react-table";
+import { Plus } from "lucide-react";
+import { useState } from "react";
+import {
+  parseAsInteger,
+  parseAsString,
+  parseAsStringEnum,
+  useQueryStates,
+} from "nuqs";
 import { toast } from "sonner";
 import { getToastErrorMessage } from "@/lib/api-error";
+import { ActionHintPopover } from "@/components/ActionHintPopover";
+import { OrganizationsRelationSelect } from "@/components/form/relation-selects";
+import { DataTable, entityIdColumn } from "@/components/DataTable";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { FilterInput } from "@/components/ui/FilterInput";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PAGE_SIZE } from "@/constants";
 import { useCurrentUser } from "@/features/auth";
 import { OrganizationsCombobox } from "../../components/OrganizationsCombobox/OrganizationsCombobox";
-import { createFleet, getFleets, getFleetSummary } from "../../api/requests";
+import { createFleet } from "../../api/requests";
 import type { Fleet } from "../../api/types";
+import { useGetFleetsFiltered } from "../../hooks/useGetFleetsFiltered";
 
-const FleetCard = ({ fleet }: { fleet: Fleet }) => {
-  const { data: summary } = useQuery({
-    queryKey: ["fleets", fleet.id, "summary"],
-    queryFn: () => getFleetSummary(fleet.id),
-  });
-
-  return (
-    <Link to="/frotas/$fleetId" params={{ fleetId: String(fleet.id) }}>
-      <Card className="cursor-pointer transition-shadow hover:shadow-md">
-        <CardContent className="p-5">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-xs text-neutral-500">#{fleet.id}</p>
-              <p className="font-semibold text-neutral-900">{fleet.name}</p>
-            </div>
-            <ChevronRight className="h-4 w-4 shrink-0 text-neutral-400" />
-          </div>
-          <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
-            <StatMini label="Veículos" value={summary?.vehicle_count ?? "—"} />
-            <StatMini label="Motoristas" value={summary?.driver_count ?? "—"} />
-            <StatMini label="Passagens" value={summary?.transaction_count ?? "—"} />
-            <StatMini label="CO₂ (kg)" value={summary ? summary.co2_total_kg.toFixed(1) : "—"} />
-            <StatMini label="Combustível (L)" value={summary ? summary.fuel_total_liters.toFixed(1) : "—"} />
-            <StatMini label="Economia (R$)" value={summary ? `R$ ${summary.total_savings_brl.toFixed(0)}` : "—"} />
-          </div>
-        </CardContent>
-      </Card>
-    </Link>
-  );
+const fleetsSearchParams = {
+  page: parseAsInteger.withDefault(1),
+  sort: parseAsString,
+  order: parseAsStringEnum(["asc", "desc"] as const).withDefault("asc"),
+  search: parseAsString,
+  org: parseAsInteger,
 };
-
-const StatMini = ({ label, value }: { label: string; value: number | string }) => (
-  <div className="rounded-md border border-neutral-200 bg-neutral-50 p-2 text-center">
-    <p className="text-sm font-semibold text-neutral-900">{value}</p>
-    <p className="text-xs text-neutral-500">{label}</p>
-  </div>
-);
 
 const CreateFleetDialog = ({
   open,
@@ -67,7 +58,9 @@ const CreateFleetDialog = ({
 }) => {
   const queryClient = useQueryClient();
   const [name, setName] = useState("");
-  const [organizationId, setOrganizationId] = useState<number | undefined>(defaultOrganizationId);
+  const [organizationId, setOrganizationId] = useState<number | undefined>(
+    defaultOrganizationId,
+  );
 
   const mutation = useMutation({
     mutationFn: () => {
@@ -114,10 +107,16 @@ const CreateFleetDialog = ({
             </div>
           )}
           <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={onClose}>Cancelar</Button>
+            <Button variant="outline" onClick={onClose}>
+              Cancelar
+            </Button>
             <Button
               onClick={() => mutation.mutate()}
-              disabled={!name.trim() || mutation.isPending || (isAdmin && organizationId == null)}
+              disabled={
+                !name.trim() ||
+                mutation.isPending ||
+                (isAdmin && organizationId == null)
+              }
             >
               {mutation.isPending ? "Salvando…" : "Salvar"}
             </Button>
@@ -128,58 +127,139 @@ const CreateFleetDialog = ({
   );
 };
 
+const columns: ColumnDef<Fleet>[] = [
+  entityIdColumn<Fleet>(),
+  {
+    accessorKey: "name",
+    header: "Nome",
+    enableSorting: true,
+  },
+  {
+    accessorKey: "organization_id",
+    header: "Organização",
+    enableSorting: true,
+    cell: ({ row }) => row.original.organization_id ?? "—",
+  },
+  {
+    id: "actions",
+    header: "Ações",
+    enableSorting: false,
+    cell: ({ row }) => (
+      <ActionHintPopover label="Ver detalhes da frota">
+        <Button asChild variant="outline" size="sm">
+          <Link
+            to="/frotas/$fleetId"
+            params={{ fleetId: String(row.original.id) }}
+            aria-label="Ver detalhes da frota"
+          >
+            Ver
+          </Link>
+        </Button>
+      </ActionHintPopover>
+    ),
+  },
+];
+
 export const FleetsPage = () => {
   const { user } = useCurrentUser();
-  const [search, setSearch] = useState("");
+  const isAdmin = user?.role === "admin";
+  const [{ page, sort, order, search, org }, setParams] = useQueryStates(
+    fleetsSearchParams,
+    { history: "replace" },
+  );
   const [createOpen, setCreateOpen] = useState(false);
 
-  const organizationId =
-    user?.role === "gestor_frota" ? user.organization_id ?? undefined : undefined;
+  const scopedOrgId =
+    user?.role === "gestor_frota"
+      ? (user.organization_id ?? undefined)
+      : isAdmin
+        ? (org ?? undefined)
+        : undefined;
 
-  const { data: fleets, isLoading } = useQuery({
-    queryKey: ["fleets", organizationId, search],
-    queryFn: () => getFleets({ organizationId, search: search || undefined }),
+  const pagination: PaginationState = {
+    pageIndex: page - 1,
+    pageSize: PAGE_SIZE,
+  };
+  const sorting: SortingState = sort
+    ? [{ id: sort, desc: order === "desc" }]
+    : [];
+
+  const { data, isLoading } = useGetFleetsFiltered({
+    page,
+    pageSize: PAGE_SIZE,
+    search: search ?? undefined,
+    organizationId: scopedOrgId,
+    sortBy: sort ?? undefined,
+    sortOrder: order,
   });
 
-  const filtered = useMemo(() => {
-    if (!fleets) return [];
-    if (!search.trim()) return fleets;
-    const q = search.toLowerCase();
-    return fleets.filter(
-      (f) =>
-        f.name.toLowerCase().includes(q) ||
-        String(f.id).includes(q),
-    );
-  }, [fleets, search]);
+  const pageCount = data ? Math.ceil(data.total / PAGE_SIZE) : undefined;
+
+  const handlePaginationChange: OnChangeFn<PaginationState> = (updater) => {
+    const next = typeof updater === "function" ? updater(pagination) : updater;
+    setParams({ page: next.pageIndex + 1 });
+  };
+
+  const handleSortingChange: OnChangeFn<SortingState> = (updater) => {
+    const next = typeof updater === "function" ? updater(sorting) : updater;
+    setParams({
+      sort: next[0]?.id ?? null,
+      order: next[0]?.desc ? "desc" : "asc",
+      page: 1,
+    });
+  };
 
   return (
-    <PageLayout title="Frotas" description="Visualize e gerencie todas as frotas cadastradas.">
-      <div className="flex items-center gap-3">
+    <PageLayout
+      title="Frotas"
+      description="Visualize e gerencie todas as frotas cadastradas."
+    >
+      <section className="flex flex-col gap-4 md:flex-row md:items-center">
         <FilterInput
           placeholder="Buscar frota por nome ou ID"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full"
+          value={search ?? ""}
+          onChange={(e) =>
+            setParams({ search: e.target.value || null, page: 1 })
+          }
+          className="md:flex-1"
         />
-        <Button onClick={() => setCreateOpen(true)}>
+        {isAdmin && (
+          <OrganizationsRelationSelect
+            value={org ?? undefined}
+            onValueChange={(value) =>
+              setParams({ org: value ?? null, page: 1 })
+            }
+            placeholder="Todas as organizações"
+            emptyLabel="Todas as organizações"
+            className="w-full md:w-52"
+          />
+        )}
+        <Button onClick={() => setCreateOpen(true)} className="shrink-0">
           <Plus className="mr-1 h-4 w-4" />
           Nova Frota
         </Button>
-      </div>
+      </section>
 
-      {isLoading && <p className="text-sm text-neutral-500">Carregando frotas…</p>}
-      {!isLoading && filtered.length === 0 && (
-        <p className="text-sm text-neutral-500">Nenhuma frota encontrada.</p>
-      )}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((fleet) => <FleetCard key={fleet.id} fleet={fleet} />)}
-      </div>
+      <DataTable
+        columns={columns}
+        data={data?.items ?? []}
+        isLoading={isLoading}
+        pageCount={pageCount}
+        pagination={pagination}
+        onPaginationChange={handlePaginationChange}
+        sorting={sorting}
+        onSortingChange={handleSortingChange}
+      />
 
       <CreateFleetDialog
         open={createOpen}
         onClose={() => setCreateOpen(false)}
-        defaultOrganizationId={organizationId}
-        isAdmin={user?.role === "admin"}
+        defaultOrganizationId={
+          user?.role === "gestor_frota"
+            ? (user.organization_id ?? undefined)
+            : undefined
+        }
+        isAdmin={isAdmin}
       />
     </PageLayout>
   );
