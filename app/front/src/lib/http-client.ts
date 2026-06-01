@@ -18,21 +18,19 @@ export const api = ky.create({
       },
     ],
     beforeError: [
-      async (state) => {
-        const { error } = state;
-        if (isHTTPError(error)) {
-          try {
-            const body = (await error.response.clone().json()) as Parameters<
-              typeof parseFastApiErrorBody
-            >[0];
-            const detail = parseFastApiErrorBody(body);
-            if (detail) {
-              const apiError = error as ApiHTTPError;
-              apiError.apiDetail = detail;
-              error.message = detail;
-            }
-          } catch {
-            // response body wasn't JSON — keep default message
+      ({ error }) => {
+        if (
+          isHTTPError(error) &&
+          error.data != null &&
+          typeof error.data === "object"
+        ) {
+          const detail = parseFastApiErrorBody(
+            error.data as Parameters<typeof parseFastApiErrorBody>[0],
+          );
+          if (detail) {
+            const apiError = error as ApiHTTPError;
+            apiError.apiDetail = detail;
+            error.message = detail;
           }
         }
         return error;

@@ -89,6 +89,12 @@ export function extractApiDetail(error: unknown): string | undefined {
     if (withDetail.apiDetail?.trim()) {
       return withDetail.apiDetail.trim()
     }
+    if (error.data != null && typeof error.data === "object") {
+      const fromData = parseFastApiErrorBody(error.data as FastApiErrorBody)
+      if (fromData) {
+        return fromData
+      }
+    }
     const msg = error.message?.trim()
     if (msg && !isTechnicalMessage(msg)) {
       return msg
