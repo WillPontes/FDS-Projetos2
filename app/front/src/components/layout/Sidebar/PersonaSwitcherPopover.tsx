@@ -1,5 +1,4 @@
-import { useNavigate, useRouterState } from "@tanstack/react-router";
-import { useQueryClient } from "@tanstack/react-query";
+import { useRouterState } from "@tanstack/react-router";
 import { Check, UserRoundCog } from "lucide-react";
 import { PERSONA_MOCKS } from "@/constants/personas";
 import { APP_NAV_ITEMS } from "@/constants/nav";
@@ -37,18 +36,20 @@ type PersonaSwitcherPopoverProps = {
 export const PersonaSwitcherPopover = ({ onSelect }: PersonaSwitcherPopoverProps) => {
   const user = useAuthStore((s) => s.user);
   const login = useAuthStore((s) => s.login);
-  const queryClient = useQueryClient();
-  const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   const handleSelect = (persona: CurrentUser) => {
+    if (user?.id === persona.id) return;
+
     login(persona);
-    queryClient.invalidateQueries();
     onSelect?.();
 
-    if (!isRouteAllowedForRole(pathname, persona.role)) {
-      navigate({ to: ROLE_HOME[persona.role] });
-    }
+    const nextPath = isRouteAllowedForRole(pathname, persona.role)
+      ? pathname
+      : ROLE_HOME[persona.role];
+
+    // Full reload so in-flight/cached requests never use the previous X-User-Id.
+    window.location.assign(nextPath);
   };
 
   const activeLabel =
