@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { DriverFormDialog } from "../../components/DriverFormDialog/DriverFormDialog";
 import { DriverCreateDialog } from "../../components/DriverCreateDialog/DriverCreateDialog";
@@ -32,20 +31,9 @@ import { ActionHintPopover } from "@/components/ActionHintPopover";
 import { DataTable, entityIdColumn } from "@/components/DataTable";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { PAGE_SIZE } from "@/constants";
-import { KpiCard } from "@/features/sustainability/components/MetricCard";
 import type { UserWithVehicle } from "@/features/users/api/types";
 import { useDeleteUser } from "@/features/users/hooks/useUpdateUser";
-import { api } from "@/lib/http-client";
-import { Leaf, Fuel, DollarSign, Users } from "lucide-react";
 import { useGetDrivers } from "../../hooks/useGetDrivers";
-
-type UserStatItem = {
-  user_id: number;
-  co2_total_kg: number;
-  fuel_total_liters: number;
-  financial_total_brl: number;
-  transactions_count: number;
-};
 
 const columns = (
   onDelete: (driver: UserWithVehicle) => void,
@@ -134,21 +122,6 @@ const driversSearchParams = {
 };
 
 export const DriversListPage = () => {
-  const { data: allStats } = useQuery({
-    queryKey: ["user-stats"],
-    queryFn: () => api.get("/api/user-stats/").json<UserStatItem[]>(),
-  });
-
-  const totals = allStats?.reduce(
-    (acc, s) => ({
-      drivers: acc.drivers + 1,
-      co2: acc.co2 + s.co2_total_kg,
-      fuel: acc.fuel + s.fuel_total_liters,
-      financial: acc.financial + s.financial_total_brl,
-    }),
-    { drivers: 0, co2: 0, fuel: 0, financial: 0 },
-  );
-
   const [{ page, sort, order, search }, setParams] = useQueryStates(
     driversSearchParams,
     { history: "replace" },
@@ -202,29 +175,6 @@ export const DriversListPage = () => {
       title="Motoristas"
       description="Consulte e gerencie os motoristas cadastrados no sistema."
     >
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <KpiCard
-          title="MOTORISTAS"
-          value={data?.total ?? "—"}
-          icon={<Users className="text-[#72C215]" size={24} />}
-        />
-        <KpiCard
-          title="CO₂ EVITADO (KG)"
-          value={totals ? totals.co2.toFixed(1) : "—"}
-          icon={<Leaf className="text-[#72C215]" size={24} />}
-        />
-        <KpiCard
-          title="COMBUSTÍVEL (L)"
-          value={totals ? totals.fuel.toFixed(1) : "—"}
-          icon={<Fuel className="text-[#72C215]" size={24} />}
-        />
-        <KpiCard
-          title="ECONOMIA (R$)"
-          value={totals ? `R$ ${totals.financial.toFixed(0)}` : "—"}
-          icon={<DollarSign className="text-[#72C215]" size={24} />}
-        />
-      </div>
-
       {isError ? (
         <p className="text-destructive" role="alert">
           {getToastErrorMessage(error, {

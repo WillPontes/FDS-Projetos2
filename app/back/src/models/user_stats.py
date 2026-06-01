@@ -73,5 +73,6 @@ class UserStatsPublic(SQLModel):
     financial_total_brl: float
 
     transactions_count: int
+    paper_saved_meters: float = 0
 
     updated_at: datetime

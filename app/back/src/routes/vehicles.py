@@ -120,6 +120,7 @@ async def get_vehicle_summary(
 ):
     from sqlalchemy import func, select
     from src.models.transaction import Transaction
+    from src.services.paper_savings import compute_paper_saved_meters
 
     vehicle = await get_vehicle_by_id_svc(session, vehicle_id)
     if not vehicle:
@@ -135,12 +136,24 @@ async def get_vehicle_summary(
         ).where(Transaction.vehicle_id == vehicle_id)
     )
     count, co2, fuel, financial, time_sec = result.one()
+    digital_count_result = await session.execute(
+        select(func.count()).where(
+            Transaction.vehicle_id == vehicle_id,
+            Transaction.is_digital.is_(True),
+        )
+    )
+    digital_count = int(digital_count_result.scalar_one())
+    paper_saved_meters = await compute_paper_saved_meters(
+        session,
+        digital_transaction_count=digital_count,
+    )
     return {
         "transaction_count": int(count),
         "co2_total_kg": float(co2),
         "fuel_total_liters": float(fuel),
         "financial_total_brl": float(financial),
         "time_total_sec": float(time_sec),
+        "paper_saved_meters": paper_saved_meters,
     }
 
 

@@ -1,9 +1,18 @@
-import { Leaf, Fuel, Download, Coins, Tag } from "lucide-react";
+import { Leaf, Fuel, Download, Coins, Tag, Scroll } from "lucide-react";
 import { useState } from "react";
 
 import { PageLayout } from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
 import { KpiCard } from "@/features/sustainability/components/MetricCard";
+import {
+  formatKpiCo2,
+  formatKpiCount,
+  formatKpiCurrency,
+  formatKpiFuel,
+  formatKpiPaper,
+  KPI_ICON_SIZE,
+  KPI_TITLES,
+} from "@/features/sustainability/lib/kpi";
 import { useCurrentUser } from "@/features/auth";
 import { OrganizationsCombobox } from "@/features/fleet/components/OrganizationsCombobox/OrganizationsCombobox";
 import { useDashboardFilters } from "@/features/dashboard/hooks/useDashboardFilters";
@@ -46,24 +55,29 @@ export const DashboardPage = () => {
   // TODO: replace mock KPI values with real API data scoped by organization
   const METRICS = [
     {
-      title: "EMISSÃO DE CO₂ EVITADAS",
-      value: "12.450kg",
-      icon: <Leaf className="text-[#72C215]" size={30} />,
+      title: KPI_TITLES.co2Avoided,
+      value: formatKpiCo2(12450),
+      icon: <Leaf className="text-[#72C215]" size={KPI_ICON_SIZE} />,
     },
     {
-      title: "COMBUSTÍVEL ECONOMIZADO",
-      value: "8.920L",
-      icon: <Fuel className="text-[#72C215]" size={30} />,
+      title: KPI_TITLES.fuelSaved,
+      value: formatKpiFuel(8920),
+      icon: <Fuel className="text-[#72C215]" size={KPI_ICON_SIZE} />,
     },
     {
-      title: "ECONOMIA ACUMULADA (ROI)",
-      value: "R$ 67.340",
-      icon: <Coins className="text-[#72C215]" size={30} />,
+      title: KPI_TITLES.paperSaved,
+      value: formatKpiPaper(650),
+      icon: <Scroll className="text-[#72C215]" size={KPI_ICON_SIZE} />,
     },
     {
-      title: "TAGS ATIVOS",
-      value: "247",
-      icon: <Tag className="text-[#72C215]" size={30} />,
+      title: KPI_TITLES.financialSavings,
+      value: formatKpiCurrency(67340),
+      icon: <Coins className="text-[#72C215]" size={KPI_ICON_SIZE} />,
+    },
+    {
+      title: KPI_TITLES.tagsActive,
+      value: formatKpiCount(247),
+      icon: <Tag className="text-[#72C215]" size={KPI_ICON_SIZE} />,
     },
   ];
 
@@ -105,7 +119,7 @@ export const DashboardPage = () => {
         </Button>
       </section>
 
-      <section className="grid grid-cols-4 gap-6">
+      <section className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5">
         {METRICS.map((metric) => (
           <KpiCard
             key={metric.title}

@@ -14,6 +14,7 @@ from src.middleware.dev_auth import get_current_user_dev
 from src.repositories.organization_repository import OrganizationRepository
 from src.repositories.transaction_repository import TransactionRepository
 from src.repositories.user_repository import UserRepository
+from src.services.paper_savings import compute_paper_saved_meters
 
 router = APIRouter(tags=["Organizations"])
 
@@ -107,6 +108,18 @@ async def get_organization_summary(
     )
     transaction_count, total_savings, co2_total, fuel_total = tx_result.one()
 
+    digital_count_result = await db.execute(
+        select(func.count()).where(
+            Transaction.organization_id == organization_id,
+            Transaction.is_digital.is_(True),
+        )
+    )
+    digital_count = int(digital_count_result.scalar_one())
+    paper_saved_meters = await compute_paper_saved_meters(
+        db,
+        digital_transaction_count=digital_count,
+    )
+
     return {
         "vehicle_count": vehicle_count,
         "driver_count": driver_count,
@@ -114,6 +127,7 @@ async def get_organization_summary(
         "total_savings_brl": float(total_savings),
         "co2_total_kg": float(co2_total),
         "fuel_total_liters": float(fuel_total),
+        "paper_saved_meters": paper_saved_meters,
     }
 
 

@@ -5,6 +5,7 @@ from src.models.fleet import Fleet, FleetUser
 from src.models.transaction import Transaction
 from src.models.user import User
 from src.models.vehicle import Vehicle
+from src.services.paper_savings import compute_paper_saved_meters
 
 
 class FleetRepository:
@@ -152,6 +153,18 @@ class FleetRepository:
             )
         ).one()
         count, co2, fuel, savings = tx_stats
+        fleet_vehicle_ids = select(Vehicle.id).where(Vehicle.fleet_id == fleet_id)
+        digital_count_result = await self.session.execute(
+            select(func.count()).where(
+                Transaction.vehicle_id.in_(fleet_vehicle_ids),
+                Transaction.is_digital.is_(True),
+            )
+        )
+        digital_count = int(digital_count_result.scalar_one())
+        paper_saved_meters = await compute_paper_saved_meters(
+            self.session,
+            digital_transaction_count=digital_count,
+        )
         return {
             "vehicle_count": int(vehicle_count),
             "driver_count": int(driver_count),
@@ -159,4 +172,5 @@ class FleetRepository:
             "co2_total_kg": float(co2),
             "fuel_total_liters": float(fuel),
             "total_savings_brl": float(savings),
+            "paper_saved_meters": paper_saved_meters,
         }

@@ -35,6 +35,7 @@ export type OrganizationSummary = {
   total_savings_brl: number;
   co2_total_kg: number;
   fuel_total_liters: number;
+  paper_saved_meters: number;
 };
 
 export type FleetSummary = {
@@ -44,6 +45,7 @@ export type FleetSummary = {
   co2_total_kg: number;
   fuel_total_liters: number;
   total_savings_brl: number;
+  paper_saved_meters: number;
 };
 
 export type VehicleSummary = {
@@ -52,6 +54,7 @@ export type VehicleSummary = {
   fuel_total_liters: number;
   financial_total_brl: number;
   time_total_sec: number;
+  paper_saved_meters: number;
 };
 
 export type OrganizationTransaction = {

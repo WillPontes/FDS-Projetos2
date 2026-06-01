@@ -24,7 +24,7 @@ export const ImpactDashboardPage = () => {
     {
       key: "agua",
       title: `${(metrics?.totalWaterSaved ?? 0).toLocaleString("pt-BR")} litros`,
-      subtitle: "de água poupa dos",
+      subtitle: "de água poupados",
       detail: `${(metrics?.totalWaterSaved ?? 0).toLocaleString("pt-BR")} L`,
       icon: <Droplet className="h-10 w-10 text-primary" />,
     },

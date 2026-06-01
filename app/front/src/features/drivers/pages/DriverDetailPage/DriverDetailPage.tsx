@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "@tanstack/react-router";
 import type { ColumnDef, OnChangeFn, PaginationState } from "@tanstack/react-table";
-import { ArrowLeft, DollarSign, Fuel, Leaf, Ticket } from "lucide-react";
+import { ArrowLeft, Coins, Fuel, Leaf, Scroll, Ticket } from "lucide-react";
 import { format } from "date-fns";
 import { useState } from "react";
 import { DataTable, entityIdColumn } from "@/components/DataTable";
@@ -12,6 +12,15 @@ import { getUserById } from "@/features/users/api/requests";
 import { getUserTransactions } from "@/features/fleet/api/requests";
 import type { VehicleTransaction } from "@/features/fleet/api/types";
 import { KpiCard, SectionCard } from "@/features/sustainability/components/MetricCard";
+import {
+  formatEnvironmentalFinancial,
+  formatKpiCo2,
+  formatKpiCount,
+  formatKpiFuel,
+  formatKpiPaper,
+  KPI_ICON_SIZE,
+  KPI_TITLES,
+} from "@/features/sustainability/lib/kpi";
 import { TransactionFilters } from "@/components/TransactionFilters/TransactionFilters";
 import type { TransactionFilterState } from "@/components/TransactionFilters/TransactionFilters";
 import { api } from "@/lib/http-client";
@@ -26,6 +35,7 @@ type UserStats = {
   financial_total_brl: number;
   transactions_count: number;
   total_time_saved_sec: number;
+  paper_saved_meters: number;
 };
 
 const transactionColumns: ColumnDef<VehicleTransaction>[] = [
@@ -144,26 +154,31 @@ export const DriverDetailPage = ({ driverId }: DriverDetailPageProps) => {
         </div>
       </SectionCard>
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5">
         <KpiCard
-          title="PASSAGENS"
-          value={stats?.transactions_count ?? "—"}
-          icon={<Ticket className="text-[#72C215]" size={24} />}
+          title={KPI_TITLES.passages}
+          value={formatKpiCount(stats?.transactions_count)}
+          icon={<Ticket className="text-[#72C215]" size={KPI_ICON_SIZE} />}
         />
         <KpiCard
-          title="CO₂ EVITADO (KG)"
-          value={stats ? stats.co2_total_kg.toFixed(2) : "—"}
-          icon={<Leaf className="text-[#72C215]" size={24} />}
+          title={KPI_TITLES.co2Avoided}
+          value={formatKpiCo2(stats?.co2_total_kg)}
+          icon={<Leaf className="text-[#72C215]" size={KPI_ICON_SIZE} />}
         />
         <KpiCard
-          title="COMBUSTÍVEL (L)"
-          value={stats ? stats.fuel_total_liters.toFixed(2) : "—"}
-          icon={<Fuel className="text-[#72C215]" size={24} />}
+          title={KPI_TITLES.fuelSaved}
+          value={formatKpiFuel(stats?.fuel_total_liters)}
+          icon={<Fuel className="text-[#72C215]" size={KPI_ICON_SIZE} />}
         />
         <KpiCard
-          title="ECONOMIA (R$)"
-          value={stats ? `R$ ${stats.financial_total_brl.toFixed(2)}` : "—"}
-          icon={<DollarSign className="text-[#72C215]" size={24} />}
+          title={KPI_TITLES.paperSaved}
+          value={formatKpiPaper(stats?.paper_saved_meters)}
+          icon={<Scroll className="text-[#72C215]" size={KPI_ICON_SIZE} />}
+        />
+        <KpiCard
+          title={KPI_TITLES.financialSavings}
+          value={formatEnvironmentalFinancial(stats ?? {})}
+          icon={<Coins className="text-[#72C215]" size={KPI_ICON_SIZE} />}
         />
       </div>
 

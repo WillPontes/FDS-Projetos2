@@ -6,6 +6,14 @@ import {
   MetricCard,
   sectionCardLabelClass,
 } from "@/features/sustainability/components/MetricCard";
+import {
+  formatKpiCo2,
+  formatKpiDistance,
+  formatKpiDuration,
+  formatKpiFuel,
+  KPI_ICON_SIZE,
+  KPI_TITLES,
+} from "@/features/sustainability/lib/kpi";
 import type { RouteEstimate } from "../../api/types";
 
 type RouteEstimatePanelProps = {
@@ -32,9 +40,9 @@ export const RouteEstimatePanel = ({
       </div>
 
       <KpiCard
-        title="ECONOMIA ESTIMADA"
-        value={`${estimate.carbonSavedKg} kg CO₂`}
-        icon={<Leaf className="text-[#72C215]" size={30} />}
+        title={KPI_TITLES.co2Avoided}
+        value={formatKpiCo2(estimate.carbonSavedKg)}
+        icon={<Leaf className="text-[#72C215]" size={KPI_ICON_SIZE} />}
       />
 
       <p className="text-sm text-muted-foreground">
@@ -43,19 +51,19 @@ export const RouteEstimatePanel = ({
 
       <div className="grid grid-cols-3 gap-4">
         <KpiCard
-          title="DISTÂNCIA"
-          value={`${estimate.distanceKm} km`}
-          icon={<Route className="text-[#72C215]" size={30} />}
+          title={KPI_TITLES.distance}
+          value={formatKpiDistance(estimate.distanceKm)}
+          icon={<Route className="text-[#72C215]" size={KPI_ICON_SIZE} />}
         />
         <KpiCard
-          title="DURAÇÃO"
-          value={`${estimate.durationMin} min`}
-          icon={<Clock className="text-[#72C215]" size={30} />}
+          title={KPI_TITLES.duration}
+          value={formatKpiDuration(estimate.durationMin)}
+          icon={<Clock className="text-[#72C215]" size={KPI_ICON_SIZE} />}
         />
         <KpiCard
-          title="COMBUSTÍVEL"
-          value={`${estimate.fuelSavedLiters} L`}
-          icon={<Fuel className="text-[#72C215]" size={30} />}
+          title={KPI_TITLES.fuelSaved}
+          value={formatKpiFuel(estimate.fuelSavedLiters)}
+          icon={<Fuel className="text-[#72C215]" size={KPI_ICON_SIZE} />}
         />
       </div>
 
@@ -67,10 +75,10 @@ export const RouteEstimatePanel = ({
           </div>
           <div className="text-sm">
             <p className="font-semibold text-foreground">
-              Seu veículo: {estimate.carbonEstimateKg} kg CO₂
+              Seu veículo: {formatKpiCo2(estimate.carbonEstimateKg)}
             </p>
             <p className="text-muted-foreground">
-              Rota padrão: {estimate.benchmarkCarbonKg} kg CO₂
+              Rota padrão: {formatKpiCo2(estimate.benchmarkCarbonKg)}
             </p>
           </div>
         </div>

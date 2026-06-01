@@ -1,4 +1,11 @@
 import { Clock, Leaf, Ticket } from "lucide-react";
+import {
+  formatKpiCo2,
+  formatKpiCount,
+  formatKpiHours,
+  KPI_ICON_SIZE,
+  KPI_TITLES,
+} from "../../lib/kpi";
 import { KpiCard } from "../MetricCard";
 
 type StatCardProps = {
@@ -11,19 +18,19 @@ type StatCardProps = {
 export const StatCard = ({ label, passages, co2, hours }: StatCardProps) => {
   const metrics = [
     {
-      title: "PASSAGENS",
-      value: passages,
-      icon: <Ticket className="text-[#72C215]" size={30} />,
+      title: KPI_TITLES.passages,
+      value: formatKpiCount(typeof passages === "number" ? passages : Number(passages)),
+      icon: <Ticket className="text-[#72C215]" size={KPI_ICON_SIZE} />,
     },
     {
-      title: "KG CO₂",
-      value: co2,
-      icon: <Leaf className="text-[#72C215]" size={30} />,
+      title: KPI_TITLES.co2Avoided,
+      value: formatKpiCo2(typeof co2 === "number" ? co2 : Number(co2)),
+      icon: <Leaf className="text-[#72C215]" size={KPI_ICON_SIZE} />,
     },
     {
-      title: "HORAS",
-      value: hours,
-      icon: <Clock className="text-[#72C215]" size={30} />,
+      title: KPI_TITLES.hoursSaved,
+      value: formatKpiHours(typeof hours === "number" ? hours : Number(hours)),
+      icon: <Clock className="text-[#72C215]" size={KPI_ICON_SIZE} />,
     },
   ];
 
