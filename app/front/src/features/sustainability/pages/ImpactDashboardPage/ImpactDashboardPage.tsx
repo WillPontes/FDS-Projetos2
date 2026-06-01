@@ -13,26 +13,26 @@ export const ImpactDashboardPage = () => {
   const weeklyPercentage = weeklyGoal?.weeklyPercentage ?? 0;
   const weeklyAccumulated = Math.round((weeklyPercentage * weeklyTarget) / 100);
 
-  const ludicMetrics = [
+  const impactEquivalences = [
     {
       key: "carbono",
-      title: `${metrics?.treeSaved ?? 0} Árvores`,
-      subtitle: "Árvores Plantadas e Crescendo por 1 Ano",
-      techValue: `${metrics?.totalCarbon ?? 0}kg de CO2`,
+      title: `${metrics?.treeSaved ?? 0} árvores`,
+      subtitle: "equivalentes plantadas por 1 ano",
+      detail: `${metrics?.totalCarbon ?? 0} kg de CO₂`,
       icon: <Leaf className="h-10 w-10 text-primary" />,
     },
     {
       key: "agua",
-      title: `${(metrics?.totalWaterSaved ?? 0).toLocaleString("pt-BR")} Litros`,
-      subtitle: "Litros de Água Poupados",
-      techValue: `${metrics?.totalWaterSaved ?? 0}L de Água`,
+      title: `${(metrics?.totalWaterSaved ?? 0).toLocaleString("pt-BR")} litros`,
+      subtitle: "de água poupa dos",
+      detail: `${(metrics?.totalWaterSaved ?? 0).toLocaleString("pt-BR")} L`,
       icon: <Droplet className="h-10 w-10 text-primary" />,
     },
     {
       key: "papel",
-      title: `${metrics?.paperSaved ?? 0} Metros`,
-      subtitle: "Metros de Papel Evitados",
-      techValue: `${metrics?.paperSaved ?? 0}m de Papel`,
+      title: `${metrics?.paperSaved ?? 0} metros`,
+      subtitle: "de papel evitados",
+      detail: `${metrics?.paperSaved ?? 0} m de papel`,
       icon: <Scroll className="h-10 w-10 text-primary" />,
     },
   ];
@@ -40,7 +40,7 @@ export const ImpactDashboardPage = () => {
   return (
     <PageLayout
       title="Meu Impacto"
-      description="Acompanhe suas métricas de sustentabilidade, impacto lúdico e progresso da meta semanal."
+      description="Acompanhe suas métricas de sustentabilidade e o progresso da meta semanal."
     >
       <section>
         {metricsLoading ? (
@@ -51,7 +51,7 @@ export const ImpactDashboardPage = () => {
               {metrics?.daysSavedWithoutQueues ?? 0}
             </span>
             <span className="text-xs font-semibold text-muted-foreground">
-              Dias Economizados sem Filas de Pedágio
+              dias economizados em filas de pedágio
             </span>
           </MetricCard>
         )}
@@ -62,14 +62,14 @@ export const ImpactDashboardPage = () => {
           <Skeleton className="h-64 w-full rounded" />
         ) : (
           <MetricCard className="p-6">
-            <div className="mb-6 flex flex-col gap-2">
-              <span className="metric-label">Impacto Lúdico</span>
-              <p className="mb-6 text-xs font-medium text-muted-foreground">
-                Você Economizou o Equivalente a:
+            <div className="mb-6">
+              <span className="metric-label">Impacto ambiental</span>
+              <p className="mt-2 text-xs font-medium text-muted-foreground">
+                Equivale a
               </p>
             </div>
             <div className="grid grid-cols-1 divide-y divide-border md:grid-cols-3 md:divide-x md:divide-y-0">
-              {ludicMetrics.map((metric) => (
+              {impactEquivalences.map((metric) => (
                 <div
                   key={metric.key}
                   className="flex flex-col items-center px-6 py-6 text-center md:py-0"
@@ -83,8 +83,8 @@ export const ImpactDashboardPage = () => {
                   <span className="mt-1 text-xs font-semibold text-muted-foreground">
                     {metric.subtitle}
                   </span>
-                  <span className="mt-4 text-sm font-bold text-taggy-brand">
-                    Valor Técnico: {metric.techValue}
+                  <span className="mt-4 text-sm font-medium text-muted-foreground">
+                    {metric.detail}
                   </span>
                 </div>
               ))}
@@ -100,7 +100,7 @@ export const ImpactDashboardPage = () => {
           <MetricCard className="p-6">
             <div className="mb-3 flex items-center justify-between">
               <span className="text-sm font-bold text-foreground">
-                Meta Semanal
+                Meta semanal
               </span>
               <span className="text-xs font-medium text-muted-foreground">
                 {weeklyAccumulated} / {weeklyGoal?.weeklyGoal ?? 0}

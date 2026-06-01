@@ -1,5 +1,4 @@
 import { api } from "@/lib/http-client";
-import { mockStore, resolveWithMock } from "@/mocks";
 
 export type RawVehicle = {
   id: number;
@@ -13,8 +12,8 @@ export type RawVehicle = {
 };
 
 export async function getRawVehicles(): Promise<RawVehicle[]> {
-  return resolveWithMock(
-    () => api.get("/api/vehicles/").json<RawVehicle[]>(),
-    () => mockStore.getRawVehicles(),
-  );
+  const response = await api
+    .get("/api/vehicles/", { searchParams: { page: 1, page_size: 100 } })
+    .json<{ items: RawVehicle[]; total: number }>();
+  return response.items;
 }

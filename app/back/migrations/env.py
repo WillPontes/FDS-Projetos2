@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from sqlalchemy.pool import NullPool
 from sqlmodel import SQLModel
 
+from src.models.fleet import Fleet, FleetUser  # noqa: F401
 from src.models.fuel_prices import FuelPriceByUF  # noqa: F401
 from src.models.organization import Organization  # noqa: F401
 from src.models.technical_specs import TechnicalSpecs  # noqa: F401
@@ -16,11 +17,15 @@ from src.models.user import User  # noqa: F401
 from src.models.user_stats import UserStats  # noqa: F401
 from src.models.vehicle import Vehicle  # noqa: F401
 from src.models.weekly_goal import WeeklyGoal  # noqa: F401
+from src.database.url import normalize_async_database_url
 
 load_dotenv()
 
 config = context.config
-config.set_main_option("sqlalchemy.url", os.environ["DATABASE_URL"])
+config.set_main_option(
+    "sqlalchemy.url",
+    normalize_async_database_url(os.environ["DATABASE_URL"]),
+)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)

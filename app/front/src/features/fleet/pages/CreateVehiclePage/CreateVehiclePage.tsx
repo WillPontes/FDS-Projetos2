@@ -12,7 +12,7 @@ import {
   type VehicleFormData,
 } from "../../schemas/vehicle-schema";
 import { useCreateVehicle } from "../../hooks/useCreateVehicle";
-import { STATUS_OPTIONS, VEHICLE_FUEL_OPTIONS } from "../../constants";
+import { VEHICLE_FUEL_OPTIONS } from "../../constants";
 
 export const CreateVehiclePage = () => {
   const navigate = useNavigate();
@@ -21,11 +21,10 @@ export const CreateVehiclePage = () => {
   const form = useForm<VehicleFormData>({
     resolver: zodResolver(vehicleCreateSchema as any),
     defaultValues: {
-      plate: "",
+      id_tag: "",
+      license_plate: "",
       model: "",
-      year: new Date().getFullYear(),
-      status: "active",
-      fuelType: "",
+      fuel_type: "gasolina_c",
     },
   });
 
@@ -47,9 +46,15 @@ export const CreateVehiclePage = () => {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <ControlledInput
             control={form.control}
-            name="plate"
+            name="id_tag"
+            label="TAG ID"
+            placeholder="TAG-001-ABC"
+          />
+          <ControlledInput
+            control={form.control}
+            name="license_plate"
             label="Placa"
-            placeholder="AAA0A00"
+            placeholder="AAA-0000"
           />
           <ControlledInput
             control={form.control}
@@ -57,24 +62,11 @@ export const CreateVehiclePage = () => {
             label="Modelo"
             placeholder="Toyota Hilux"
           />
-          <ControlledInput
-            control={form.control}
-            name="year"
-            label="Ano"
-            type="number"
-            placeholder={String(new Date().getFullYear())}
-          />
           <ControlledSelect
             control={form.control}
-            name="fuelType"
+            name="fuel_type"
             label="Tipo de combustível"
             options={VEHICLE_FUEL_OPTIONS}
-          />
-          <ControlledSelect
-            control={form.control}
-            name="status"
-            label="Status"
-            options={STATUS_OPTIONS}
           />
           <FormActions>
             <Button

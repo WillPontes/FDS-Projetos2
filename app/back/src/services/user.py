@@ -8,8 +8,10 @@ async def list_users(
     db: AsyncSession,
     role: UserRole | None = None,
     organization_id: int | None = None,
+    search: str | None = None,
 ) -> list[User]:
     return await UserRepository(db).get_all_filtered(
         role=role,
         organization_id=organization_id,
+        search=search,
     )

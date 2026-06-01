@@ -16,7 +16,7 @@ cd app/back
 cp .env.example .env
 ```
 
-- **`DATABASE_URL`**: URL assíncrona SQLAlchemy, por exemplo `postgresql+asyncpg://postgres:postgres@localhost:5432/taggy` para desenvolvimento contra Postgres local.
+- **`DATABASE_URL`**: URL PostgreSQL (ex.: `postgresql+asyncpg://postgres:postgres@localhost:5432/taggy`). URLs `postgresql://` ou `postgres://` (como as do Render) são convertidas automaticamente para `postgresql+asyncpg://`. No Render, liga a base ao Web Service para injetar a URL correta e usa o utilizador com permissão de login — não um role só de grupo (erro `is not permitted to log in`).
 - **`JWT_SECRET`**: segredo HS256 para validar tokens nas rotas que usem `Depends(get_current_user)` (substituir o Supabase por JWT emitido pela vossa camada de autenticação).
 - **`CORS_ORIGINS`**: opcional; lista separada por vírgulas (predefinido: `http://localhost:5173`).
 

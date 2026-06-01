@@ -11,10 +11,11 @@ dependencies = [
     "pydantic-settings>=2.7",
     "PyJWT>=2.9",
     "google-cloud-bigquery",
+    "openpyxl>=3.1",
 ]
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "ruff>=0.9",
     "pytest>=8.3",
     "httpx>=0.28",

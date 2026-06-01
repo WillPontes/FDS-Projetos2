@@ -13,61 +13,41 @@ import {
   useQueryStates,
 } from "nuqs";
 import type { DateRange } from "react-day-picker";
+import { Download } from "lucide-react";
 
-import { DataTable } from "@/components/DataTable";
+import { DataTable, entityIdColumn } from "@/components/DataTable";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
 import { PAGE_SIZE } from "@/constants";
 import { DashboardDateRangePicker } from "@/features/dashboard/pages/DashboardPage/components/DashboardDateRangePicker";
 import { DashboardFuelSelect } from "@/features/dashboard/pages/DashboardPage/components/DashboardFuelSelect";
 import { useGetVehicles } from "@/features/fleet/hooks/useGetVehicles";
+import { OrganizationsCombobox } from "@/features/fleet/components/OrganizationsCombobox/OrganizationsCombobox";
 import type { Vehicle } from "@/features/fleet/schemas/vehicle-schema";
 import { DEFAULT_REGION } from "@/features/reports/constants";
+import { buildExportUrl } from "../../api/requests";
 import { ReportsRegionSelect } from "./components/ReportsRegionSelect";
-
-type ReportVehicle = Vehicle & {
-  fuel_type?: string;
-  installation_date?: string;
-};
 
 type ReportFilters = {
   dateRange: DateRange | undefined;
   fuelType: string | undefined;
   region: string;
+  organizationId: number | undefined;
 };
 
 const defaultFilters: ReportFilters = {
   dateRange: undefined,
   fuelType: undefined,
   region: DEFAULT_REGION,
+  organizationId: undefined,
 };
 
-const columns: ColumnDef<ReportVehicle>[] = [
-  {
-    accessorKey: "id",
-    header: "SÉRIE DA TAG",
-    enableSorting: true,
-  },
-  {
-    accessorKey: "plate",
-    header: "PLACA VINCULADA",
-    enableSorting: true,
-  },
-  {
-    accessorKey: "model",
-    header: "MODELO DO VEÍCULO",
-    enableSorting: true,
-  },
-  {
-    accessorKey: "fuel_type",
-    header: "TIPO DE COMBUSTÍVEL",
-    enableSorting: true,
-  },
-  {
-    accessorKey: "installation_date",
-    header: "DATA DA INSTALAÇÃO",
-    enableSorting: true,
-  },
+const columns: ColumnDef<Vehicle>[] = [
+  entityIdColumn<Vehicle>(),
+  { accessorKey: "id_tag", header: "SÉRIE DA TAG", enableSorting: true },
+  { accessorKey: "license_plate", header: "PLACA VINCULADA", enableSorting: true },
+  { accessorKey: "model", header: "MODELO DO VEÍCULO", enableSorting: true },
+  { accessorKey: "fuel_type", header: "TIPO DE COMBUSTÍVEL", enableSorting: true },
 ];
 
 const reportsSearchParams = {
@@ -76,61 +56,31 @@ const reportsSearchParams = {
   order: parseAsStringEnum(["asc", "desc"] as const).withDefault("asc"),
 };
 
-function filterVehicles(
-  items: ReportVehicle[],
-  filters: ReportFilters,
-): ReportVehicle[] {
-  return items.filter((item) => {
-    if (
-      filters.fuelType &&
-      item.fuel_type?.toLowerCase() !== filters.fuelType.toLowerCase()
-    ) {
-      return false;
-    }
-
-    return true;
-  });
+function filterVehicles(items: Vehicle[], fuelType: string | undefined): Vehicle[] {
+  if (!fuelType) return items;
+  return items.filter((item) => item.fuel_type?.toLowerCase() === fuelType.toLowerCase());
 }
 
 export const ReportsPage = () => {
-  const [draftFilters, setDraftFilters] =
-    useState<ReportFilters>(defaultFilters);
-  const [appliedFilters, setAppliedFilters] =
-    useState<ReportFilters>(defaultFilters);
+  const [draftFilters, setDraftFilters] = useState<ReportFilters>(defaultFilters);
+  const [appliedFilters, setAppliedFilters] = useState<ReportFilters>(defaultFilters);
 
-  const [{ page, sort, order }, setParams] = useQueryStates(
-    reportsSearchParams,
-    {
-      history: "replace",
-    },
-  );
+  const [{ page, sort, order }, setParams] = useQueryStates(reportsSearchParams, {
+    history: "replace",
+  });
 
-  const pagination: PaginationState = {
-    pageIndex: page - 1,
-    pageSize: PAGE_SIZE,
-  };
-  const sorting: SortingState = sort
-    ? [{ id: sort, desc: order === "desc" }]
-    : [];
+  const pagination: PaginationState = { pageIndex: page - 1, pageSize: PAGE_SIZE };
+  const sorting: SortingState = sort ? [{ id: sort, desc: order === "desc" }] : [];
 
   const { data, isLoading } = useGetVehicles({
     page,
     pageSize: PAGE_SIZE,
-    sortBy: sort ?? undefined,
-    sortOrder: order,
-    dateFrom: appliedFilters.dateRange?.from
-      ? format(appliedFilters.dateRange.from, "yyyy-MM-dd")
-      : undefined,
-    dateTo: appliedFilters.dateRange?.to
-      ? format(appliedFilters.dateRange.to, "yyyy-MM-dd")
-      : undefined,
-    fuelType: appliedFilters.fuelType,
-    region: appliedFilters.region,
+    organizationId: appliedFilters.organizationId,
   });
 
   const filteredItems = useMemo(
-    () => filterVehicles((data?.items ?? []) as ReportVehicle[], appliedFilters),
-    [data?.items, appliedFilters],
+    () => filterVehicles(data?.items ?? [], appliedFilters.fuelType),
+    [data?.items, appliedFilters.fuelType],
   );
 
   const pageCount = data ? Math.ceil(data.total / PAGE_SIZE) : undefined;
@@ -138,6 +88,18 @@ export const ReportsPage = () => {
   const handleGenerate = () => {
     setAppliedFilters(draftFilters);
     setParams({ page: 1 });
+  };
+
+  const handleExport = () => {
+    const url = buildExportUrl({
+      fromDate: appliedFilters.dateRange?.from
+        ? format(appliedFilters.dateRange.from, "yyyy-MM-dd")
+        : undefined,
+      toDate: appliedFilters.dateRange?.to
+        ? format(appliedFilters.dateRange.to, "yyyy-MM-dd")
+        : undefined,
+    });
+    window.open(url, "_blank");
   };
 
   const handlePaginationChange: OnChangeFn<PaginationState> = (updater) => {
@@ -157,7 +119,7 @@ export const ReportsPage = () => {
   return (
     <PageLayout
       title="Relatórios"
-      description="Gere relatórios de veículos com filtros por período, combustível e região."
+      description="Gere relatórios de veículos com filtros por período, combustível, frota e região."
     >
       <section className="space-y-4 rounded border border-neutral-300 bg-white p-4">
         <h2 className="font-semibold">Gerar relatórios</h2>
@@ -182,11 +144,23 @@ export const ReportsPage = () => {
                 setDraftFilters((prev) => ({ ...prev, region }))
               }
             />
+            <OrganizationsCombobox
+              value={draftFilters.organizationId}
+              onValueChange={(v) =>
+                setDraftFilters((prev) => ({ ...prev, organizationId: v }))
+              }
+            />
           </div>
 
-          <Button type="button" onClick={handleGenerate}>
-            Gerar
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button type="button" onClick={handleGenerate}>
+              Gerar
+            </Button>
+            <Button type="button" variant="outline" onClick={handleExport}>
+              <Download className="mr-2 h-4 w-4" />
+              Exportar XLSX
+            </Button>
+          </div>
         </div>
 
         <DataTable

@@ -1,7 +1,8 @@
 export const ROUTE_LABELS: Record<string, string> = {
   "/": "Início",
   "/dashboard": "Dashboard",
-  "/frota/": "Frota",
+  "/frotas/": "Frotas",
+  "/frota/": "Veículos",
   "/frota/novo": "Cadastrar Veículo",
   "/frota/editar": "Editar Veículo",
   "/relatorios": "Relatórios",

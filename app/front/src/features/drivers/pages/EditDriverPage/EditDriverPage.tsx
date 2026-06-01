@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
 import { toast } from "sonner";
@@ -7,11 +7,13 @@ import { Button } from "@/components/ui/button";
 import { ControlledInput } from "@/components/form/ControlledInput";
 import { ControlledSelect } from "@/components/form/ControlledSelect";
 import { FormActions } from "@/components/form/FormActions";
+import { Label } from "@/components/ui/label";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { joinUsersWithVehicles } from "@/features/users/lib/join-users-with-vehicles";
 import { useGetRawVehicles } from "@/features/users/hooks/useGetRawVehicles";
 import { useGetUser } from "@/features/users/hooks/useGetUser";
 import { useUpdateUser } from "@/features/users/hooks/useUpdateUser";
+import { OrganizationsCombobox } from "@/features/fleet/components/OrganizationsCombobox/OrganizationsCombobox";
 import {
   driverFormSchema,
   type DriverFormData,
@@ -25,7 +27,7 @@ export const EditDriverPage = () => {
 
   const { data: user, isLoading, isError } = useGetUser(driverId, isValidId);
   const { data: vehicles = [] } = useGetRawVehicles();
-  const { mutate, isPending } = useUpdateUser();
+  const { mutate, isPending } = useUpdateUser({ silent: true });
 
   const driverWithVehicle = useMemo(() => {
     if (!user) return undefined;
@@ -47,6 +49,7 @@ export const EditDriverPage = () => {
       name: "",
       email: "",
       vehicleId: "__none__",
+      organization_id: null,
     },
   });
 
@@ -58,6 +61,7 @@ export const EditDriverPage = () => {
       vehicleId: driverWithVehicle.vehicleId
         ? String(driverWithVehicle.vehicleId)
         : "__none__",
+      organization_id: driverWithVehicle.organization_id ?? null,
     });
   }, [driverWithVehicle, form]);
 
@@ -68,10 +72,12 @@ export const EditDriverPage = () => {
         data: {
           name: formData.name,
           email: formData.email,
+          organization_id: formData.organization_id ?? undefined,
         },
       },
       {
         onSuccess: () => {
+          toast.success("Motorista atualizado.");
           if (formData.vehicleId && formData.vehicleId !== "__none__") {
             toast.info(
               "Vínculo de veículo será persistido quando a API estiver disponível.",
@@ -79,6 +85,7 @@ export const EditDriverPage = () => {
           }
           navigate({ to: "/motoristas" });
         },
+        onError: () => toast.error("Erro ao atualizar motorista."),
       },
     );
   };
@@ -149,6 +156,20 @@ export const EditDriverPage = () => {
               ...vehicleOptions,
             ]}
           />
+          <div className="space-y-1">
+            <Label>Frota</Label>
+            <Controller
+              control={form.control}
+              name="organization_id"
+              render={({ field }) => (
+                <OrganizationsCombobox
+                  value={field.value ?? undefined}
+                  onValueChange={(v) => field.onChange(v ?? null)}
+                  placeholder="Sem frota"
+                />
+              )}
+            />
+          </div>
           <FormActions>
             <Button
               type="button"

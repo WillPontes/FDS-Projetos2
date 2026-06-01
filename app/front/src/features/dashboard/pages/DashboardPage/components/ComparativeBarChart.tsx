@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/chart";
 
 const chartData = [
+  // TODO: Integração pendente
   { tipo: "Sem Taggy", emissao: 90 },
   { tipo: "Com Taggy", emissao: 45 },
 ];

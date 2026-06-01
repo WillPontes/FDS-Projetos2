@@ -5,6 +5,7 @@ export type CurrentUser = {
   name: string;
   email: string;
   role: UserRole;
+  organization_id?: number | null;
   avatarUrl?: string;
   status?: "active" | "inactive";
 };
