@@ -36,8 +36,16 @@ from src.models.user import User, UserRole  # noqa: E402
 from src.models.user_stats import UserStats  # noqa: E402
 from src.models.vehicle import Vehicle  # noqa: E402
 from src.models.weekly_goal import WeeklyGoal  # noqa: E402
+from src.dto.fuel_price import (  # noqa: E402
+    FUEL_PRICES_META_AGGREGATION,
+    FUEL_PRICES_META_SOURCE,
+    fuel_price_row_to_dto,
+)
+from src.engine import CalcEngine, TransactionOrchestrator  # noqa: E402
+from src.repositories.fuel_prices_repository import FuelPricesRepository  # noqa: E402
 from src.repositories.technical_specs_repository import TechnicalSpecsRepository  # noqa: E402
 from src.services.password import hash_password  # noqa: E402
+from src.services.technical_specs import get_all_specs  # noqa: E402
 
 SEED_DEFAULT_PASSWORD = "taggy123"
 
@@ -266,6 +274,70 @@ async def seed_vehicles(
     return vehicles
 
 
+def _engine_specs_for_calc(specs: dict) -> dict:
+    """Garante fuel_prices_meta exigido pela CalcEngine (ausente no dict cru do provider)."""
+    out = dict(specs)
+    out.setdefault(
+        "fuel_prices_meta",
+        {
+            "source": FUEL_PRICES_META_SOURCE,
+            "aggregation": FUEL_PRICES_META_AGGREGATION,
+            "as_of": utc_now().isoformat(),
+        },
+    )
+    return out
+
+
+def _metrics_from_calc_result(result: dict) -> dict:
+    env = result.get("environmental") or {}
+    meta = result.get("metadata") or {}
+    fin = result.get("financial") or {}
+    return {
+        "co2_avoided_kg": env.get("co2_kg"),
+        "fuel_saved_liters": env.get("fuel_liters"),
+        "water_saved_liters": env.get("water_liters"),
+        "time_saved_sec": meta.get("time_saved_sec"),
+        "financial_savings_brl": fin.get("total_savings_brl"),
+    }
+
+
+def _build_parameters_snapshot(
+    *,
+    plate: str,
+    elapsed_time_sec: float,
+    context: str,
+    uf: str,
+    is_digital: bool,
+    vehicle: Vehicle,
+    specs: dict,
+    fuel_prices_all: dict,
+) -> dict:
+    payload_dict = {
+        "plate": plate.strip().upper(),
+        "elapsed_time": int(elapsed_time_sec),
+        "context": context,
+        "uf_passagem": uf.strip().upper(),
+        "is_digital": is_digital,
+        "vehicle": {
+            "category": vehicle.category,
+            "fuel_type": vehicle.fuel_type,
+            "model": vehicle.model,
+        },
+    }
+    engine_specs = _engine_specs_for_calc(specs)
+    result = TransactionOrchestrator(CalcEngine(engine_specs)).handle_tag_event(payload_dict)
+    return {
+        "payload": payload_dict,
+        "emission_factors": specs.get("emission_factors"),
+        "pricing_snapshot": {
+            "fuel_prices": fuel_prices_all,
+            "fuel_prices_by_uf": specs.get("fuel_prices_by_uf"),
+            "fuel_prices_meta": engine_specs.get("fuel_prices_meta"),
+        },
+        "result": result,
+    }
+
+
 async def seed_fleet_users(db, users: list[User], fleets: list[Fleet]) -> None:
     links = [
         (fleets[0].id, users[1].id),
@@ -294,100 +366,102 @@ async def seed_transactions(db, users: list[User], vehicles: list[Vehicle], orgs
         print("  transactions: já existem, pulando")
         return
 
+    specs = await get_all_specs(db)
+    fuel_rows = await FuelPricesRepository(db).get_all()
+    fuel_prices_all = {
+        row.uf: fuel_price_row_to_dto(row).model_dump(mode="json") for row in fuel_rows
+    }
+    vehicle_by_id = {v.id: v for v in vehicles}
+
     base_date = utc_now() - timedelta(days=30)
 
     records = [
-        # João motorista — ABC-1234 — pedagio SP
+        # João motorista — ABC-1234
         dict(user_id=users[3].id, vehicle_id=vehicles[0].id, organization_id=orgs[0].id, plate="ABC-1234",
              context="pedagio", uf="SP", elapsed_time_sec=145.0, is_digital=True,
-             co2_avoided_kg=0.212, fuel_saved_liters=0.082, time_saved_sec=35.0, financial_savings_brl=0.53, water_saved_liters=0.82,
              created_at=base_date + timedelta(days=0, hours=7, minutes=15)),
         dict(user_id=users[3].id, vehicle_id=vehicles[0].id, organization_id=orgs[0].id, plate="ABC-1234",
              context="pedagio", uf="SP", elapsed_time_sec=162.0, is_digital=True,
-             co2_avoided_kg=0.235, fuel_saved_liters=0.091, time_saved_sec=18.0, financial_savings_brl=0.59, water_saved_liters=0.91,
              created_at=base_date + timedelta(days=1, hours=8, minutes=30)),
         dict(user_id=users[3].id, vehicle_id=vehicles[0].id, organization_id=orgs[0].id, plate="ABC-1234",
              context="estacionamento", uf="SP", elapsed_time_sec=285.0, is_digital=True,
-             co2_avoided_kg=0.415, fuel_saved_liters=0.160, time_saved_sec=15.0, financial_savings_brl=1.04, water_saved_liters=1.60,
              created_at=base_date + timedelta(days=2, hours=9, minutes=0)),
         dict(user_id=users[3].id, vehicle_id=vehicles[0].id, organization_id=orgs[0].id, plate="ABC-1234",
              context="pedagio", uf="MG", elapsed_time_sec=130.0, is_digital=True,
-             co2_avoided_kg=0.190, fuel_saved_liters=0.073, time_saved_sec=50.0, financial_savings_brl=0.47, water_saved_liters=0.73,
              created_at=base_date + timedelta(days=4, hours=6, minutes=45)),
         dict(user_id=users[3].id, vehicle_id=vehicles[0].id, organization_id=orgs[0].id, plate="ABC-1234",
              context="pedagio", uf="MG", elapsed_time_sec=155.0, is_digital=True,
-             co2_avoided_kg=0.226, fuel_saved_liters=0.087, time_saved_sec=25.0, financial_savings_brl=0.56, water_saved_liters=0.87,
              created_at=base_date + timedelta(days=5, hours=7, minutes=20)),
-        # Veículo DEF-5678 sem driver
+        # Veículo DEF-5678
         dict(user_id=users[1].id, vehicle_id=vehicles[1].id, organization_id=orgs[0].id, plate="DEF-5678",
              context="pedagio", uf="SP", elapsed_time_sec=170.0, is_digital=True,
-             co2_avoided_kg=0.620, fuel_saved_liters=0.238, time_saved_sec=10.0, financial_savings_brl=1.55, water_saved_liters=2.38,
              created_at=base_date + timedelta(days=3, hours=10, minutes=0)),
         dict(user_id=users[1].id, vehicle_id=vehicles[1].id, organization_id=orgs[0].id, plate="DEF-5678",
              context="estacionamento", uf="RS", elapsed_time_sec=310.0, is_digital=True,
-             co2_avoided_kg=1.132, fuel_saved_liters=0.435, time_saved_sec=0.0, financial_savings_brl=2.83, water_saved_liters=4.35,
              created_at=base_date + timedelta(days=6, hours=11, minutes=15)),
         dict(user_id=users[1].id, vehicle_id=vehicles[1].id, organization_id=orgs[0].id, plate="DEF-5678",
              context="pedagio", uf="RS", elapsed_time_sec=140.0, is_digital=True,
-             co2_avoided_kg=0.511, fuel_saved_liters=0.197, time_saved_sec=40.0, financial_savings_brl=1.28, water_saved_liters=1.97,
              created_at=base_date + timedelta(days=8, hours=7, minutes=0)),
-        # Ana motorista — GHI-9012 — gasolina
+        # Ana motorista — GHI-9012
         dict(user_id=users[4].id, vehicle_id=vehicles[2].id, organization_id=orgs[1].id, plate="GHI-9012",
              context="pedagio", uf="RJ", elapsed_time_sec=125.0, is_digital=True,
-             co2_avoided_kg=0.138, fuel_saved_liters=0.062, time_saved_sec=55.0, financial_savings_brl=0.37, water_saved_liters=0.62,
              created_at=base_date + timedelta(days=0, hours=8, minutes=0)),
         dict(user_id=users[4].id, vehicle_id=vehicles[2].id, organization_id=orgs[1].id, plate="GHI-9012",
              context="estacionamento", uf="RJ", elapsed_time_sec=260.0, is_digital=True,
-             co2_avoided_kg=0.288, fuel_saved_liters=0.130, time_saved_sec=40.0, financial_savings_brl=0.77, water_saved_liters=1.30,
              created_at=base_date + timedelta(days=1, hours=12, minutes=30)),
         dict(user_id=users[4].id, vehicle_id=vehicles[2].id, organization_id=orgs[1].id, plate="GHI-9012",
              context="pedagio", uf="RJ", elapsed_time_sec=138.0, is_digital=True,
-             co2_avoided_kg=0.153, fuel_saved_liters=0.069, time_saved_sec=42.0, financial_savings_brl=0.41, water_saved_liters=0.69,
              created_at=base_date + timedelta(days=3, hours=9, minutes=15)),
         dict(user_id=users[4].id, vehicle_id=vehicles[2].id, organization_id=orgs[1].id, plate="GHI-9012",
              context="pedagio", uf="BA", elapsed_time_sec=148.0, is_digital=True,
-             co2_avoided_kg=0.164, fuel_saved_liters=0.074, time_saved_sec=32.0, financial_savings_brl=0.44, water_saved_liters=0.74,
              created_at=base_date + timedelta(days=5, hours=8, minutes=45)),
         dict(user_id=users[4].id, vehicle_id=vehicles[2].id, organization_id=orgs[1].id, plate="GHI-9012",
              context="estacionamento", uf="BA", elapsed_time_sec=290.0, is_digital=True,
-             co2_avoided_kg=0.322, fuel_saved_liters=0.145, time_saved_sec=10.0, financial_savings_brl=0.86, water_saved_liters=1.45,
              created_at=base_date + timedelta(days=7, hours=10, minutes=0)),
-        # Admin — JKL-3456 — etanol
-        dict(user_id=users[0].id, vehicle_id=vehicles[3].id, organization_id=None, plate="JKL-3456",
+        # Admin — veículo pessoal MNO-7890 (etanol)
+        dict(user_id=users[0].id, vehicle_id=vehicles[3].id, organization_id=None, plate="MNO-7890",
              context="pedagio", uf="SP", elapsed_time_sec=120.0, is_digital=True,
-             co2_avoided_kg=0.088, fuel_saved_liters=0.060, time_saved_sec=60.0, financial_savings_brl=0.23, water_saved_liters=0.60,
              created_at=base_date + timedelta(days=2, hours=7, minutes=30)),
-        dict(user_id=users[0].id, vehicle_id=vehicles[3].id, organization_id=None, plate="JKL-3456",
+        dict(user_id=users[0].id, vehicle_id=vehicles[3].id, organization_id=None, plate="MNO-7890",
              context="pedagio", uf="SP", elapsed_time_sec=135.0, is_digital=True,
-             co2_avoided_kg=0.099, fuel_saved_liters=0.068, time_saved_sec=45.0, financial_savings_brl=0.26, water_saved_liters=0.68,
              created_at=base_date + timedelta(days=9, hours=8, minutes=0)),
-        # Transações recentes (semana atual) — João
+        # Semana atual — João
         dict(user_id=users[3].id, vehicle_id=vehicles[0].id, organization_id=orgs[0].id, plate="ABC-1234",
              context="pedagio", uf="SP", elapsed_time_sec=150.0, is_digital=True,
-             co2_avoided_kg=0.218, fuel_saved_liters=0.084, time_saved_sec=30.0, financial_savings_brl=0.55, water_saved_liters=0.84,
              created_at=utc_now() - timedelta(days=1, hours=7)),
         dict(user_id=users[3].id, vehicle_id=vehicles[0].id, organization_id=orgs[0].id, plate="ABC-1234",
              context="estacionamento", uf="SP", elapsed_time_sec=275.0, is_digital=True,
-             co2_avoided_kg=0.400, fuel_saved_liters=0.154, time_saved_sec=25.0, financial_savings_brl=1.00, water_saved_liters=1.54,
              created_at=utc_now() - timedelta(hours=5)),
         # Recentes — Ana
         dict(user_id=users[4].id, vehicle_id=vehicles[2].id, organization_id=orgs[1].id, plate="GHI-9012",
              context="pedagio", uf="RJ", elapsed_time_sec=130.0, is_digital=True,
-             co2_avoided_kg=0.144, fuel_saved_liters=0.065, time_saved_sec=50.0, financial_savings_brl=0.39, water_saved_liters=0.65,
              created_at=utc_now() - timedelta(days=2, hours=8)),
         dict(user_id=users[4].id, vehicle_id=vehicles[2].id, organization_id=orgs[1].id, plate="GHI-9012",
              context="pedagio", uf="RJ", elapsed_time_sec=142.0, is_digital=True,
-             co2_avoided_kg=0.157, fuel_saved_liters=0.071, time_saved_sec=38.0, financial_savings_brl=0.42, water_saved_liters=0.71,
              created_at=utc_now() - timedelta(hours=3)),
-        # Carlos gestor — usa o DEF
+        # Carlos gestor — DEF-5678
         dict(user_id=users[1].id, vehicle_id=vehicles[1].id, organization_id=orgs[0].id, plate="DEF-5678",
              context="pedagio", uf="PR", elapsed_time_sec=155.0, is_digital=True,
-             co2_avoided_kg=0.565, fuel_saved_liters=0.217, time_saved_sec=25.0, financial_savings_brl=1.41, water_saved_liters=2.17,
              created_at=utc_now() - timedelta(days=1, hours=6)),
     ]
 
     for r in records:
-        t = Transaction(**r)
+        vehicle = vehicle_by_id[r["vehicle_id"]]
+        snapshot = _build_parameters_snapshot(
+            plate=r["plate"],
+            elapsed_time_sec=r["elapsed_time_sec"],
+            context=r["context"],
+            uf=r["uf"],
+            is_digital=r["is_digital"],
+            vehicle=vehicle,
+            specs=specs,
+            fuel_prices_all=fuel_prices_all,
+        )
+        t = Transaction(
+            parameters_snapshot=snapshot,
+            **_metrics_from_calc_result(snapshot["result"]),
+            **r,
+        )
         db.add(t)
 
     await db.flush()
