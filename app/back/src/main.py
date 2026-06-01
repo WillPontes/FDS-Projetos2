@@ -27,7 +27,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173",
-                   "https://taggy-ecoscore-git-feat-modules-igrphillipes-projects.vercel.app",
+                   "http://localhost:5174",
                    "https://taggy-ecoscore.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
