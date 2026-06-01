@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import { Navigate } from "@tanstack/react-router";
 import { UserFormDialog } from "../../components/UserFormDialog/UserFormDialog";
 import type {
@@ -26,6 +25,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -33,12 +33,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { OrganizationsRelationSelect } from "@/components/form/relation-selects";
 import { ActionHintPopover } from "@/components/ActionHintPopover";
 import { DataTable, entityIdColumn } from "@/components/DataTable";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { PAGE_SIZE } from "@/constants";
 import { useCurrentUser } from "@/features/auth";
-import { getOrganizations } from "@/features/fleet/api/requests";
 import type { User } from "../../api/types";
 import { USER_ROLE_LABELS, USER_ROLE_OPTIONS } from "../../constants";
 import { useGetUsersFiltered } from "../../hooks/useGetUsersFiltered";
@@ -110,7 +110,6 @@ const usersSearchParams = {
 
 export const UsersListPage = () => {
   const { user, isAuthenticated } = useCurrentUser();
-  const { data: orgs } = useQuery({ queryKey: ["organizations"], queryFn: getOrganizations });
   const [{ page, sort, order, search, role, org }, setParams] = useQueryStates(
     usersSearchParams,
     { history: "replace" },
@@ -183,14 +182,13 @@ export const UsersListPage = () => {
       ) : (
         <>
           <section className="flex flex-col gap-4 md:flex-row md:items-center">
-            <input
-              type="text"
+            <Input
               placeholder="Buscar por nome ou e-mail"
               value={search ?? ""}
               onChange={(e) =>
                 setParams({ search: e.target.value || null, page: 1 })
               }
-              className="h-10 w-full rounded-md border border-neutral-300 bg-neutral-100 px-4 py-2 text-sm outline-none md:flex-1"
+              className="md:flex-1"
             />
             <Select
               value={role}
@@ -198,7 +196,12 @@ export const UsersListPage = () => {
                 setParams({ role: value as typeof role, page: 1 })
               }
             >
-              <SelectTrigger className="w-full md:w-44">
+              <SelectTrigger
+                className="w-full md:w-44"
+                clearable
+                hasValue={role !== "all"}
+                onClear={() => setParams({ role: "all", page: 1 })}
+              >
                 <SelectValue placeholder="Filtrar por perfil" />
               </SelectTrigger>
               <SelectContent>
@@ -209,24 +212,15 @@ export const UsersListPage = () => {
                 ))}
               </SelectContent>
             </Select>
-            <Select
-              value={org != null ? String(org) : "all"}
-              onValueChange={(v) =>
-                setParams({ org: v === "all" ? null : Number(v), page: 1 })
+            <OrganizationsRelationSelect
+              value={org ?? undefined}
+              onValueChange={(value) =>
+                setParams({ org: value ?? null, page: 1 })
               }
-            >
-              <SelectTrigger className="w-full md:w-44">
-                <SelectValue placeholder="Todas as organizações" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas as organizações</SelectItem>
-                {orgs?.map((o) => (
-                  <SelectItem key={o.id} value={String(o.id)}>
-                    {o.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              placeholder="Todas as organizações"
+              emptyLabel="Todas as organizações"
+              className="w-full md:w-52"
+            />
             <Button onClick={() => setCreateOpen(true)} className="shrink-0">
               <Plus className="mr-1 h-4 w-4" />
               Novo Usuário

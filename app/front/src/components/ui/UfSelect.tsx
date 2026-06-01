@@ -18,18 +18,29 @@ type UfSelectProps = {
   placeholder?: string;
 };
 
-export const UfSelect = ({ value, onValueChange, placeholder = "UF" }: UfSelectProps) => (
+export const UfSelect = ({
+  value,
+  onValueChange,
+  placeholder = "UF",
+}: UfSelectProps) => (
   <Select
     value={value ?? "all"}
     onValueChange={(v) => onValueChange(v === "all" ? undefined : v)}
   >
-    <SelectTrigger className="h-9 w-28">
+    <SelectTrigger
+      className="w-28"
+      clearable
+      hasValue={value != null}
+      onClear={() => onValueChange(undefined)}
+    >
       <SelectValue placeholder={placeholder} />
     </SelectTrigger>
     <SelectContent>
       <SelectItem value="all">Todas</SelectItem>
       {UF_OPTIONS.map((uf) => (
-        <SelectItem key={uf} value={uf}>{uf}</SelectItem>
+        <SelectItem key={uf} value={uf}>
+          {uf}
+        </SelectItem>
       ))}
     </SelectContent>
   </Select>

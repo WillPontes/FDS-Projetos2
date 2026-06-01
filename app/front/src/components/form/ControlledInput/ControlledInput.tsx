@@ -7,6 +7,7 @@ import {
 
 import { FormField, formFieldErrorId } from "@/components/form/FormField";
 import { Input } from "@/components/ui/input";
+import { fieldControlErrorClassName } from "@/lib/field-control";
 import { cn } from "@/lib/utils";
 
 type ControlledInputProps<T extends FieldValues> = {
@@ -43,10 +44,9 @@ export const ControlledInput = <T extends FieldValues>({
               disabled={disabled}
               aria-invalid={!!errorMsg}
               aria-describedby={errorMsg ? formFieldErrorId(id) : undefined}
-              className={cn(
-                errorMsg && "border-destructive focus-visible:ring-destructive",
-              )}
+              className={cn(errorMsg && fieldControlErrorClassName)}
               value={field.value ?? ""}
+              onClear={() => field.onChange("")}
             />
           </FormField>
         );

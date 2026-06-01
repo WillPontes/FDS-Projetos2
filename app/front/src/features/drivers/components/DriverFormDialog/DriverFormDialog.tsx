@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { ControlledInput } from "@/components/form/ControlledInput";
-import { ControlledSelect } from "@/components/form/ControlledSelect";
-import { OrganizationsCombobox } from "@/features/fleet/components/OrganizationsCombobox/OrganizationsCombobox";
+import {
+  OrganizationsRelationSelect,
+  VehiclesRelationSelect,
+} from "@/components/form/relation-selects";
 import { useGetRawVehicles } from "@/features/users/hooks/useGetRawVehicles";
 import { useUpdateUser } from "@/features/users/hooks/useUpdateUser";
 import { updateUserVehicles } from "@/features/users/api/requests";
@@ -25,7 +27,6 @@ type DriverFormDialogProps = {
 export const DriverFormDialog = ({ open, onClose, driver }: DriverFormDialogProps) => {
   const { data: vehicles = [] } = useGetRawVehicles();
   const { mutate, isPending } = useUpdateUser({ silent: true });
-  const [selectedVehicleIds, setSelectedVehicleIds] = useState<number[]>([]);
   const [savingVehicles, setSavingVehicles] = useState(false);
 
   const driverWithVehicle = useMemo(
@@ -38,21 +39,13 @@ export const DriverFormDialog = ({ open, onClose, driver }: DriverFormDialogProp
     [vehicles, driver.id],
   );
 
-  const vehicleOptions = useMemo(
-    () =>
-      vehicles.map((v) => ({
-        value: String(v.id),
-        label: `${v.license_plate} (TAG ${v.id_tag})`,
-      })),
-    [vehicles],
-  );
-
   const form = useForm<DriverFormData>({
     resolver: zodResolver(driverFormSchema as any),
     defaultValues: {
       name: "",
       email: "",
-      vehicleId: "__none__",
+      vehicle_id: null,
+      vehicle_ids: [],
       organization_id: null,
     },
   });
@@ -65,17 +58,11 @@ export const DriverFormDialog = ({ open, onClose, driver }: DriverFormDialogProp
     form.reset({
       name: driverWithVehicle.name,
       email: driverWithVehicle.email,
-      vehicleId: driverWithVehicle.vehicleId ? String(driverWithVehicle.vehicleId) : "__none__",
+      vehicle_id: driverWithVehicle.vehicleId ?? null,
+      vehicle_ids: assignedVehicleIds,
       organization_id: driverWithVehicle.organization_id ?? null,
     });
-    setSelectedVehicleIds(assignedVehicleIds);
   }, [open, driverWithVehicle, assignedVehicleIds, form]);
-
-  const toggleVehicle = (vehicleId: number, checked: boolean) => {
-    setSelectedVehicleIds((prev) =>
-      checked ? [...prev, vehicleId] : prev.filter((id) => id !== vehicleId),
-    );
-  };
 
   const onSubmit = form.handleSubmit(async (data) => {
     mutate(
@@ -92,13 +79,12 @@ export const DriverFormDialog = ({ open, onClose, driver }: DriverFormDialogProp
           try {
             setSavingVehicles(true);
             if (isIndividualDriver) {
-              await updateUserVehicles(driver.id, selectedVehicleIds);
+              await updateUserVehicles(driver.id, data.vehicle_ids ?? []);
             } else {
-              const vehicleId =
-                data.vehicleId && data.vehicleId !== "__none__"
-                  ? Number(data.vehicleId)
-                  : null;
-              await updateUserVehicles(driver.id, vehicleId ? [vehicleId] : []);
+              await updateUserVehicles(
+                driver.id,
+                data.vehicle_id != null ? [data.vehicle_id] : [],
+              );
             }
             toast.success("Motorista atualizado.");
             onClose();
@@ -132,33 +118,43 @@ export const DriverFormDialog = ({ open, onClose, driver }: DriverFormDialogProp
           <ControlledInput control={form.control} name="name" label="Nome" placeholder="Nome completo" />
           <ControlledInput control={form.control} name="email" label="E-mail" placeholder="email@exemplo.com" />
           {isIndividualDriver ? (
-            <div className="space-y-2">
+            <div className="space-y-1">
               <Label>Veículos Vinculados</Label>
-              <div className="max-h-48 space-y-2 overflow-y-auto rounded border border-neutral-200 p-3">
-                {vehicles.map((v) => (
-                  <label key={v.id} className="flex items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={selectedVehicleIds.includes(v.id)}
-                      onChange={(e) => toggleVehicle(v.id, e.target.checked)}
-                      className="h-4 w-4 rounded border-neutral-300"
-                    />
-                    <span>{v.license_plate} (TAG {v.id_tag})</span>
-                  </label>
-                ))}
-                {vehicles.length === 0 && (
-                  <p className="text-sm text-neutral-500">Nenhum veículo disponível.</p>
+              <Controller
+                control={form.control}
+                name="vehicle_ids"
+                render={({ field }) => (
+                  <VehiclesRelationSelect
+                    mode="multiple"
+                    value={field.value ?? []}
+                    onValueChange={(value) =>
+                      field.onChange(Array.isArray(value) ? value : [])
+                    }
+                    placeholder="Selecione os veículos"
+                    allowEmpty
+                  />
                 )}
-              </div>
+              />
             </div>
           ) : (
-            <ControlledSelect
-              control={form.control}
-              name="vehicleId"
-              label="Veículo Vinculado"
-              placeholder="Selecione um veículo"
-              options={[{ value: "__none__", label: "Sem veículo" }, ...vehicleOptions]}
-            />
+            <div className="space-y-1">
+              <Label>Veículo Vinculado</Label>
+              <Controller
+                control={form.control}
+                name="vehicle_id"
+                render={({ field }) => (
+                  <VehiclesRelationSelect
+                    value={field.value ?? undefined}
+                    onValueChange={(value) =>
+                      field.onChange(typeof value === "number" ? value : null)
+                    }
+                    organizationId={organizationId ?? undefined}
+                    placeholder="Selecione um veículo"
+                    emptyLabel="Sem veículo"
+                  />
+                )}
+              />
+            </div>
           )}
           <div className="space-y-1">
             <Label>Organização</Label>
@@ -166,7 +162,7 @@ export const DriverFormDialog = ({ open, onClose, driver }: DriverFormDialogProp
               control={form.control}
               name="organization_id"
               render={({ field }) => (
-                <OrganizationsCombobox
+                <OrganizationsRelationSelect
                   value={field.value ?? undefined}
                   onValueChange={(v) => field.onChange(v ?? null)}
                   placeholder="Sem organização"

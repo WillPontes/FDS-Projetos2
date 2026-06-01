@@ -17,18 +17,29 @@ type ContextSelectProps = {
   placeholder?: string;
 };
 
-export const ContextSelect = ({ value, onValueChange, placeholder = "Contexto" }: ContextSelectProps) => (
+export const ContextSelect = ({
+  value,
+  onValueChange,
+  placeholder = "Contexto",
+}: ContextSelectProps) => (
   <Select
     value={value ?? "all"}
     onValueChange={(v) => onValueChange(v === "all" ? undefined : v)}
   >
-    <SelectTrigger className="h-9 w-40">
+    <SelectTrigger
+      className="w-40"
+      clearable
+      hasValue={value != null}
+      onClear={() => onValueChange(undefined)}
+    >
       <SelectValue placeholder={placeholder} />
     </SelectTrigger>
     <SelectContent>
       <SelectItem value="all">Todos</SelectItem>
       {CONTEXT_OPTIONS.map((opt) => (
-        <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+        <SelectItem key={opt.value} value={opt.value}>
+          {opt.label}
+        </SelectItem>
       ))}
     </SelectContent>
   </Select>

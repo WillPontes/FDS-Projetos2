@@ -14,7 +14,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { ControlledInput } from "@/components/form/ControlledInput";
 import { ControlledSelect } from "@/components/form/ControlledSelect";
-import { OrganizationsCombobox } from "@/features/fleet/components/OrganizationsCombobox/OrganizationsCombobox";
+import { OrganizationsRelationSelect } from "@/components/form/relation-selects";
 import {
   useCreateUser,
   useDeleteUser,
@@ -106,7 +106,7 @@ export const UserFormDialog = ({ open, onClose, user }: UserFormDialogProps) => 
                 control={form.control}
                 name="organization_id"
                 render={({ field }) => (
-                  <OrganizationsCombobox
+                  <OrganizationsRelationSelect
                     value={field.value ?? undefined}
                     onValueChange={(v) => field.onChange(v ?? null)}
                     placeholder="Sem organização"

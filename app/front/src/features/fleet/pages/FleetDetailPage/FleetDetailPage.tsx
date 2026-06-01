@@ -22,14 +22,16 @@ import { PAGE_SIZE } from "@/constants";
 import { KpiCard } from "@/features/sustainability/components/MetricCard";
 import { TransactionFilters } from "@/components/TransactionFilters/TransactionFilters";
 import type { TransactionFilterState } from "@/components/TransactionFilters/TransactionFilters";
+import {
+  UsersRelationSelect,
+  VehiclesRelationSelect,
+} from "@/components/form/relation-selects";
 import type { User } from "@/features/users/api/types";
-import { useGetUsers } from "@/features/users/hooks/useGetUsers";
 import {
   getFleetSummary,
   getFleetTransactions,
   getFleetUsers,
   getFleetVehicles,
-  getVehicles,
   linkFleetUser,
   linkFleetVehicle,
   unlinkFleetUser,
@@ -138,7 +140,8 @@ export const FleetDetailPage = ({ fleetId, fleetName }: FleetDetailPageProps) =>
   const [txFilters, setTxFilters] = useState<TransactionFilterState>({});
   const [linkVehicleOpen, setLinkVehicleOpen] = useState(false);
   const [linkUserOpen, setLinkUserOpen] = useState(false);
-  const [linkVehicleSearch, setLinkVehicleSearch] = useState("");
+  const [selectedLinkVehicleId, setSelectedLinkVehicleId] = useState<number | undefined>();
+  const [selectedLinkUserId, setSelectedLinkUserId] = useState<number | undefined>();
 
   const { data: summary } = useQuery({
     queryKey: ["fleets", fleetId, "summary"],
@@ -154,15 +157,6 @@ export const FleetDetailPage = ({ fleetId, fleetName }: FleetDetailPageProps) =>
     queryKey: ["fleets", fleetId, "users"],
     queryFn: () => getFleetUsers(fleetId),
   });
-
-  const { data: availableVehicles } = useQuery({
-    queryKey: ["vehicles", "sem-frota", linkVehicleSearch],
-    queryFn: () =>
-      getVehicles({ semFrota: true, search: linkVehicleSearch || undefined, pageSize: 50 }),
-    enabled: linkVehicleOpen,
-  });
-
-  const { data: orgUsers } = useGetUsers();
 
   const txApiFilters = {
     context: txFilters.context,
@@ -202,6 +196,7 @@ export const FleetDetailPage = ({ fleetId, fleetName }: FleetDetailPageProps) =>
       toast.success("Veículo vinculado.");
       invalidateFleet();
       setLinkVehicleOpen(false);
+      setSelectedLinkVehicleId(undefined);
     },
     onError: (error) =>
       toast.error(
@@ -224,6 +219,7 @@ export const FleetDetailPage = ({ fleetId, fleetName }: FleetDetailPageProps) =>
       toast.success("Usuário vinculado.");
       invalidateFleet();
       setLinkUserOpen(false);
+      setSelectedLinkUserId(undefined);
     },
     onError: (error) =>
       toast.error(
@@ -248,8 +244,8 @@ export const FleetDetailPage = ({ fleetId, fleetName }: FleetDetailPageProps) =>
     return fleetUsers.filter((u) => u.name.toLowerCase().includes(q));
   }, [fleetUsers, driverSearch]);
 
-  const fleetUserIds = new Set(fleetUsers.map((u) => u.id));
-  const linkableUsers = (orgUsers ?? []).filter((u) => !fleetUserIds.has(u.id));
+  const fleetUserIds = fleetUsers.map((u) => u.id);
+  const fleetVehicleIds = fleetVehicles.map((v) => v.id);
 
   return (
     <PageLayout title={`#${fleetId} · ${fleetName}`} description="Detalhes e métricas da frota.">
@@ -331,56 +327,80 @@ export const FleetDetailPage = ({ fleetId, fleetName }: FleetDetailPageProps) =>
         </TabsContent>
       </Tabs>
 
-      <Dialog open={linkVehicleOpen} onOpenChange={setLinkVehicleOpen}>
+      <Dialog
+        open={linkVehicleOpen}
+        onOpenChange={(open) => {
+          setLinkVehicleOpen(open);
+          if (!open) setSelectedLinkVehicleId(undefined);
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Vincular Veículo</DialogTitle>
           </DialogHeader>
-          <FilterInput
-            placeholder="Buscar veículo sem frota"
-            value={linkVehicleSearch}
-            onChange={(e) => setLinkVehicleSearch(e.target.value)}
-            className="mb-3"
+          <VehiclesRelationSelect
+            value={selectedLinkVehicleId}
+            onValueChange={(value) =>
+              setSelectedLinkVehicleId(typeof value === "number" ? value : undefined)
+            }
+            semFrota
+            excludeIds={fleetVehicleIds}
+            placeholder="Selecione um veículo sem frota"
+            allowEmpty={false}
+            className="mb-4"
           />
-          <div className="max-h-64 space-y-1 overflow-y-auto">
-            {(availableVehicles?.items ?? []).map((v) => (
-              <button
-                key={v.id}
-                type="button"
-                className="flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm hover:bg-neutral-100"
-                onClick={() => linkVehicleMutation.mutate(v.id)}
-              >
-                <span>#{v.id} · {v.license_plate} · {v.model}</span>
-                <Link2 className="h-3 w-3 text-neutral-400" />
-              </button>
-            ))}
-            {(availableVehicles?.items ?? []).length === 0 && (
-              <p className="text-sm text-neutral-500">Nenhum veículo disponível.</p>
-            )}
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setLinkVehicleOpen(false)}>
+              Cancelar
+            </Button>
+            <Button
+              disabled={selectedLinkVehicleId == null || linkVehicleMutation.isPending}
+              onClick={() => {
+                if (selectedLinkVehicleId != null) {
+                  linkVehicleMutation.mutate(selectedLinkVehicleId);
+                }
+              }}
+            >
+              {linkVehicleMutation.isPending ? "Vinculando…" : "Vincular"}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={linkUserOpen} onOpenChange={setLinkUserOpen}>
+      <Dialog
+        open={linkUserOpen}
+        onOpenChange={(open) => {
+          setLinkUserOpen(open);
+          if (!open) setSelectedLinkUserId(undefined);
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Vincular Motorista</DialogTitle>
           </DialogHeader>
-          <div className="max-h-64 space-y-1 overflow-y-auto">
-            {linkableUsers.map((u) => (
-              <button
-                key={u.id}
-                type="button"
-                className="flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm hover:bg-neutral-100"
-                onClick={() => linkUserMutation.mutate(u.id)}
-              >
-                <span>#{u.id} · {u.name}</span>
-                <Link2 className="h-3 w-3 text-neutral-400" />
-              </button>
-            ))}
-            {linkableUsers.length === 0 && (
-              <p className="text-sm text-neutral-500">Nenhum usuário disponível.</p>
-            )}
+          <UsersRelationSelect
+            value={selectedLinkUserId}
+            onValueChange={setSelectedLinkUserId}
+            role="motorista"
+            excludeIds={fleetUserIds}
+            placeholder="Selecione um motorista"
+            allowEmpty={false}
+            className="mb-4"
+          />
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setLinkUserOpen(false)}>
+              Cancelar
+            </Button>
+            <Button
+              disabled={selectedLinkUserId == null || linkUserMutation.isPending}
+              onClick={() => {
+                if (selectedLinkUserId != null) {
+                  linkUserMutation.mutate(selectedLinkUserId);
+                }
+              }}
+            >
+              {linkUserMutation.isPending ? "Vinculando…" : "Vincular"}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

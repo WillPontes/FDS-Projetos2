@@ -12,7 +12,8 @@ export type UserFormData = z.infer<typeof userFormSchema>;
 export const driverFormSchema = userFormSchema
   .pick({ name: true, email: true })
   .extend({
-    vehicleId: z.string().optional(),
+    vehicle_id: z.coerce.number().nullable().optional(),
+    vehicle_ids: z.array(z.coerce.number()).optional(),
     organization_id: z.coerce.number().nullable().optional(),
   });
 

@@ -6,15 +6,18 @@ import { toast } from "sonner";
 import { getToastErrorMessage } from "@/lib/api-error";
 import { Button } from "@/components/ui/button";
 import { ControlledInput } from "@/components/form/ControlledInput";
-import { ControlledSelect } from "@/components/form/ControlledSelect";
 import { FormActions } from "@/components/form/FormActions";
 import { Label } from "@/components/ui/label";
 import { PageLayout } from "@/components/layout/PageLayout";
+import {
+  OrganizationsRelationSelect,
+  VehiclesRelationSelect,
+} from "@/components/form/relation-selects";
 import { joinUsersWithVehicles } from "@/features/users/lib/join-users-with-vehicles";
 import { useGetRawVehicles } from "@/features/users/hooks/useGetRawVehicles";
 import { useGetUser } from "@/features/users/hooks/useGetUser";
 import { useUpdateUser } from "@/features/users/hooks/useUpdateUser";
-import { OrganizationsCombobox } from "@/features/fleet/components/OrganizationsCombobox/OrganizationsCombobox";
+import { updateUserVehicles } from "@/features/users/api/requests";
 import {
   driverFormSchema,
   type DriverFormData,
@@ -35,13 +38,9 @@ export const EditDriverPage = () => {
     return joinUsersWithVehicles([user], vehicles)[0];
   }, [user, vehicles]);
 
-  const vehicleOptions = useMemo(
-    () =>
-      vehicles.map((vehicle) => ({
-        value: String(vehicle.id),
-        label: `${vehicle.license_plate} (TAG ${vehicle.id_tag})`,
-      })),
-    [vehicles],
+  const assignedVehicleIds = useMemo(
+    () => vehicles.filter((v) => v.assigned_driver_id === driverId).map((v) => v.id),
+    [vehicles, driverId],
   );
 
   const form = useForm<DriverFormData>({
@@ -49,22 +48,25 @@ export const EditDriverPage = () => {
     defaultValues: {
       name: "",
       email: "",
-      vehicleId: "__none__",
+      vehicle_id: null,
+      vehicle_ids: [],
       organization_id: null,
     },
   });
+
+  const organizationId = form.watch("organization_id");
+  const isIndividualDriver = organizationId == null;
 
   useEffect(() => {
     if (!driverWithVehicle) return;
     form.reset({
       name: driverWithVehicle.name,
       email: driverWithVehicle.email,
-      vehicleId: driverWithVehicle.vehicleId
-        ? String(driverWithVehicle.vehicleId)
-        : "__none__",
+      vehicle_id: driverWithVehicle.vehicleId ?? null,
+      vehicle_ids: assignedVehicleIds,
       organization_id: driverWithVehicle.organization_id ?? null,
     });
-  }, [driverWithVehicle, form]);
+  }, [driverWithVehicle, assignedVehicleIds, form]);
 
   const onSubmit = (formData: DriverFormData) => {
     mutate(
@@ -77,14 +79,25 @@ export const EditDriverPage = () => {
         },
       },
       {
-        onSuccess: () => {
-          toast.success("Motorista atualizado.");
-          if (formData.vehicleId && formData.vehicleId !== "__none__") {
-            toast.info(
-              "Vínculo de veículo será persistido quando a API estiver disponível.",
+        onSuccess: async () => {
+          try {
+            if (isIndividualDriver) {
+              await updateUserVehicles(driverId, formData.vehicle_ids ?? []);
+            } else {
+              await updateUserVehicles(
+                driverId,
+                formData.vehicle_id != null ? [formData.vehicle_id] : [],
+              );
+            }
+            toast.success("Motorista atualizado.");
+            navigate({ to: "/motoristas" });
+          } catch (error) {
+            toast.error(
+              getToastErrorMessage(error, {
+                fallback: "Erro ao atualizar veículos vinculados.",
+              }),
             );
           }
-          navigate({ to: "/motoristas" });
         },
         onError: (error) =>
           toast.error(
@@ -150,26 +163,55 @@ export const EditDriverPage = () => {
             label="E-mail"
             placeholder="email@exemplo.com"
           />
-          <ControlledSelect
-            control={form.control}
-            name="vehicleId"
-            label="Veículo Vinculado"
-            placeholder="Selecione um veículo"
-            options={[
-              { value: "__none__", label: "Sem veículo" },
-              ...vehicleOptions,
-            ]}
-          />
+          {isIndividualDriver ? (
+            <div className="space-y-1">
+              <Label>Veículos Vinculados</Label>
+              <Controller
+                control={form.control}
+                name="vehicle_ids"
+                render={({ field }) => (
+                  <VehiclesRelationSelect
+                    mode="multiple"
+                    value={field.value ?? []}
+                    onValueChange={(value) =>
+                      field.onChange(Array.isArray(value) ? value : [])
+                    }
+                    placeholder="Selecione os veículos"
+                    allowEmpty
+                  />
+                )}
+              />
+            </div>
+          ) : (
+            <div className="space-y-1">
+              <Label>Veículo Vinculado</Label>
+              <Controller
+                control={form.control}
+                name="vehicle_id"
+                render={({ field }) => (
+                  <VehiclesRelationSelect
+                    value={field.value ?? undefined}
+                    onValueChange={(value) =>
+                      field.onChange(typeof value === "number" ? value : null)
+                    }
+                    organizationId={organizationId ?? undefined}
+                    placeholder="Selecione um veículo"
+                    emptyLabel="Sem veículo"
+                  />
+                )}
+              />
+            </div>
+          )}
           <div className="space-y-1">
-            <Label>Frota</Label>
+            <Label>Organização</Label>
             <Controller
               control={form.control}
               name="organization_id"
               render={({ field }) => (
-                <OrganizationsCombobox
+                <OrganizationsRelationSelect
                   value={field.value ?? undefined}
                   onValueChange={(v) => field.onChange(v ?? null)}
-                  placeholder="Sem frota"
+                  placeholder="Sem organização"
                 />
               )}
             />

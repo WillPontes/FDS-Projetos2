@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { fieldControlErrorClassName } from "@/lib/field-control";
 import { cn } from "@/lib/utils";
 
 export type SelectOption = {
@@ -27,6 +28,7 @@ type ControlledSelectProps<T extends FieldValues> = {
   options: SelectOption[];
   placeholder?: string;
   disabled?: boolean;
+  clearValue?: string;
 };
 
 export const ControlledSelect = <T extends FieldValues>({
@@ -36,6 +38,7 @@ export const ControlledSelect = <T extends FieldValues>({
   options,
   placeholder = "Selecione...",
   disabled,
+  clearValue = "",
 }: ControlledSelectProps<T>) => {
   const id = String(name);
   return (
@@ -44,10 +47,16 @@ export const ControlledSelect = <T extends FieldValues>({
       name={name}
       render={({ field, fieldState }) => {
         const errorMsg = fieldState.error?.message;
+        const currentValue = field.value ?? clearValue;
+        const hasValue =
+          currentValue !== clearValue &&
+          currentValue !== "" &&
+          currentValue != null;
+
         return (
           <FormField id={id} label={label} error={errorMsg}>
             <Select
-              value={field.value ?? ""}
+              value={String(currentValue)}
               onValueChange={field.onChange}
               disabled={disabled}
             >
@@ -55,9 +64,10 @@ export const ControlledSelect = <T extends FieldValues>({
                 id={id}
                 aria-invalid={!!errorMsg}
                 aria-describedby={errorMsg ? formFieldErrorId(id) : undefined}
-                className={cn(
-                  errorMsg && "border-destructive focus:ring-destructive",
-                )}
+                className={cn(errorMsg && fieldControlErrorClassName)}
+                clearable
+                hasValue={hasValue}
+                onClear={() => field.onChange(clearValue)}
               >
                 <SelectValue placeholder={placeholder} />
               </SelectTrigger>

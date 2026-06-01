@@ -4,14 +4,15 @@ import { ptBR } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
 import type { DateRange } from "react-day-picker";
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { FieldTrigger } from "@/components/ui/field-trigger";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+
 type DashboardDateRangePickerProps = {
   date: DateRange | undefined;
   onDateChange: (date: DateRange | undefined) => void;
@@ -25,44 +26,43 @@ export const DashboardDateRangePicker = ({
   const hasValue = Boolean(date?.from);
 
   return (
-    <div className="flex items-center gap-1">
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button
-            type="button"
-            variant="outline"
-            className={cn(
-              "w-[280px] justify-start border-neutral-200 text-black bg-neutral-100 text-left font-normal",
-              !hasValue && "text-muted-foreground",
-            )}
-          >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {date?.from ? (
-              date.to ? (
-                <>
-                  {format(date.from, "dd/MM/yyyy", { locale: ptBR })} –{" "}
-                  {format(date.to, "dd/MM/yyyy", { locale: ptBR })}
-                </>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <FieldTrigger
+          showClear={hasValue}
+          onClear={() => onDateChange(undefined)}
+          className={cn("w-[280px]", !hasValue && "text-muted-foreground")}
+        >
+          <span className="flex min-w-0 items-center gap-2">
+            <CalendarIcon className="h-4 w-4 shrink-0" />
+            <span className="truncate">
+              {date?.from ? (
+                date.to ? (
+                  <>
+                    {format(date.from, "dd/MM/yyyy", { locale: ptBR })} –{" "}
+                    {format(date.to, "dd/MM/yyyy", { locale: ptBR })}
+                  </>
+                ) : (
+                  format(date.from, "dd/MM/yyyy", { locale: ptBR })
+                )
               ) : (
-                format(date.from, "dd/MM/yyyy", { locale: ptBR })
-              )
-            ) : (
-              <span>Selecionar período</span>
-            )}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            mode="range"
-            className="p-3"
-            defaultMonth={date?.from}
-            selected={date}
-            onSelect={onDateChange}
-            numberOfMonths={2}
-            locale={ptBR}
-          />
-        </PopoverContent>
-      </Popover>
-    </div>
+                "Selecionar período"
+              )}
+            </span>
+          </span>
+        </FieldTrigger>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0" align="start">
+        <Calendar
+          mode="range"
+          className="p-3"
+          defaultMonth={date?.from}
+          selected={date}
+          onSelect={onDateChange}
+          numberOfMonths={2}
+          locale={ptBR}
+        />
+      </PopoverContent>
+    </Popover>
   );
 };

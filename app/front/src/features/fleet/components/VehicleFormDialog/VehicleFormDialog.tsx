@@ -12,7 +12,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { ControlledInput } from "@/components/form/ControlledInput";
 import { ControlledSelect } from "@/components/form/ControlledSelect";
-import { FleetsCombobox } from "../FleetsCombobox/FleetsCombobox";
+import { FleetsRelationSelect } from "@/components/form/relation-selects";
 import { VEHICLE_FUEL_OPTIONS } from "../../constants";
 import { useCreateVehicle } from "../../hooks/useCreateVehicle";
 import { useUpdateVehicle } from "../../hooks/useUpdateVehicle";
@@ -154,7 +154,7 @@ export const VehicleFormDialog = ({
               control={form.control}
               name="fleet_id"
               render={({ field }) => (
-                <FleetsCombobox
+                <FleetsRelationSelect
                   value={field.value ?? undefined}
                   onValueChange={(v) => field.onChange(v ?? null)}
                   organizationId={orgIdForFleet ?? undefined}

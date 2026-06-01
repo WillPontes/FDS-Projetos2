@@ -18,6 +18,7 @@ type FilterSelectProps = {
   options: FilterSelectOption[];
   placeholder?: string;
   className?: string;
+  clearValue?: string;
 };
 
 export const FilterSelect = ({
@@ -26,17 +27,27 @@ export const FilterSelect = ({
   options,
   placeholder = "Selecione",
   className,
-}: FilterSelectProps) => (
-  <Select value={value} onValueChange={onValueChange}>
-    <SelectTrigger className={cn("h-9 w-[180px] bg-neutral-100 border-neutral-200", className)}>
-      <SelectValue placeholder={placeholder} />
-    </SelectTrigger>
-    <SelectContent>
-      {options.map((opt) => (
-        <SelectItem key={opt.value} value={opt.value}>
-          {opt.label}
-        </SelectItem>
-      ))}
-    </SelectContent>
-  </Select>
-);
+  clearValue = "",
+}: FilterSelectProps) => {
+  const hasValue = value !== clearValue && value !== "";
+
+  return (
+    <Select value={value} onValueChange={onValueChange}>
+      <SelectTrigger
+        className={cn("w-[180px]", className)}
+        clearable
+        hasValue={hasValue}
+        onClear={() => onValueChange(clearValue)}
+      >
+        <SelectValue placeholder={placeholder} />
+      </SelectTrigger>
+      <SelectContent>
+        {options.map((opt) => (
+          <SelectItem key={opt.value} value={opt.value}>
+            {opt.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+};

@@ -27,11 +27,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { UsersRelationSelect } from "@/components/form/relation-selects";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { KpiCard } from "@/features/sustainability/components/MetricCard";
 import type { User } from "@/features/users/api/types";
-import { useGetUsers } from "@/features/users/hooks/useGetUsers";
 import {
   getOrganizationSummary,
   getOrganizationUsers,
@@ -132,6 +132,7 @@ export const OrganizationDetailPage = ({
   const queryClient = useQueryClient();
   const [userSearch, setUserSearch] = useState("");
   const [linkUserOpen, setLinkUserOpen] = useState(false);
+  const [selectedLinkUserId, setSelectedLinkUserId] = useState<number | undefined>();
   const [editOpen, setEditOpen] = useState(false);
 
   const { data: summary } = useQuery({
@@ -143,8 +144,6 @@ export const OrganizationDetailPage = ({
     queryKey: ["organizations", orgId, "users"],
     queryFn: () => getOrganizationUsers(orgId),
   });
-
-  const { data: allUsers } = useGetUsers();
 
   const updateMutation = useMutation({
     mutationFn: (data: OrgFormData) =>
@@ -179,6 +178,7 @@ export const OrganizationDetailPage = ({
       toast.success("Usuário vinculado.");
       queryClient.invalidateQueries({ queryKey: ["organizations", orgId, "users"] });
       setLinkUserOpen(false);
+      setSelectedLinkUserId(undefined);
     },
     onError: (error) =>
       toast.error(
@@ -193,9 +193,6 @@ export const OrganizationDetailPage = ({
       (u) => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q),
     );
   }, [orgUsers, userSearch]);
-
-  const orgUserIds = new Set(orgUsers.map((u) => u.id));
-  const linkableUsers = (allUsers ?? []).filter((u) => !orgUserIds.has(u.id));
 
   return (
     <PageLayout
@@ -249,26 +246,39 @@ export const OrganizationDetailPage = ({
         onSubmit={(data) => updateMutation.mutate(data)}
       />
 
-      <Dialog open={linkUserOpen} onOpenChange={setLinkUserOpen}>
+      <Dialog
+        open={linkUserOpen}
+        onOpenChange={(open) => {
+          setLinkUserOpen(open);
+          if (!open) setSelectedLinkUserId(undefined);
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Vincular Pessoa</DialogTitle>
           </DialogHeader>
-          <div className="max-h-64 space-y-1 overflow-y-auto">
-            {linkableUsers.map((u) => (
-              <button
-                key={u.id}
-                type="button"
-                className="flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm hover:bg-neutral-100"
-                onClick={() => linkMutation.mutate(u.id)}
-              >
-                <span>#{u.id} · {u.name}</span>
-                <Link2 className="h-3 w-3 text-neutral-400" />
-              </button>
-            ))}
-            {linkableUsers.length === 0 && (
-              <p className="text-sm text-neutral-500">Nenhum usuário disponível.</p>
-            )}
+          <UsersRelationSelect
+            value={selectedLinkUserId}
+            onValueChange={setSelectedLinkUserId}
+            linkableToOrganizationId={orgId}
+            placeholder="Selecione uma pessoa"
+            allowEmpty={false}
+            className="mb-4"
+          />
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setLinkUserOpen(false)}>
+              Cancelar
+            </Button>
+            <Button
+              disabled={selectedLinkUserId == null || linkMutation.isPending}
+              onClick={() => {
+                if (selectedLinkUserId != null) {
+                  linkMutation.mutate(selectedLinkUserId);
+                }
+              }}
+            >
+              {linkMutation.isPending ? "Vinculando…" : "Vincular"}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

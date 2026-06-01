@@ -1,7 +1,9 @@
 import { api } from "@/lib/http-client";
+import { normalizePaginatedResponse } from "@/lib/paginated-response";
 import type {
   ListUsersParams,
   ListUsersResponse,
+  PaginatedUsersResponse,
   UpdateUserPayload,
   User,
 } from "./types";
@@ -9,14 +11,46 @@ import type {
 export async function getUsers(
   params?: ListUsersParams,
 ): Promise<ListUsersResponse> {
-  return api
+  const res = await api
     .get("/api/users/", {
       searchParams: {
         ...(params?.role && { role: params.role }),
-        ...(params?.organization_id != null && { organization_id: params.organization_id }),
+        ...(params?.organization_id != null && {
+          organization_id: params.organization_id,
+        }),
+        ...(params?.search && { search: params.search }),
+        ...(params?.paginate && { paginate: "true" }),
+        ...(params?.page != null && { page: params.page }),
+        ...(params?.pageSize != null && { page_size: params.pageSize }),
       },
     })
-    .json<ListUsersResponse>();
+    .json<ListUsersResponse | PaginatedUsersResponse>();
+
+  if (Array.isArray(res)) return res;
+  return res.items;
+}
+
+export async function getUsersPaginated(
+  params?: ListUsersParams,
+): Promise<PaginatedUsersResponse> {
+  const res = await api
+    .get("/api/users/", {
+      searchParams: {
+        ...(params?.role && { role: params.role }),
+        ...(params?.organization_id != null && {
+          organization_id: params.organization_id,
+        }),
+        ...(params?.linkable_to_organization_id != null && {
+          linkable_to_organization_id: params.linkable_to_organization_id,
+        }),
+        ...(params?.search && { search: params.search }),
+        paginate: "true",
+        page: params?.page ?? 1,
+        page_size: params?.pageSize ?? 20,
+      },
+    })
+    .json();
+  return normalizePaginatedResponse<User>(res);
 }
 
 export async function getUserById(id: number): Promise<User | undefined> {

@@ -29,7 +29,7 @@ export const TransactionFilters = ({
           placeholder="Buscar por placa"
           value={filters.plate ?? ""}
           onChange={(e) => onChange({ ...filters, plate: e.target.value || undefined })}
-          className="h-9 w-44"
+          className="w-44"
         />
       )}
       <ContextSelect

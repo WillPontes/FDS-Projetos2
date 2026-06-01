@@ -16,9 +16,16 @@ export const ReportsRegionSelect = ({
   value,
   onValueChange,
 }: ReportsRegionSelectProps) => {
+  const hasValue = value !== "" && value !== "all";
+
   return (
     <Select value={value} onValueChange={onValueChange}>
-      <SelectTrigger className="w-[220px] bg-neutral-100">
+      <SelectTrigger
+        className="w-[220px]"
+        clearable
+        hasValue={hasValue}
+        onClear={() => onValueChange("all")}
+      >
         <SelectValue placeholder="Região" />
       </SelectTrigger>
       <SelectContent>

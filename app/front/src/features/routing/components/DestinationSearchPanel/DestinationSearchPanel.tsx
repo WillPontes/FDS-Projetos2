@@ -41,7 +41,6 @@ export const DestinationSearchPanel = ({
           onChange={(event) => onDestinationChange(event.target.value)}
           placeholder="Para onde você vai?"
           className="pl-9"
-          aria-invalid={Boolean(errorMessage)}
         />
       </div>
 

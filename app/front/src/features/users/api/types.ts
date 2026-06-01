@@ -22,6 +22,16 @@ export type UserWithVehicle = User & {
 export type ListUsersParams = {
   role?: UserRole;
   organization_id?: number;
+  search?: string;
+  page?: number;
+  pageSize?: number;
+  paginate?: boolean;
+  linkable_to_organization_id?: number;
+};
+
+export type PaginatedUsersResponse = {
+  items: User[];
+  total: number;
 };
 
 export type ListUsersResponse = User[];

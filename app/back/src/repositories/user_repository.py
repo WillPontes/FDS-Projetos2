@@ -1,6 +1,6 @@
 from typing import Literal, Optional
 
-from sqlalchemy import select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models.user import User
@@ -41,11 +41,61 @@ class UserRepository:
             )
 
         if search:
-            query = query.where(User.name.ilike(f"%{search}%"))
+            query = query.where(
+                or_(
+                    User.name.ilike(f"%{search}%"),
+                    User.email.ilike(f"%{search}%"),
+                )
+            )
 
         result = await self.session.execute(query)
 
         return list(result.scalars().all())
+
+    async def get_paginated(
+        self,
+        page: int = 1,
+        page_size: int = 20,
+        role: UserRole | None = None,
+        organization_id: int | None = None,
+        search: str | None = None,
+        linkable_to_organization_id: int | None = None,
+    ) -> tuple[list[User], int]:
+        query = select(User)
+
+        if role is not None:
+            query = query.where(User.role == role)
+
+        if organization_id is not None:
+            query = query.where(
+                User.organization_id == organization_id
+            )
+
+        if linkable_to_organization_id is not None:
+            query = query.where(
+                or_(
+                    User.organization_id.is_(None),
+                    User.organization_id != linkable_to_organization_id,
+                )
+            )
+
+        if search:
+            query = query.where(
+                or_(
+                    User.name.ilike(f"%{search}%"),
+                    User.email.ilike(f"%{search}%"),
+                )
+            )
+
+        total_result = await self.session.execute(
+            select(func.count()).select_from(query.subquery())
+        )
+        total = total_result.scalar_one()
+        offset = (page - 1) * page_size
+        result = await self.session.execute(
+            query.order_by(User.name).offset(offset).limit(page_size)
+        )
+        return list(result.scalars().all()), total
 
     async def create(
         self,

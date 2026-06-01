@@ -23,19 +23,51 @@ class UserVehiclesUpdate(BaseModel):
     vehicle_ids: list[int]
 
 
-@router.get("/", response_model=list[UserPublic])
+@router.get("/")
 async def get_users(
     role: UserRoleLiteral | None = None,
     organization_id: int | None = None,
     include_common: bool = Query(default=False),
     search: str | None = None,
+    page: int = Query(default=1, ge=1),
+    page_size: int = Query(default=20, ge=1, le=100),
+    paginate: bool = Query(default=False),
+    linkable_to_organization_id: int | None = None,
     db: AsyncSession = Depends(get_db),
     current_user: User | None = Depends(get_current_user_dev),
-) -> list[UserPublic]:
+):
     org_scope = apply_org_scope_for_gestor(current_user, organization_id)
+    repo = UserRepository(db)
+
+    if paginate:
+        if current_user and current_user.role == UserRole.gestor_frota and role == "motorista":
+            org_drivers, org_total = await repo.get_paginated(
+                page, page_size, role="motorista", organization_id=org_scope, search=search
+            )
+            common, common_total = await repo.get_paginated(
+                page, page_size, role="motorista", organization_id=None, search=search
+            )
+            seen = {u.id for u in org_drivers}
+            merged = org_drivers + [u for u in common if u.id not in seen]
+            return {
+                "items": [UserPublic.model_validate(row) for row in merged],
+                "total": org_total + common_total,
+            }
+
+        users, total = await repo.get_paginated(
+            page,
+            page_size,
+            role=role,
+            organization_id=org_scope,
+            search=search,
+            linkable_to_organization_id=linkable_to_organization_id,
+        )
+        return {
+            "items": [UserPublic.model_validate(row) for row in users],
+            "total": total,
+        }
 
     if current_user and current_user.role == UserRole.gestor_frota and role == "motorista":
-        repo = UserRepository(db)
         org_drivers = await repo.get_all_filtered(role="motorista", organization_id=org_scope, search=search)
         common = await repo.get_all_filtered(role="motorista", organization_id=None, search=search) if include_common or True else []
         seen = {u.id for u in org_drivers}

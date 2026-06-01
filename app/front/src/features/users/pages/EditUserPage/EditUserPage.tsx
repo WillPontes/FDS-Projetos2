@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, Navigate, useNavigate, useParams } from "@tanstack/react-router";
 import { Trash } from "lucide-react";
@@ -16,6 +16,8 @@ import {
 import { ControlledInput } from "@/components/form/ControlledInput";
 import { ControlledSelect } from "@/components/form/ControlledSelect";
 import { FormActions } from "@/components/form/FormActions";
+import { Label } from "@/components/ui/label";
+import { OrganizationsRelationSelect } from "@/components/form/relation-selects";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { useCurrentUser } from "@/features/auth";
 import { USER_ROLE_OPTIONS } from "../../constants";
@@ -147,13 +149,20 @@ export const EditUserPage = () => {
               label: option.label,
             }))}
           />
-          <ControlledInput
-            control={form.control}
-            name="organization_id"
-            label="ID da organização"
-            type="number"
-            placeholder="Opcional"
-          />
+          <div className="space-y-1">
+            <Label>Organização</Label>
+            <Controller
+              control={form.control}
+              name="organization_id"
+              render={({ field }) => (
+                <OrganizationsRelationSelect
+                  value={field.value ?? undefined}
+                  onValueChange={(value) => field.onChange(value ?? null)}
+                  placeholder="Sem organização"
+                />
+              )}
+            />
+          </div>
           <FormActions>
             <Button
               type="button"
