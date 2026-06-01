@@ -17,6 +17,7 @@ import { useCurrentUser } from "@/features/auth";
 import { OrganizationsCombobox } from "@/features/fleet/components/OrganizationsCombobox/OrganizationsCombobox";
 import { useDashboardFilters } from "@/features/dashboard/hooks/useDashboardFilters";
 import { useDailyStats } from "@/features/dashboard/hooks/useDailyStats";
+import { useDashboardSummary } from "@/features/dashboard/hooks/useDashboardSummary";
 import { ComparativeBarChart } from "./components/ComparativeBarChart";
 import { DashboardDateRangePicker } from "./components/DashboardDateRangePicker";
 import { DashboardFuelSelect } from "./components/DashboardFuelSelect";
@@ -52,31 +53,34 @@ export const DashboardPage = () => {
     organizationId: scopedOrgId,
   });
 
-  // TODO: replace mock KPI values with real API data scoped by organization
+  const { data: summary } = useDashboardSummary({
+    organizationId: scopedOrgId,
+  });
+
   const METRICS = [
     {
       title: KPI_TITLES.co2Avoided,
-      value: formatKpiCo2(12450),
+      value: formatKpiCo2(summary?.total_co2_avoided_kg),
       icon: <Leaf className="text-[#72C215]" size={KPI_ICON_SIZE} />,
     },
     {
       title: KPI_TITLES.fuelSaved,
-      value: formatKpiFuel(8920),
+      value: formatKpiFuel(summary?.total_fuel_saved_liters),
       icon: <Fuel className="text-[#72C215]" size={KPI_ICON_SIZE} />,
     },
     {
       title: KPI_TITLES.paperSaved,
-      value: formatKpiPaper(650),
+      value: formatKpiPaper(summary?.paper_saved_meters),
       icon: <Scroll className="text-[#72C215]" size={KPI_ICON_SIZE} />,
     },
     {
       title: KPI_TITLES.financialSavings,
-      value: formatKpiCurrency(67340),
+      value: formatKpiCurrency(summary?.accumulated_economy),
       icon: <Coins className="text-[#72C215]" size={KPI_ICON_SIZE} />,
     },
     {
       title: KPI_TITLES.tagsActive,
-      value: formatKpiCount(247),
+      value: formatKpiCount(summary?.active_tags),
       icon: <Tag className="text-[#72C215]" size={KPI_ICON_SIZE} />,
     },
   ];
