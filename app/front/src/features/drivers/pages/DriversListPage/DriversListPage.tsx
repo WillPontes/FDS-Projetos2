@@ -17,6 +17,7 @@ import {
   useQueryStates,
 } from "nuqs";
 import { FilterInput } from "@/components/ui/FilterInput";
+import { getToastErrorMessage } from "@/lib/api-error";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -226,9 +227,9 @@ export const DriversListPage = () => {
 
       {isError ? (
         <p className="text-destructive" role="alert">
-          {error instanceof Error
-            ? error.message
-            : "Erro ao carregar motoristas."}
+          {getToastErrorMessage(error, {
+            fallback: "Erro ao carregar motoristas.",
+          })}
         </p>
       ) : (
         <>

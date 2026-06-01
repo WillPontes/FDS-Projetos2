@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { getToastErrorMessage } from "@/lib/api-error";
 import { createUser, updateUser, deleteUser } from "../../api/requests";
 import { userQueryKeys } from "../../api/query-keys";
 import type { UpdateUserPayload, User } from "../../api/types";
@@ -22,8 +23,10 @@ export const useCreateUser = () => {
       queryClient.invalidateQueries({ queryKey: userQueryKeys.all });
       toast.success("Usuário criado com sucesso!");
     },
-    onError: (error: Error) => {
-      toast.error(error.message || "Erro ao criar usuário.");
+    onError: (error) => {
+      toast.error(
+        getToastErrorMessage(error, { fallback: "Erro ao criar usuário." }),
+      );
     },
   });
 };
@@ -44,9 +47,11 @@ export const useUpdateUser = (options?: UserMutationOptions) => {
         toast.success("Usuário atualizado com sucesso!");
       }
     },
-    onError: (error: Error) => {
+    onError: (error) => {
       if (!silent) {
-        toast.error(error.message || "Erro ao atualizar usuário.");
+        toast.error(
+          getToastErrorMessage(error, { fallback: "Erro ao atualizar usuário." }),
+        );
       }
     },
   });
@@ -64,8 +69,10 @@ export const useDeleteUser = () => {
       queryClient.removeQueries({ queryKey: userQueryKeys.detail(id) });
       toast.success("Usuário excluído com sucesso!");
     },
-    onError: (error: Error) => {
-      toast.error(error.message || "Erro ao excluir usuário.");
+    onError: (error) => {
+      toast.error(
+        getToastErrorMessage(error, { fallback: "Erro ao excluir usuário." }),
+      );
     },
   });
 };

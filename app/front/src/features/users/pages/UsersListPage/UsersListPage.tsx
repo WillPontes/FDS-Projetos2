@@ -16,6 +16,7 @@ import {
   useQueryStates,
 } from "nuqs";
 import { Badge } from "@/components/ui/badge";
+import { getToastErrorMessage } from "@/lib/api-error";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -175,9 +176,9 @@ export const UsersListPage = () => {
     >
       {isError ? (
         <p className="text-destructive" role="alert">
-          {error instanceof Error
-            ? error.message
-            : "Erro ao carregar usuários."}
+          {getToastErrorMessage(error, {
+            fallback: "Erro ao carregar usuários.",
+          })}
         </p>
       ) : (
         <>

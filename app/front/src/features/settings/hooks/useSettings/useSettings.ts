@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { getToastErrorMessage } from "@/lib/api-error";
 import {
   getFuelPrices,
   getTechnicalSpecsBundle,
@@ -34,8 +35,12 @@ export const useUpdateTechnicalSpecs = () => {
       });
       toast.success("Especificações técnicas atualizadas!");
     },
-    onError: (error: Error) => {
-      toast.error(error.message || "Erro ao salvar especificações.");
+    onError: (error) => {
+      toast.error(
+        getToastErrorMessage(error, {
+          fallback: "Erro ao salvar especificações.",
+        }),
+      );
     },
   });
 };
@@ -51,8 +56,12 @@ export const useSyncFuelPrices = () => {
       });
       toast.success("Preços sincronizados com a ANP!");
     },
-    onError: (error: Error) => {
-      toast.error(error.message || "Erro ao sincronizar preços.");
+    onError: (error) => {
+      toast.error(
+        getToastErrorMessage(error, {
+          fallback: "Erro ao sincronizar preços.",
+        }),
+      );
     },
   });
 };
@@ -76,8 +85,12 @@ export const useUpdateFuelPriceMock = () => {
       });
       toast.success(`Preços de ${uf} atualizados localmente (mock).`);
     },
-    onError: (error: Error) => {
-      toast.error(error.message || "Erro ao atualizar preços.");
+    onError: (error) => {
+      toast.error(
+        getToastErrorMessage(error, {
+          fallback: "Erro ao atualizar preços.",
+        }),
+      );
     },
   });
 };
