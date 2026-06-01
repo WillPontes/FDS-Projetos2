@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.connection import get_db
+from src.errors import messages as err
 from src.middleware.dev_auth import apply_org_scope_for_gestor, get_current_user_dev
 from src.models.fleet import FleetPublic
 from src.models.user import User, UserPublic
@@ -52,10 +53,10 @@ async def get_fleet(
 ):
     fleet = await FleetRepository(db).get_by_id(fleet_id)
     if not fleet:
-        raise HTTPException(status_code=404, detail="Frota não encontrada.")
+        raise HTTPException(status_code=404, detail=err.FLEET_NOT_FOUND)
     org_scope = apply_org_scope_for_gestor(current_user, None)
     if org_scope is not None and fleet.organization_id != org_scope:
-        raise HTTPException(status_code=403, detail="Acesso negado.")
+        raise HTTPException(status_code=403, detail=err.ACCESS_DENIED)
     return {"data": FleetPublic.model_validate(fleet)}
 
 
@@ -67,10 +68,10 @@ async def get_fleet_summary(
 ):
     fleet = await FleetRepository(db).get_by_id(fleet_id)
     if not fleet:
-        raise HTTPException(status_code=404, detail="Frota não encontrada.")
+        raise HTTPException(status_code=404, detail=err.FLEET_NOT_FOUND)
     org_scope = apply_org_scope_for_gestor(current_user, None)
     if org_scope is not None and fleet.organization_id != org_scope:
-        raise HTTPException(status_code=403, detail="Acesso negado.")
+        raise HTTPException(status_code=403, detail=err.ACCESS_DENIED)
     return await FleetRepository(db).get_summary(fleet_id)
 
 
@@ -84,10 +85,10 @@ async def get_fleet_transactions(
 ):
     fleet = await FleetRepository(db).get_by_id(fleet_id)
     if not fleet:
-        raise HTTPException(status_code=404, detail="Frota não encontrada.")
+        raise HTTPException(status_code=404, detail=err.FLEET_NOT_FOUND)
     org_scope = apply_org_scope_for_gestor(current_user, None)
     if org_scope is not None and fleet.organization_id != org_scope:
-        raise HTTPException(status_code=403, detail="Acesso negado.")
+        raise HTTPException(status_code=403, detail=err.ACCESS_DENIED)
     vehicles = await FleetRepository(db).get_vehicles(fleet_id)
     vehicle_ids = [v.id for v in vehicles if v.id is not None]
     if not vehicle_ids:
@@ -109,7 +110,7 @@ async def create_fleet(
 ):
     org_scope = apply_org_scope_for_gestor(current_user, body.organization_id)
     if org_scope is not None and body.organization_id != org_scope:
-        raise HTTPException(status_code=403, detail="Acesso negado.")
+        raise HTTPException(status_code=403, detail=err.ACCESS_DENIED)
     fleet = await FleetRepository(db).create(body.name, body.organization_id)
     await db.commit()
     return {"data": FleetPublic.model_validate(fleet)}
@@ -124,10 +125,10 @@ async def update_fleet(
 ):
     fleet = await FleetRepository(db).get_by_id(fleet_id)
     if not fleet:
-        raise HTTPException(status_code=404, detail="Frota não encontrada.")
+        raise HTTPException(status_code=404, detail=err.FLEET_NOT_FOUND)
     org_scope = apply_org_scope_for_gestor(current_user, None)
     if org_scope is not None and fleet.organization_id != org_scope:
-        raise HTTPException(status_code=403, detail="Acesso negado.")
+        raise HTTPException(status_code=403, detail=err.ACCESS_DENIED)
     updated = await FleetRepository(db).update(fleet_id, body.name)
     await db.commit()
     return {"data": FleetPublic.model_validate(updated)}
@@ -141,10 +142,10 @@ async def delete_fleet(
 ):
     fleet = await FleetRepository(db).get_by_id(fleet_id)
     if not fleet:
-        raise HTTPException(status_code=404, detail="Frota não encontrada.")
+        raise HTTPException(status_code=404, detail=err.FLEET_NOT_FOUND)
     org_scope = apply_org_scope_for_gestor(current_user, None)
     if org_scope is not None and fleet.organization_id != org_scope:
-        raise HTTPException(status_code=403, detail="Acesso negado.")
+        raise HTTPException(status_code=403, detail=err.ACCESS_DENIED)
     await FleetRepository(db).delete(fleet_id)
     await db.commit()
 
@@ -157,10 +158,10 @@ async def list_fleet_users(
 ):
     fleet = await FleetRepository(db).get_by_id(fleet_id)
     if not fleet:
-        raise HTTPException(status_code=404, detail="Frota não encontrada.")
+        raise HTTPException(status_code=404, detail=err.FLEET_NOT_FOUND)
     org_scope = apply_org_scope_for_gestor(current_user, None)
     if org_scope is not None and fleet.organization_id != org_scope:
-        raise HTTPException(status_code=403, detail="Acesso negado.")
+        raise HTTPException(status_code=403, detail=err.ACCESS_DENIED)
     users = await FleetRepository(db).get_users(fleet_id)
     return [UserPublic.model_validate(u) for u in users]
 
@@ -174,10 +175,10 @@ async def link_fleet_user(
 ):
     fleet = await FleetRepository(db).get_by_id(fleet_id)
     if not fleet:
-        raise HTTPException(status_code=404, detail="Frota não encontrada.")
+        raise HTTPException(status_code=404, detail=err.FLEET_NOT_FOUND)
     org_scope = apply_org_scope_for_gestor(current_user, None)
     if org_scope is not None and fleet.organization_id != org_scope:
-        raise HTTPException(status_code=403, detail="Acesso negado.")
+        raise HTTPException(status_code=403, detail=err.ACCESS_DENIED)
     await FleetRepository(db).link_user(fleet_id, user_id)
     await db.commit()
     return {"message": "Usuário vinculado."}
@@ -192,10 +193,10 @@ async def unlink_fleet_user(
 ):
     fleet = await FleetRepository(db).get_by_id(fleet_id)
     if not fleet:
-        raise HTTPException(status_code=404, detail="Frota não encontrada.")
+        raise HTTPException(status_code=404, detail=err.FLEET_NOT_FOUND)
     org_scope = apply_org_scope_for_gestor(current_user, None)
     if org_scope is not None and fleet.organization_id != org_scope:
-        raise HTTPException(status_code=403, detail="Acesso negado.")
+        raise HTTPException(status_code=403, detail=err.ACCESS_DENIED)
     await FleetRepository(db).unlink_user(fleet_id, user_id)
     await db.commit()
 
@@ -208,10 +209,10 @@ async def list_fleet_vehicles(
 ):
     fleet = await FleetRepository(db).get_by_id(fleet_id)
     if not fleet:
-        raise HTTPException(status_code=404, detail="Frota não encontrada.")
+        raise HTTPException(status_code=404, detail=err.FLEET_NOT_FOUND)
     org_scope = apply_org_scope_for_gestor(current_user, None)
     if org_scope is not None and fleet.organization_id != org_scope:
-        raise HTTPException(status_code=403, detail="Acesso negado.")
+        raise HTTPException(status_code=403, detail=err.ACCESS_DENIED)
     vehicles = await FleetRepository(db).get_vehicles(fleet_id)
     return [VehiclePublic.model_validate(v) for v in vehicles]
 
@@ -225,13 +226,13 @@ async def link_fleet_vehicle(
 ):
     fleet = await FleetRepository(db).get_by_id(fleet_id)
     if not fleet:
-        raise HTTPException(status_code=404, detail="Frota não encontrada.")
+        raise HTTPException(status_code=404, detail=err.FLEET_NOT_FOUND)
     org_scope = apply_org_scope_for_gestor(current_user, None)
     if org_scope is not None and fleet.organization_id != org_scope:
-        raise HTTPException(status_code=403, detail="Acesso negado.")
+        raise HTTPException(status_code=403, detail=err.ACCESS_DENIED)
     vehicle = await FleetRepository(db).link_vehicle(fleet_id, vehicle_id)
     if vehicle is None:
-        raise HTTPException(status_code=404, detail="Veículo não encontrado.")
+        raise HTTPException(status_code=404, detail=err.VEHICLE_NOT_FOUND)
     await db.commit()
     return {"data": VehiclePublic.model_validate(vehicle)}
 
@@ -245,11 +246,11 @@ async def unlink_fleet_vehicle(
 ):
     fleet = await FleetRepository(db).get_by_id(fleet_id)
     if not fleet:
-        raise HTTPException(status_code=404, detail="Frota não encontrada.")
+        raise HTTPException(status_code=404, detail=err.FLEET_NOT_FOUND)
     org_scope = apply_org_scope_for_gestor(current_user, None)
     if org_scope is not None and fleet.organization_id != org_scope:
-        raise HTTPException(status_code=403, detail="Acesso negado.")
+        raise HTTPException(status_code=403, detail=err.ACCESS_DENIED)
     vehicle = await FleetRepository(db).unlink_vehicle(fleet_id, vehicle_id)
     if vehicle is None:
-        raise HTTPException(status_code=404, detail="Veículo não vinculado a esta frota.")
+        raise HTTPException(status_code=404, detail=err.VEHICLE_NOT_LINKED_TO_FLEET)
     await db.commit()

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { getToastErrorMessage } from "@/lib/api-error";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -36,7 +37,10 @@ export const DriverCreateDialog = ({ open, onClose }: DriverCreateDialogProps) =
       setOrganizationId(undefined);
       onClose();
     },
-    onError: () => toast.error("Erro ao cadastrar motorista."),
+    onError: (error) =>
+      toast.error(
+        getToastErrorMessage(error, { fallback: "Erro ao cadastrar motorista." }),
+      ),
   });
 
   return (

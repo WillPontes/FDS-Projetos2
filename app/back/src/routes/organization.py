@@ -4,6 +4,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.connection import get_db
+from src.errors import messages as err
 from src.dto.transactions import TransactionPublic
 from src.models.organization import OrganizationPublic
 from src.models.transaction import Transaction
@@ -67,7 +68,7 @@ async def get_organization_by_id(
     if not organization:
         raise HTTPException(
             status_code=404,
-            detail="Organização não encontrada.",
+            detail=err.ORGANIZATION_NOT_FOUND,
         )
 
     return {
@@ -84,7 +85,7 @@ async def get_organization_summary(
     repository = OrganizationRepository(db)
     organization = await repository.get_by_id(organization_id)
     if not organization:
-        raise HTTPException(status_code=404, detail="Organização não encontrada.")
+        raise HTTPException(status_code=404, detail=err.ORGANIZATION_NOT_FOUND)
 
     vehicle_count_result = await db.execute(
         select(func.count()).where(Vehicle.organization_id == organization_id)
@@ -126,7 +127,7 @@ async def get_organization_transactions(
     repository = OrganizationRepository(db)
     organization = await repository.get_by_id(organization_id)
     if not organization:
-        raise HTTPException(status_code=404, detail="Organização não encontrada.")
+        raise HTTPException(status_code=404, detail=err.ORGANIZATION_NOT_FOUND)
 
     tx_repo = TransactionRepository(db)
     items, total = await tx_repo.get_by_organization_paginated(organization_id, page, page_size)
@@ -163,7 +164,7 @@ async def update_organization(
     repository = OrganizationRepository(db)
     organization = await repository.update(organization_id, name=body.name, cnpj=body.cnpj)
     if organization is None:
-        raise HTTPException(status_code=404, detail="Organização não encontrada.")
+        raise HTTPException(status_code=404, detail=err.ORGANIZATION_NOT_FOUND)
     await db.commit()
     return {
         "message": "Organização atualizada com sucesso",
@@ -179,7 +180,7 @@ async def delete_organization(
     repository = OrganizationRepository(db)
     deleted = await repository.delete(organization_id)
     if not deleted:
-        raise HTTPException(status_code=404, detail="Organização não encontrada.")
+        raise HTTPException(status_code=404, detail=err.ORGANIZATION_NOT_FOUND)
     await db.commit()
 
 
@@ -190,7 +191,7 @@ async def list_organization_users(
 ):
     organization = await OrganizationRepository(db).get_by_id(organization_id)
     if not organization:
-        raise HTTPException(status_code=404, detail="Organização não encontrada.")
+        raise HTTPException(status_code=404, detail=err.ORGANIZATION_NOT_FOUND)
     users = await UserRepository(db).get_all_filtered(organization_id=organization_id)
     return [UserPublic.model_validate(u) for u in users]
 
@@ -203,10 +204,10 @@ async def link_organization_user(
 ):
     organization = await OrganizationRepository(db).get_by_id(organization_id)
     if not organization:
-        raise HTTPException(status_code=404, detail="Organização não encontrada.")
+        raise HTTPException(status_code=404, detail=err.ORGANIZATION_NOT_FOUND)
     user = await UserRepository(db).get_by_id(user_id)
     if not user:
-        raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+        raise HTTPException(status_code=404, detail=err.USER_NOT_FOUND)
     user.organization_id = organization_id
     await db.commit()
     return {"message": "Usuário vinculado à organização."}
@@ -220,6 +221,6 @@ async def unlink_organization_user(
 ):
     user = await UserRepository(db).get_by_id(user_id)
     if not user or user.organization_id != organization_id:
-        raise HTTPException(status_code=404, detail="Usuário não vinculado a esta organização.")
+        raise HTTPException(status_code=404, detail=err.USER_NOT_LINKED_TO_ORG)
     user.organization_id = None
     await db.commit()

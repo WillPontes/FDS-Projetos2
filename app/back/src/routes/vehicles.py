@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.connection import get_db
 from src.dto.vehicle import VehicleIn, VehicleUpdate
+from src.errors import messages as err
 from src.middleware.dev_auth import apply_org_scope_for_gestor, get_current_user_dev
 from src.models.user import User, UserRole
 from src.models.vehicle import VehicleListPublic, VehiclePublic
@@ -19,6 +20,8 @@ from src.services.vehicles import (
 
 router = APIRouter(prefix="/vehicles", tags=["vehicles"])
 
+_CONFLICT_DETAILS = frozenset({err.VEHICLE_PLATE_EXISTS, err.VEHICLE_TAG_EXISTS})
+
 
 def _assert_vehicle_access(user: User | None, vehicle: VehiclePublic | object) -> None:
     if user is None or user.role == UserRole.admin:
@@ -26,7 +29,7 @@ def _assert_vehicle_access(user: User | None, vehicle: VehiclePublic | object) -
     if user.role == UserRole.gestor_frota:
         org_id = getattr(vehicle, "organization_id", None)
         if org_id != user.organization_id:
-            raise HTTPException(status_code=403, detail="Acesso negado.")
+            raise HTTPException(status_code=403, detail=err.ACCESS_DENIED)
 
 
 @router.get("/", response_model=VehicleListPublic)
@@ -58,7 +61,7 @@ async def get_vehicle(
 ):
     vehicle = await get_vehicle_by_id_svc(session, vehicle_id)
     if not vehicle:
-        raise HTTPException(status_code=404, detail="Vehicle not found")
+        raise HTTPException(status_code=404, detail=err.VEHICLE_NOT_FOUND)
     _assert_vehicle_access(current_user, vehicle)
     return VehiclePublic.model_validate(vehicle)
 
@@ -71,13 +74,13 @@ async def create_vehicle(
 ):
     if current_user and current_user.role == UserRole.gestor_frota:
         if vehicle_in.fleet_id is None and vehicle_in.organization_id != current_user.organization_id:
-            raise HTTPException(status_code=403, detail="Gestor deve vincular veículo à própria org/frota.")
+            raise HTTPException(status_code=403, detail=err.GESTOR_VEHICLE_SCOPE)
     existing_plate = await get_vehicle_by_license_plate_svc(session, vehicle_in.license_plate)
     if existing_plate:
-        raise HTTPException(status_code=409, detail="License plate already exists")
+        raise HTTPException(status_code=409, detail=err.VEHICLE_PLATE_EXISTS)
     existing_tag = await get_vehicle_by_tag_svc(session, vehicle_in.id_tag)
     if existing_tag:
-        raise HTTPException(status_code=409, detail="Tag already exists")
+        raise HTTPException(status_code=409, detail=err.VEHICLE_TAG_EXISTS)
     try:
         vehicle = await create_vehicle_svc(session, vehicle_in)
     except ValueError as e:
@@ -95,16 +98,16 @@ async def update_vehicle(
 ):
     existing = await get_vehicle_by_id_svc(session, vehicle_id)
     if not existing:
-        raise HTTPException(status_code=404, detail="Vehicle not found")
+        raise HTTPException(status_code=404, detail=err.VEHICLE_NOT_FOUND)
     _assert_vehicle_access(current_user, existing)
     try:
         vehicle = await update_vehicle_svc(session, vehicle_id, vehicle_update)
     except ValueError as e:
         msg = str(e)
-        status = 409 if "already exists" in msg else 400
+        status = 409 if msg in _CONFLICT_DETAILS else 400
         raise HTTPException(status_code=status, detail=msg) from e
     if not vehicle:
-        raise HTTPException(status_code=404, detail="Vehicle not found")
+        raise HTTPException(status_code=404, detail=err.VEHICLE_NOT_FOUND)
     await session.commit()
     return VehiclePublic.model_validate(vehicle)
 
@@ -120,7 +123,7 @@ async def get_vehicle_summary(
 
     vehicle = await get_vehicle_by_id_svc(session, vehicle_id)
     if not vehicle:
-        raise HTTPException(status_code=404, detail="Vehicle not found")
+        raise HTTPException(status_code=404, detail=err.VEHICLE_NOT_FOUND)
     _assert_vehicle_access(current_user, vehicle)
     result = await session.execute(
         select(
@@ -151,7 +154,7 @@ async def list_vehicle_transactions(
 ):
     vehicle = await get_vehicle_by_id_svc(session, vehicle_id)
     if not vehicle:
-        raise HTTPException(status_code=404, detail="Vehicle not found")
+        raise HTTPException(status_code=404, detail=err.VEHICLE_NOT_FOUND)
     _assert_vehicle_access(current_user, vehicle)
     repo = TransactionRepository(session)
     items, total = await repo.get_by_vehicle_paginated(vehicle_id, page, page_size)
@@ -170,10 +173,10 @@ async def delete_vehicle(
 ):
     existing = await get_vehicle_by_id_svc(session, vehicle_id)
     if not existing:
-        raise HTTPException(status_code=404, detail="Vehicle not found")
+        raise HTTPException(status_code=404, detail=err.VEHICLE_NOT_FOUND)
     _assert_vehicle_access(current_user, existing)
     deleted = await delete_vehicle_svc(session, vehicle_id)
     if not deleted:
-        raise HTTPException(status_code=404, detail="Vehicle not found")
+        raise HTTPException(status_code=404, detail=err.VEHICLE_NOT_FOUND)
     await session.commit()
-    return {"message": "Vehicle deleted"}
+    return {"message": "Veículo removido."}

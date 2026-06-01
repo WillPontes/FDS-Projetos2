@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.connection import get_db
+from src.errors import messages as err
 from src.models.user_stats import UserStatsPublic
 from src.services.user_stats import (
     get_user_stats as get_user_stats_svc,
@@ -33,7 +34,7 @@ async def get_user_stats(
     if not stats:
         raise HTTPException(
             status_code=404,
-            detail="User stats not found",
+            detail=err.USER_STATS_NOT_FOUND,
         )
 
     return UserStatsPublic.model_validate(stats)

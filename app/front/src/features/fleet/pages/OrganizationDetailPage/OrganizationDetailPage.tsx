@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { getToastErrorMessage } from "@/lib/api-error";
 import { ActionHintPopover } from "@/components/ActionHintPopover";
 import { DataTable, entityIdColumn } from "@/components/DataTable";
 import { PageLayout } from "@/components/layout/PageLayout";
@@ -152,7 +153,12 @@ export const OrganizationDetailPage = ({
       toast.success("Organização atualizada.");
       queryClient.invalidateQueries({ queryKey: ["organizations"] });
     },
-    onError: () => toast.error("Erro ao atualizar organização."),
+    onError: (error) =>
+      toast.error(
+        getToastErrorMessage(error, {
+          fallback: "Erro ao atualizar organização.",
+        }),
+      ),
   });
 
   const unlinkMutation = useMutation({
@@ -161,7 +167,10 @@ export const OrganizationDetailPage = ({
       toast.success("Usuário desvinculado.");
       queryClient.invalidateQueries({ queryKey: ["organizations", orgId, "users"] });
     },
-    onError: () => toast.error("Erro ao desvincular usuário."),
+    onError: (error) =>
+      toast.error(
+        getToastErrorMessage(error, { fallback: "Erro ao desvincular usuário." }),
+      ),
   });
 
   const linkMutation = useMutation({
@@ -171,7 +180,10 @@ export const OrganizationDetailPage = ({
       queryClient.invalidateQueries({ queryKey: ["organizations", orgId, "users"] });
       setLinkUserOpen(false);
     },
-    onError: () => toast.error("Erro ao vincular usuário."),
+    onError: (error) =>
+      toast.error(
+        getToastErrorMessage(error, { fallback: "Erro ao vincular usuário." }),
+      ),
   });
 
   const filteredUsers = useMemo(() => {

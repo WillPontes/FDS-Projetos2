@@ -2,9 +2,11 @@ from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.connection import get_db
+from src.errors import messages as err
 from src.dto.user import UserUpdate
 from src.middleware.dev_auth import apply_org_scope_for_gestor, get_current_user_dev
 from src.models.user import User, UserPublic, UserRole
@@ -52,10 +54,10 @@ async def get_user_by_id(
 ) -> UserPublic:
     user = await UserRepository(db).get_by_id(user_id)
     if user is None:
-        raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+        raise HTTPException(status_code=404, detail=err.USER_NOT_FOUND)
     if current_user and current_user.role == UserRole.gestor_frota:
         if user.organization_id not in (None, current_user.organization_id):
-            raise HTTPException(status_code=403, detail="Acesso negado.")
+            raise HTTPException(status_code=403, detail=err.ACCESS_DENIED)
     return UserPublic.model_validate(user)
 
 
@@ -70,7 +72,7 @@ async def create_user(
     repository = UserRepository(db)
     existing_user = await repository.get_by_email(email)
     if existing_user:
-        raise HTTPException(status_code=409, detail="Já existe um usuário com este email.")
+        raise HTTPException(status_code=409, detail=err.USER_EMAIL_EXISTS)
     user = await repository.create(name=name, email=email, role=role, organization_id=organization_id)
     await db.commit()
     return UserPublic.model_validate(user)
@@ -86,10 +88,10 @@ async def update_user(
     repository = UserRepository(db)
     existing = await repository.get_by_id(user_id)
     if existing is None:
-        raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+        raise HTTPException(status_code=404, detail=err.USER_NOT_FOUND)
     if current_user and current_user.role == UserRole.gestor_frota:
         if existing.organization_id not in (None, current_user.organization_id):
-            raise HTTPException(status_code=403, detail="Acesso negado.")
+            raise HTTPException(status_code=403, detail=err.ACCESS_DENIED)
 
     data = payload.model_dump(exclude_unset=True)
     user = await repository.update(
@@ -101,7 +103,7 @@ async def update_user(
         set_organization_id="organization_id" in data,
     )
     if user is None:
-        raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+        raise HTTPException(status_code=404, detail=err.USER_NOT_FOUND)
     await db.commit()
     return UserPublic.model_validate(user)
 
@@ -115,11 +117,11 @@ async def update_user_vehicles(
 ) -> dict:
     user = await UserRepository(db).get_by_id(user_id)
     if user is None:
-        raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+        raise HTTPException(status_code=404, detail=err.USER_NOT_FOUND)
     if user.role != UserRole.motorista:
-        raise HTTPException(status_code=400, detail="Apenas motoristas podem ter veículos vinculados.")
+        raise HTTPException(status_code=400, detail=err.DRIVER_VEHICLES_ONLY)
     if user.organization_id is not None and len(body.vehicle_ids) > 1:
-        raise HTTPException(status_code=400, detail="Motorista de org só pode ter um veículo.")
+        raise HTTPException(status_code=400, detail=err.DRIVER_SINGLE_VEHICLE)
     if user.organization_id is None and current_user and current_user.role == UserRole.gestor_frota:
         pass
 
@@ -143,5 +145,5 @@ async def delete_user(
     repository = UserRepository(db)
     deleted = await repository.delete(user_id)
     if not deleted:
-        raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+        raise HTTPException(status_code=404, detail=err.USER_NOT_FOUND)
     await db.commit()

@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Pencil, Plus, Trash } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { getToastErrorMessage } from "@/lib/api-error";
 import { ActionHintPopover } from "@/components/ActionHintPopover";
 import { DataTable, entityIdColumn } from "@/components/DataTable";
 import { PageLayout } from "@/components/layout/PageLayout";
@@ -116,20 +117,31 @@ export const OrganizationsPage = () => {
     mutationFn: (data: OrgFormData) =>
       createOrganization({ name: data.name, cnpj: data.cnpj || undefined }),
     onSuccess: () => { toast.success("Organização criada."); invalidate(); },
-    onError: () => toast.error("Erro ao criar organização."),
+    onError: (error) =>
+      toast.error(
+        getToastErrorMessage(error, { fallback: "Erro ao criar organização." }),
+      ),
   });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: OrgFormData }) =>
       updateOrganization(id, { name: data.name, cnpj: data.cnpj || undefined }),
     onSuccess: () => { toast.success("Organização atualizada."); invalidate(); },
-    onError: () => toast.error("Erro ao atualizar organização."),
+    onError: (error) =>
+      toast.error(
+        getToastErrorMessage(error, {
+          fallback: "Erro ao atualizar organização.",
+        }),
+      ),
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: number) => deleteOrganization(id),
     onSuccess: () => { toast.success("Organização removida."); invalidate(); },
-    onError: () => toast.error("Erro ao remover organização."),
+    onError: (error) =>
+      toast.error(
+        getToastErrorMessage(error, { fallback: "Erro ao remover organização." }),
+      ),
   });
 
   const columns: ColumnDef<Organization>[] = [

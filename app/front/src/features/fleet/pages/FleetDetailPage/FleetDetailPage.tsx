@@ -5,6 +5,7 @@ import { ArrowLeft, Car, DollarSign, Fuel, Leaf, Link2, Ticket, Unlink, Users } 
 import { format } from "date-fns";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { getToastErrorMessage } from "@/lib/api-error";
 import { ActionHintPopover } from "@/components/ActionHintPopover";
 import { DataTable, entityIdColumn } from "@/components/DataTable";
 import { PageLayout } from "@/components/layout/PageLayout";
@@ -189,7 +190,10 @@ export const FleetDetailPage = ({ fleetId, fleetName }: FleetDetailPageProps) =>
   const unlinkVehicleMutation = useMutation({
     mutationFn: (vehicleId: number) => unlinkFleetVehicle(fleetId, vehicleId),
     onSuccess: () => { toast.success("Veículo desvinculado."); invalidateFleet(); },
-    onError: () => toast.error("Erro ao desvincular veículo."),
+    onError: (error) =>
+      toast.error(
+        getToastErrorMessage(error, { fallback: "Erro ao desvincular veículo." }),
+      ),
   });
 
   const linkVehicleMutation = useMutation({
@@ -199,13 +203,19 @@ export const FleetDetailPage = ({ fleetId, fleetName }: FleetDetailPageProps) =>
       invalidateFleet();
       setLinkVehicleOpen(false);
     },
-    onError: () => toast.error("Erro ao vincular veículo."),
+    onError: (error) =>
+      toast.error(
+        getToastErrorMessage(error, { fallback: "Erro ao vincular veículo." }),
+      ),
   });
 
   const unlinkUserMutation = useMutation({
     mutationFn: (userId: number) => unlinkFleetUser(fleetId, userId),
     onSuccess: () => { toast.success("Usuário desvinculado."); invalidateFleet(); },
-    onError: () => toast.error("Erro ao desvincular usuário."),
+    onError: (error) =>
+      toast.error(
+        getToastErrorMessage(error, { fallback: "Erro ao desvincular usuário." }),
+      ),
   });
 
   const linkUserMutation = useMutation({
@@ -215,7 +225,10 @@ export const FleetDetailPage = ({ fleetId, fleetName }: FleetDetailPageProps) =>
       invalidateFleet();
       setLinkUserOpen(false);
     },
-    onError: () => toast.error("Erro ao vincular usuário."),
+    onError: (error) =>
+      toast.error(
+        getToastErrorMessage(error, { fallback: "Erro ao vincular usuário." }),
+      ),
   });
 
   const filteredVehicles = useMemo(() => {

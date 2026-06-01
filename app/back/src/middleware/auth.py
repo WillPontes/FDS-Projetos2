@@ -1,8 +1,13 @@
+import logging
 import os
 from typing import Any
 
 import jwt
 from fastapi import HTTPException, Security, status
+
+from src.errors import messages as err
+
+logger = logging.getLogger(__name__)
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jwt.exceptions import InvalidTokenError
 
@@ -12,16 +17,17 @@ bearer = HTTPBearer()
 def _decode_jwt(token: str) -> dict[str, Any]:
     secret = os.environ.get("JWT_SECRET", "")
     if not secret:
+        logger.error("JWT_SECRET não configurado no servidor")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="JWT_SECRET não configurado no servidor",
+            detail=err.GENERIC_INTERNAL,
         )
     try:
         return jwt.decode(token, secret, algorithms=["HS256"])
     except InvalidTokenError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token inválido ou expirado",
+            detail=err.TOKEN_INVALID,
         ) from None
 
 
@@ -33,7 +39,7 @@ async def get_current_user(
     if sub is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token sem identificador (sub)",
+            detail=err.TOKEN_MISSING_SUB,
         )
     email = payload.get("email")
     if email is not None and not isinstance(email, str):

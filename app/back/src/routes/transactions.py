@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.connection import get_db
+from src.errors import messages as err
 from src.dto.transactions import (
     ProcessTransactionBody,
     TransactionIn,
@@ -75,7 +76,7 @@ async def get_transaction(
     if not transaction:
         raise HTTPException(
             status_code=404,
-            detail="Transaction not found",
+            detail=err.TRANSACTION_NOT_FOUND,
         )
 
     return TransactionPublic.model_validate(transaction)
@@ -108,7 +109,7 @@ async def update_transaction(
     if not transaction:
         raise HTTPException(
             status_code=404,
-            detail="Transaction not found",
+            detail=err.TRANSACTION_NOT_FOUND,
         )
 
     await db.commit()
@@ -126,7 +127,7 @@ async def delete_transaction(
     if not deleted:
         raise HTTPException(
             status_code=404,
-            detail="Transaction not found",
+            detail=err.TRANSACTION_NOT_FOUND,
         )
 
     await db.commit()
@@ -142,7 +143,7 @@ async def process_transaction(
     try:
         specs = await get_all_specs(db)
     except CalcEngineError as e:
-        raise HTTPException(status_code=422, detail=str(e)) from e
+        raise HTTPException(status_code=422, detail=err.CALC_ENGINE_FAILED) from e
 
     engine = CalcEngine(specs)
     orchestrator = TransactionOrchestrator(engine)
@@ -162,7 +163,7 @@ async def process_transaction(
     try:
         result = orchestrator.handle_tag_event(payload_dict)
     except CalcEngineError as e:
-        raise HTTPException(status_code=422, detail=str(e)) from e
+        raise HTTPException(status_code=422, detail=err.CALC_ENGINE_FAILED) from e
 
     transaction_in = TransactionIn(
         user_id=body.user_id,

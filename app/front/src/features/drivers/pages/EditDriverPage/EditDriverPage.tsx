@@ -3,6 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
 import { toast } from "sonner";
+import { getToastErrorMessage } from "@/lib/api-error";
 import { Button } from "@/components/ui/button";
 import { ControlledInput } from "@/components/form/ControlledInput";
 import { ControlledSelect } from "@/components/form/ControlledSelect";
@@ -85,7 +86,10 @@ export const EditDriverPage = () => {
           }
           navigate({ to: "/motoristas" });
         },
-        onError: () => toast.error("Erro ao atualizar motorista."),
+        onError: (error) =>
+          toast.error(
+            getToastErrorMessage(error, { fallback: "Erro ao atualizar motorista." }),
+          ),
       },
     );
   };

@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.connection import get_db
+from src.errors import messages as err
 from src.dto.goals import (
     WeeklyGoalIn,
     WeeklyGoalProgressUpdate,
@@ -42,7 +43,7 @@ async def get_goal(
     if not goal:
         raise HTTPException(
             status_code=404,
-            detail="Goal not found",
+            detail=err.GOAL_NOT_FOUND,
         )
 
     return WeeklyGoalPublic.model_validate(goal)
@@ -58,7 +59,7 @@ async def get_current_goal_by_user(
     if not goal:
         raise HTTPException(
             status_code=404,
-            detail="Current weekly goal not found",
+            detail=err.CURRENT_WEEKLY_GOAL_NOT_FOUND,
         )
 
     return WeeklyGoalPublic.model_validate(goal)
@@ -91,7 +92,7 @@ async def update_goal(
     if not goal:
         raise HTTPException(
             status_code=404,
-            detail="Goal not found",
+            detail=err.GOAL_NOT_FOUND,
         )
 
     await db.commit()
@@ -114,7 +115,7 @@ async def update_goal_progress(
     if not goal:
         raise HTTPException(
             status_code=404,
-            detail="Goal not found",
+            detail=err.GOAL_NOT_FOUND,
         )
 
     await db.commit()

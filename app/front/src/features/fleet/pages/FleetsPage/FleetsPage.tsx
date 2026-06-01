@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { ChevronRight, Plus } from "lucide-react";
 import { useState, useMemo } from "react";
 import { toast } from "sonner";
+import { getToastErrorMessage } from "@/lib/api-error";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { FilterInput } from "@/components/ui/FilterInput";
 import { Button } from "@/components/ui/button";
@@ -80,7 +81,10 @@ const CreateFleetDialog = ({
       setName("");
       onClose();
     },
-    onError: () => toast.error("Erro ao criar frota."),
+    onError: (error) =>
+      toast.error(
+        getToastErrorMessage(error, { fallback: "Erro ao criar frota." }),
+      ),
   });
 
   return (

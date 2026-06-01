@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.errors import messages as err
 from src.dto.vehicle import VehicleIn, VehicleUpdate
 from src.models.vehicle import Vehicle
 from src.repositories.fleet_repository import FleetRepository
@@ -16,7 +17,7 @@ async def _resolve_fleet_fields(
         return organization_id, fleet_id
     fleet = await FleetRepository(session).get_by_id(fleet_id)
     if fleet is None:
-        raise ValueError("Fleet not found")
+        raise ValueError(err.FLEET_NOT_FOUND)
     return fleet.organization_id, fleet_id
 
 
@@ -60,11 +61,11 @@ async def _assert_unique_on_update(
     if license_plate:
         existing = await get_vehicle_by_license_plate(session, license_plate)
         if existing and existing.id != vehicle_id:
-            raise ValueError("License plate already exists")
+            raise ValueError(err.VEHICLE_PLATE_EXISTS)
     if id_tag:
         existing = await get_vehicle_by_tag(session, id_tag)
         if existing and existing.id != vehicle_id:
-            raise ValueError("Tag already exists")
+            raise ValueError(err.VEHICLE_TAG_EXISTS)
 
 
 async def create_vehicle(session: AsyncSession, vehicle_in: VehicleIn) -> Vehicle:

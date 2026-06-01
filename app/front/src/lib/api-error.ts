@@ -1,6 +1,6 @@
 import { HTTPError } from "ky"
 
-const INTERNAL_ERROR_MESSAGE = "Erro interno. Tente novamente."
+export const INTERNAL_ERROR_MESSAGE = "Erro interno. Tente novamente."
 
 type FastApiValidationItem = {
   msg?: string
@@ -11,6 +11,8 @@ type FastApiErrorBody = {
   detail?: string | FastApiValidationItem[]
   message?: string
 }
+
+export type ApiHTTPError = HTTPError & { apiDetail?: string }
 
 /** Normalizes FastAPI error JSON into a single detail string. */
 export function parseFastApiErrorBody(body: FastApiErrorBody): string | undefined {
@@ -34,34 +36,6 @@ export function parseFastApiErrorBody(body: FastApiErrorBody): string | undefine
   return undefined
 }
 
-function normalizeDetailKey(detail: string): string {
-  return detail.trim().toLowerCase()
-}
-
-const DETAIL_TO_USER_MESSAGE: Record<string, string> = {
-  "license plate already exists": "Já existe um veículo com esta placa.",
-  "tag already exists": "Já existe um veículo com esta tag.",
-  "já existe um usuário com este email.": "Já existe um usuário com este email.",
-  "acesso negado.": "Acesso negado.",
-  "usuário não encontrado.": "Usuário não encontrado.",
-  "organização não encontrada.": "Organização não encontrada.",
-  "frota não encontrada.": "Frota não encontrada.",
-  "gestor deve vincular veículo à própria org/frota.":
-    "Gestor deve vincular veículo à própria organização ou frota.",
-  "veículo não encontrado.": "Veículo não encontrado.",
-  "veículo não vinculado a esta frota.": "Veículo não vinculado a esta frota.",
-  "motorista de org só pode ter um veículo.":
-    "Motorista da organização só pode ter um veículo.",
-  "apenas motoristas podem ter veículos vinculados.":
-    "Apenas motoristas podem ter veículos vinculados.",
-  "vehicle not found": "Veículo não encontrado.",
-  "fuel prices not found.": "Preços de combustível não encontrados.",
-}
-
-const ALLOWLIST_DETAILS = new Set(
-  Object.values(DETAIL_TO_USER_MESSAGE).map(normalizeDetailKey),
-)
-
 function isTechnicalMessage(message: string): boolean {
   const lower = message.toLowerCase()
   return (
@@ -74,8 +48,47 @@ function isTechnicalMessage(message: string): boolean {
   )
 }
 
+function isInternalLeakMessage(message: string): boolean {
+  const lower = message.toLowerCase()
+  return (
+    lower.includes("jwt_secret") ||
+    lower.includes("traceback") ||
+    lower.startsWith("erro interno:") ||
+    lower.includes("validation error for")
+  )
+}
+
+function isUserFacingDetail(detail: string): boolean {
+  if (!detail.trim()) return false
+  if (isTechnicalMessage(detail)) return false
+  if (isInternalLeakMessage(detail)) return false
+  return true
+}
+
+/** Legacy EN→PT map for responses not yet migrated. */
+const LEGACY_DETAIL_MAP: Record<string, string> = {
+  "license plate already exists": "Já existe um veículo com esta placa.",
+  "tag already exists": "Já existe um veículo com esta tag.",
+  "vehicle not found": "Veículo não encontrado.",
+  "fleet not found": "Frota não encontrada.",
+  "goal not found": "Meta não encontrada.",
+  "current weekly goal not found": "Meta semanal atual não encontrada.",
+  "transaction not found": "Transação não encontrada.",
+  "fuel prices not found.": "Preços de combustível não encontrados.",
+  "user stats not found": "Estatísticas do usuário não encontradas.",
+}
+
+function mapLegacyDetail(detail: string): string | undefined {
+  const mapped = LEGACY_DETAIL_MAP[detail.trim().toLowerCase()]
+  return mapped
+}
+
 export function extractApiDetail(error: unknown): string | undefined {
   if (error instanceof HTTPError) {
+    const withDetail = error as ApiHTTPError
+    if (withDetail.apiDetail?.trim()) {
+      return withDetail.apiDetail.trim()
+    }
     const msg = error.message?.trim()
     if (msg && !isTechnicalMessage(msg)) {
       return msg
@@ -99,23 +112,6 @@ export function getHttpStatus(error: unknown): number | undefined {
   return undefined
 }
 
-export function mapApiDetailToUserMessage(
-  detail: string,
-  _status?: number,
-): string | undefined {
-  const key = normalizeDetailKey(detail)
-  const mapped = DETAIL_TO_USER_MESSAGE[key]
-  if (mapped) {
-    return mapped
-  }
-
-  if (ALLOWLIST_DETAILS.has(key)) {
-    return detail.trim()
-  }
-
-  return undefined
-}
-
 export type ToastErrorOptions = {
   fallback: string
 }
@@ -132,9 +128,12 @@ export function getToastErrorMessage(
 
   const detail = extractApiDetail(error)
   if (detail) {
-    const mapped = mapApiDetailToUserMessage(detail, status)
-    if (mapped) {
-      return mapped
+    const legacy = mapLegacyDetail(detail)
+    if (legacy) {
+      return legacy
+    }
+    if (isUserFacingDetail(detail)) {
+      return detail.trim()
     }
   }
 

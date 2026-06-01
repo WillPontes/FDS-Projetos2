@@ -14,6 +14,7 @@ import {
 } from "nuqs";
 import { useState } from "react";
 import { toast } from "sonner";
+import { getToastErrorMessage } from "@/lib/api-error";
 import { ActionHintPopover } from "@/components/ActionHintPopover";
 import { Button } from "@/components/ui/button";
 import { DataTable, entityIdColumn } from "@/components/DataTable";
@@ -43,8 +44,10 @@ const VehicleActions = ({
       await deleteVehicle(vehicle.id);
       queryClient.invalidateQueries({ queryKey: vehicleKeys.lists() });
       toast.success("Veículo removido.");
-    } catch {
-      toast.error("Erro ao remover veículo.");
+    } catch (error) {
+      toast.error(
+        getToastErrorMessage(error, { fallback: "Erro ao remover veículo." }),
+      );
     }
   };
   return (

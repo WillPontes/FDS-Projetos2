@@ -1,6 +1,6 @@
 import ky, { isHTTPError } from "ky";
 import { useAuthStore } from "@/features/auth/auth-store";
-import { parseFastApiErrorBody } from "./api-error";
+import { parseFastApiErrorBody, type ApiHTTPError } from "./api-error";
 
 const apiBaseUrl = import.meta.env.VITE_API_URL?.replace(/\/$/, "");
 
@@ -27,6 +27,8 @@ export const api = ky.create({
             >[0];
             const detail = parseFastApiErrorBody(body);
             if (detail) {
+              const apiError = error as ApiHTTPError;
+              apiError.apiDetail = detail;
               error.message = detail;
             }
           } catch {

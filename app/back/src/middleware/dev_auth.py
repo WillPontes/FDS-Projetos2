@@ -4,6 +4,7 @@ from fastapi import Depends, Header, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.connection import get_db
+from src.errors import messages as err
 from src.models.user import User, UserRole
 from src.repositories.user_repository import UserRepository
 
@@ -16,7 +17,7 @@ async def get_current_user_dev(
         return None
     user = await UserRepository(db).get_by_id(x_user_id)
     if not user:
-        raise HTTPException(status_code=401, detail="Usuário não encontrado.")
+        raise HTTPException(status_code=401, detail=err.USER_NOT_FOUND)
     return user
 
 

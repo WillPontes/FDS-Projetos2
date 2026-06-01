@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { getToastErrorMessage } from "@/lib/api-error";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -101,13 +102,20 @@ export const DriverFormDialog = ({ open, onClose, driver }: DriverFormDialogProp
             }
             toast.success("Motorista atualizado.");
             onClose();
-          } catch {
-            toast.error("Erro ao atualizar veículos vinculados.");
+          } catch (vehicleError) {
+            toast.error(
+              getToastErrorMessage(vehicleError, {
+                fallback: "Erro ao atualizar veículos vinculados.",
+              }),
+            );
           } finally {
             setSavingVehicles(false);
           }
         },
-        onError: () => toast.error("Erro ao atualizar motorista."),
+        onError: (error) =>
+          toast.error(
+            getToastErrorMessage(error, { fallback: "Erro ao atualizar motorista." }),
+          ),
       },
     );
   });
