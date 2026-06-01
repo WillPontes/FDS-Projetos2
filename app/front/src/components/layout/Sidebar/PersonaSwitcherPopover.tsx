@@ -1,4 +1,5 @@
 import { useRouterState } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { Check, UserRoundCog } from "lucide-react";
 import { PERSONA_MOCKS } from "@/constants/personas";
 import { APP_NAV_ITEMS } from "@/constants/nav";
@@ -29,6 +30,11 @@ function isRouteAllowedForRole(pathname: string, role: UserRole): boolean {
   return item.roles.includes(role);
 }
 
+function normalizePath(path: string): string {
+  const trimmed = path.replace(/\/+$/, "");
+  return trimmed || "/";
+}
+
 type PersonaSwitcherPopoverProps = {
   onSelect?: () => void;
 };
@@ -36,20 +42,33 @@ type PersonaSwitcherPopoverProps = {
 export const PersonaSwitcherPopover = ({ onSelect }: PersonaSwitcherPopoverProps) => {
   const user = useAuthStore((s) => s.user);
   const login = useAuthStore((s) => s.login);
+  const queryClient = useQueryClient();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
-  const handleSelect = (persona: CurrentUser) => {
+  const handleSelect = async (persona: CurrentUser) => {
     if (user?.id === persona.id) return;
 
     login(persona);
     onSelect?.();
 
+    await queryClient.cancelQueries();
+    queryClient.clear();
+
     const nextPath = isRouteAllowedForRole(pathname, persona.role)
       ? pathname
       : ROLE_HOME[persona.role];
 
+    const currentPath = normalizePath(window.location.pathname);
+    const targetPath = normalizePath(nextPath);
+
     // Full reload so in-flight/cached requests never use the previous X-User-Id.
-    window.location.assign(nextPath);
+    // Requires SPA rewrite on the host (see app/front/vercel.json).
+    if (targetPath === currentPath) {
+      window.location.reload();
+      return;
+    }
+
+    window.location.assign(targetPath);
   };
 
   const activeLabel =
