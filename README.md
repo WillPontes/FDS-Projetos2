@@ -212,13 +212,14 @@ Registro de bugs identificados durante o desenvolvimento e resolvidos no reposit
 
 ## Screencast das histórias implementadas
 
-Demonstração em vídeo das **3 user stories implementadas** neste repositório, conforme requisito de entrega da disciplina.
+Demonstração em vídeo das **4 user stories implementadas** neste repositório, conforme requisito de entrega da disciplina.
 
 **Pasta no Google Drive:** [FDS - Screencast](https://drive.google.com/drive/folders/12x8hIs7ZXKy2VtTU_YdSx5BtF_kX-Ija)
 
 | US | Título | Screencast |
 | :- | :----- | :--------- |
 | US01 | Tradução Lúdica de Impacto | [Assistir no Drive](https://drive.google.com/file/d/10ZD-K-8rpnYV4RibiJvxrPCGJ0WZR28a/view?usp=drive_link) |
+| US02 | Conversor de Combustível em Carbono | [Assistir no Drive](https://drive.google.com/file/d/1vz3p0WEARFyfsGRrB5kpjP9ZsHTIt1Dg/view?usp=drive_link) |
 | US03 | Cálculo de Economia de Papel Térmico | [Assistir no Drive](https://drive.google.com/file/d/1zNLM5iOX1i-TXT7cJoYgcF2hXq2Kzqln/view?usp=drive_link) |
 | US05 | Gestão de Inventário de Frota | [Assistir no Drive](https://drive.google.com/file/d/1Pt1Fyj8XqtrQjxNnE_FwDTwYFRu9WD0o/view?usp=drive_link) |
 
@@ -235,8 +236,31 @@ Referências usadas no dia a dia do projeto — código, desenho da solução, m
 | Bugtracker              | [GitHub Issues](https://github.com/WillPontes/Taggy-Ecoscore/issues)                                        |
 | Wireframes              | [Figma](https://www.figma.com/design/ME63dOBQJ943GhMTh00W4g/Wireframe?node-id=0-1&p=f&t=KS4WtIegdrdhUasH-0) |
 | Screencast (protótipo)               | [YouTube](https://www.youtube.com/watch?v=7lFrXswsO0k)                                                      |
-| Screencast (histórias implementadas) | [Google Drive — US01, US03, US05](https://drive.google.com/drive/folders/12x8hIs7ZXKy2VtTU_YdSx5BtF_kX-Ija) |
+| Screencast (histórias implementadas) | [Google Drive — US01, US02, US03, US05](https://drive.google.com/drive/folders/12x8hIs7ZXKy2VtTU_YdSx5BtF_kX-Ija) |
 | Diagramas de Atividades | [Google Drive](https://drive.google.com/file/d/1XGv4y-BJ-yUia8EKnrTdb78NESRhesFB/view?usp=drive_link)       |
+
+---
+
+<a id="pair-programming"></a>
+
+## Resumo das Atividades e Troca de Papéis
+
+Registro das sessões de **pair programming** da equipe: quem pilotou, quem apoiou e o que foi entregue em cada dupla.
+
+### Afonso Henrique & Igor Aragão
+
+- **Ação:** Começamos a fazer o WebSocket para enviar mensagens (notificações) para os usuários ao fazerem passagens. Limpamos a documentação do WebSocket e do Postman para fazer os testes.
+- **Discussão:** Igor disse que Afonso deveria fazer essa task com seu apoio. O Piloto, com apoio do navegador, fez os testes com Postman e deu tudo certo.
+
+### Lucas Gabriel & José Williams
+
+- **Ação:** Começamos a desenvolver a Galeria de Cards de Impacto. Lucas iniciou criando a estrutura base do componente e a estilização responsiva. Em seguida, foi trocado o controle da tela e José assumiu o teclado para implementar as propriedades, a renderização dinâmica baseada no tipo de metáfora e os mocks de dados para testes.
+- **Discussão:** José observou que precisávamos de uma lógica flexível para trocar cores e textos dinamicamente sem quebrar o layout. Lucas, com o apoio do navegador, garantiu que as classes do Tailwind se adaptassem aos textos dinâmicos. Juntos, validamos a troca das metáforas e entregamos a interface sem bugs visuais.
+
+### Jean & Kellwen
+
+- **Ação:** Começaram a desenvolver as rotas da API no backend para o gerenciamento das metas semanais de sustentabilidade. Jean criou a estrutura dos endpoints e implementou as consultas no banco de dados para vincular o progresso aos usuários e frotas.
+- **Discussão:** Kellwen observou que era necessário criar validações rigorosas e que os valores das metas não fossem nulos ou negativos. Jean, com o apoio de Kellwen, implementou essas travas de segurança, executou testes e ocorreu tudo perfeitamente.
 
 ---
 
