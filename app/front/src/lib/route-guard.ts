@@ -18,7 +18,7 @@ export function requireRoles(roles: UserRole[], fallback?: string) {
 }
 
 export function requireMotoristaOnly() {
-  return requireRoles(["motorista"], "/impacto");
+  return requireRoles(["motorista"]);
 }
 
 export function requireManagerOrAdmin() {
