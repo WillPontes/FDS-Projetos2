@@ -74,9 +74,11 @@ Coluna _Backlog (Sprint)_ no Trello: **US01**, **US04**.
 
 ### Sprint 3
 
-Coluna _Backlog (Sprint)_ no Trello: **US06**, **US07**, **US08**, **US09**.
+Coluna _Concluído_ no Trello: **US13**, **US14**, **US15**, **US16**, **US17**, **US18**, **US19**, **US20** (25 mai. – 31 mai.).
 
-<img src="docs/images/sprint-03.png" alt="Backlog Sprint 3 — coluna Backlog (Sprint) com US06, US07, US08, US09" width="440" />
+<img src="docs/images/sprint-03-atualizada-1.jpeg" alt="Sprint 3 concluída — US20 Auditoria de passagens, US19 Minhas Passagens, US18 Ajuda e suporte, US17 Configurações gerais do administrador" width="440" />
+
+<img src="docs/images/sprint-03-atualizada-2.jpeg" alt="Sprint 3 concluída — US16 Informações do veículo vinculado, US15 Preferências de notificação, US14 Detalhe da organização, US13 CRUD de organizações" width="440" />
 
 ### Sprint 4
 
@@ -92,7 +94,19 @@ Bugs identificados e resolvidos durante o desenvolvimento: [GitHub Issues — Ta
 
 ## Screencast das histórias implementadas
 
-Demonstração em vídeo das user stories implementadas: [Google Drive — FDS Screencast](https://drive.google.com/drive/folders/12x8hIs7ZXKy2VtTU_YdSx5BtF_kX-Ija) (US01, US02, US03, US05)
+Demonstração em vídeo das user stories implementadas. Pasta completa: [Google Drive — FDS Screencast](https://drive.google.com/drive/folders/12x8hIs7ZXKy2VtTU_YdSx5BtF_kX-Ija).
+
+| US | História | Vídeo |
+| :-- | :------- | :---- |
+| US01 | Tradução Lúdica de Impacto | [Assistir no Drive](https://drive.google.com/file/d/10ZD-K-8rpnYV4RibiJvxrPCGJ0WZR28a/view?usp=drive_link) |
+| US02 | Conversor de Combustível em Carbono | [Assistir no Drive](https://drive.google.com/file/d/1vz3p0WEARFyfsGRrB5kpjP9ZsHTIt1Dg/view?usp=drive_link) |
+| US03 | Cálculo de Economia de Papel Térmico | [Assistir no Drive](https://drive.google.com/file/d/1zNLM5iOX1i-TXT7cJoYgcF2hXq2Kzqln/view?usp=drive_link) |
+| US05 | Gestão de Inventário de Frota | [Assistir no Drive](https://drive.google.com/file/d/1Pt1Fyj8XqtrQjxNnE_FwDTwYFRu9WD0o/view?usp=drive_link) |
+| US13 | Gerenciar cadastro de organizações (CRUD) | [Assistir no Drive](https://drive.google.com/file/d/1ShztjgRnfR8ZbdFprLRQKM-gXV96CLTP/view?usp=drive_link) |
+| US14 | Visualizar detalhe da organização e vincular usuários | [Assistir no Drive](https://drive.google.com/file/d/1HUWl6frm2t8FpvTvpDsjDb0IKTc6c-V-/view?usp=drive_link) |
+| US15 | Preferências de notificação | [Assistir no Drive](https://drive.google.com/file/d/1lJ6aZ8TyeiBHO1HTJrj8Euku4WxVS5en/view?usp=drive_link) |
+| US16 | Informações do veículo vinculado (motorista) | [Assistir no Drive](https://drive.google.com/file/d/1MCTGHjR1PrcBiQmWwxlkWihCasA5_9SL/view?usp=drive_link) |
+| US18 | Ajuda e suporte | [Assistir no Drive](https://drive.google.com/file/d/1NQXyWm32LgocRNFfEwm2qAghEkLOEmXL/view?usp=drive_link) |
 
 ---
 
