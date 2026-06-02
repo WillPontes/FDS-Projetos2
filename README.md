@@ -170,9 +170,9 @@ O backlog do projeto está organizado no quadro da equipe na disciplina, com car
 
 ### Sprint 1
 
-Coluna _Backlog (Sprint)_ no Trello: **US05**, **US02**, **US03**.
+Coluna _Concluído_ no Trello: **AT01**, **AT02**, **AT03** (27 abr. – 10 mai.).
 
-<img src="docs/images/sprint-01.png" alt="Backlog Sprint 1 — coluna Backlog (Sprint) com US05, US02, US03" width="440" />
+<img src="docs/images/sprint-01-atualizado.png" alt="Sprint 1 concluída — coluna Concluído com AT01 Criação dos Boilerplates, AT02 Setup de Ambientes e AT03 Configuração do JSON Server" width="440" />
 
 ### Sprint 2
 
