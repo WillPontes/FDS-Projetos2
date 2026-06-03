@@ -4,5 +4,5 @@ export {
   useUpdateTechnicalSpecs,
   useSyncFuelPrices,
   useSyncEmissionFactors,
-  useUpdateFuelPriceMock,
+  useUpdateFuelPrice,
 } from "./useSettings";

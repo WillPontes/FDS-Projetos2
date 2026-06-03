@@ -1,12 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { getToastErrorMessage } from "@/lib/api-error";
 import {
   getFuelPrices,
   getTechnicalSpecsBundle,
   syncEmissionFactors,
   syncFuelPrices,
-  updateFuelPriceMock,
+  updateFuelPrice,
   updateTechnicalSpecs,
   type FuelPriceByUF,
   type TechnicalSpecs,
@@ -30,18 +28,10 @@ export const useUpdateTechnicalSpecs = () => {
   return useMutation({
     mutationFn: (payload: Partial<TechnicalSpecs>) =>
       updateTechnicalSpecs(payload),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
         queryKey: settingsQueryKeys.technicalSpecs(),
       });
-      toast.success("Especificações técnicas atualizadas!");
-    },
-    onError: (error) => {
-      toast.error(
-        getToastErrorMessage(error, {
-          fallback: "Erro ao salvar especificações.",
-        }),
-      );
     },
   });
 };
@@ -50,8 +40,8 @@ export const useSyncEmissionFactors = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: syncEmissionFactors,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
         queryKey: settingsQueryKeys.technicalSpecs(),
       });
     },
@@ -62,13 +52,15 @@ export const useSyncFuelPrices = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: syncFuelPrices,
-    onSuccess: (data) => {
-      queryClient.setQueryData(settingsQueryKeys.fuelPrices(), data);
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: settingsQueryKeys.fuelPrices(),
+      });
     },
   });
 };
 
-export const useUpdateFuelPriceMock = () => {
+export const useUpdateFuelPrice = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
@@ -77,22 +69,11 @@ export const useUpdateFuelPriceMock = () => {
     }: {
       uf: string;
       payload: Partial<FuelPriceByUF>;
-    }) => updateFuelPriceMock(uf, payload),
-    onSuccess: (_, { uf }) => {
-      queryClient.invalidateQueries({
+    }) => updateFuelPrice(uf, payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
         queryKey: settingsQueryKeys.fuelPrices(),
       });
-      queryClient.invalidateQueries({
-        queryKey: settingsQueryKeys.technicalSpecs(),
-      });
-      toast.success(`Preços de ${uf} atualizados localmente (mock).`);
-    },
-    onError: (error) => {
-      toast.error(
-        getToastErrorMessage(error, {
-          fallback: "Erro ao atualizar preços.",
-        }),
-      );
     },
   });
 };

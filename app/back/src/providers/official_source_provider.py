@@ -52,10 +52,39 @@ class OfficialSourceProvider:
 
     async def _sync_fuel_prices_from_bq(self) -> None:
         import asyncio
+        import json
+        import os
+
+        try:
+            from google.auth.exceptions import DefaultCredentialsError
+        except ImportError:
+            DefaultCredentialsError = Exception  # type: ignore[assignment,misc]
 
         from google.cloud import bigquery
 
-        client = bigquery.Client()
+        try:
+            raw = os.environ.get("GOOGLE_CREDENTIALS_JSON")
+            if raw:
+                from google.oauth2 import service_account
+
+                info = json.loads(raw)
+                creds = service_account.Credentials.from_service_account_info(
+                    info,
+                    scopes=["https://www.googleapis.com/auth/bigquery"],
+                )
+                client = bigquery.Client(credentials=creds, project=info["project_id"])
+            else:
+                client = bigquery.Client()
+        except DefaultCredentialsError as e:
+            raise RuntimeError(
+                "Credenciais GCP não configuradas para sync ANP. "
+                "Defina GOOGLE_CREDENTIALS_JSON (conteúdo JSON da service account) "
+                "ou use Application Default Credentials em ambiente GCP."
+            ) from e
+        except (json.JSONDecodeError, KeyError) as e:
+            raise RuntimeError(
+                f"GOOGLE_CREDENTIALS_JSON inválido: {e}"
+            ) from e
 
         query = f"""
             WITH latest_date AS (

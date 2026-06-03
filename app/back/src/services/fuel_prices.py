@@ -17,7 +17,9 @@ def _build_provider(db: AsyncSession) -> OfficialSourceProvider:
 async def sync_fuel_prices(db: AsyncSession) -> dict[str, Any]:
     provider = _build_provider(db)
     await provider.sync_all_sources()
-    return await provider.get_all_fuel_prices_dict()
+    result = await provider.get_all_fuel_prices_dict()  # ler antes do commit (flush já aplicado)
+    await db.commit()
+    return result
 
 
 async def list_fuel_prices(db: AsyncSession) -> dict[str, Any]:

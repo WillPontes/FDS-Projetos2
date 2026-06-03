@@ -1,5 +1,4 @@
 import { api } from "@/lib/http-client";
-import { mockStore, resolveWithMock } from "@/mocks";
 
 export type TechnicalSpecs = {
   id: number;
@@ -34,54 +33,36 @@ export type FuelPriceByUF = {
 export type TechnicalSpecsBundle = {
   specs: TechnicalSpecs;
   fuel_prices_by_uf: Record<string, FuelPriceByUF>;
+  fuel_prices_as_of?: string;
 };
 
 export async function getTechnicalSpecsBundle(): Promise<TechnicalSpecsBundle> {
-  return resolveWithMock(
-    async () => {
-      const response = await api
-        .get("/api/technical-specs/")
-        .json<{ data: TechnicalSpecsBundle }>();
-      return response.data;
-    },
-    () => mockStore.getTechnicalSpecsBundle(),
-  );
+  const response = await api
+    .get("/api/technical-specs/")
+    .json<{ data: TechnicalSpecsBundle }>();
+  return response.data;
 }
 
 export async function updateTechnicalSpecs(
   payload: Partial<TechnicalSpecs>,
 ): Promise<TechnicalSpecs> {
-  return resolveWithMock(
-    () =>
-      api
-        .post("/api/technical-specs/update", { json: payload })
-        .json<TechnicalSpecs>(),
-    () => mockStore.updateTechnicalSpecs(payload),
-  );
+  return api
+    .post("/api/technical-specs/update", { json: payload })
+    .json<TechnicalSpecs>();
 }
 
 export async function getFuelPrices(): Promise<Record<string, FuelPriceByUF>> {
-  return resolveWithMock(
-    async () => {
-      const response = await api
-        .get("/api/fuel-prices/")
-        .json<{ data: Record<string, FuelPriceByUF> }>();
-      return response.data;
-    },
-    () => mockStore.getFuelPrices(),
-  );
+  const response = await api
+    .get("/api/fuel-prices/")
+    .json<{ data: Record<string, FuelPriceByUF> }>();
+  return response.data;
 }
 
 export async function syncFuelPrices(): Promise<Record<string, FuelPriceByUF>> {
-  return resolveWithMock(
-    async () => {
-      const response = await api
-        .post("/api/fuel-prices/sync")
-        .json<{ data: Record<string, FuelPriceByUF> }>();
-      return response.data;
-    },
-    () => mockStore.syncFuelPrices(),
-  );
+  const response = await api
+    .post("/api/fuel-prices/sync")
+    .json<{ data: Record<string, FuelPriceByUF> }>();
+  return response.data;
 }
 
 export async function syncEmissionFactors(): Promise<{
@@ -99,23 +80,14 @@ export async function syncEmissionFactors(): Promise<{
     .json();
 }
 
-export async function updateFuelPriceMock(
+export async function updateFuelPrice(
   uf: string,
   payload: Partial<FuelPriceByUF>,
 ): Promise<FuelPriceByUF> {
-  return resolveWithMock(
-    async () => {
-      const response = await api
-        .post("/api/fuel-prices/sync")
-        .json<{ data: Record<string, FuelPriceByUF> }>();
-      const existing = response.data[uf];
-      if (!existing) {
-        throw new Error(`UF ${uf} não encontrada.`);
-      }
-      return { ...existing, ...payload, uf };
-    },
-    () => mockStore.updateFuelPrice(uf, payload),
-  );
+  const response = await api
+    .put(`/api/fuel-prices/${uf}`, { json: payload })
+    .json<{ data: FuelPriceByUF }>();
+  return response.data;
 }
 
 export type AdminAccountSettings = {

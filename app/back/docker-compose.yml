@@ -46,6 +46,7 @@ services:
       - ./src:/app/src
       - ./pyproject.toml:/app/pyproject.toml
       - ./uv.lock:/app/uv.lock
+      - ./data:/app/data:ro
 
     command: >
       sh -c "uv sync --frozen --no-dev &&

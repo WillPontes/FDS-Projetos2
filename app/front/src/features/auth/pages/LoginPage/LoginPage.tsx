@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { DevPersonaLoginSection } from "../../components/DevPersonaLoginSection";
 import { useLogin } from "../../hooks/useLogin";
 
 type LoginPageProps = {
@@ -82,6 +83,7 @@ export const LoginPage = ({ redirectTo }: LoginPageProps) => {
               )}
             </Button>
           </form>
+          <DevPersonaLoginSection redirectTo={redirectTo} />
         </CardContent>
       </Card>
     </div>

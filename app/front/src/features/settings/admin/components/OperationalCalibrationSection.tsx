@@ -17,7 +17,7 @@ import {
   useGetTechnicalSpecs,
   useSyncEmissionFactors,
   useSyncFuelPrices,
-  useUpdateFuelPriceMock,
+  useUpdateFuelPrice,
   useUpdateTechnicalSpecs,
 } from "../../hooks/useSettings";
 import type { FuelPriceByUF } from "../../api/requests";
@@ -54,17 +54,16 @@ const SPEC_FIELDS: {
 
 export const OperationalCalibrationSection = () => {
   const { data: bundle, isLoading, isError } = useGetTechnicalSpecs();
-  const {
-    data: fuelPrices = {},
-    isFetching: isFuelFetching,
-  } = useGetFuelPrices();
-  const { mutate: updateSpecs, isPending: isSavingSpecs } =
+  const { data: fuelPrices = {} } = useGetFuelPrices();
+  const { mutateAsync: updateSpecsAsync, isPending: isSavingSpecs } =
     useUpdateTechnicalSpecs();
   const { mutateAsync: syncPricesAsync, isPending: isSyncing } =
     useSyncFuelPrices();
   const { mutateAsync: syncMctiAsync, isPending: isSyncingMcti } =
     useSyncEmissionFactors();
-  const { mutate: updateFuelPrice } = useUpdateFuelPriceMock();
+  const { mutateAsync: updateFuelPriceAsync } = useUpdateFuelPrice();
+
+  const [isSavingFuelPrices, setIsSavingFuelPrices] = useState(false);
 
   const [specValues, setSpecValues] = useState<Record<string, string>>({});
   const [unlockedSpecs, setUnlockedSpecs] = useState<Set<string>>(new Set());
@@ -120,21 +119,33 @@ export const OperationalCalibrationSection = () => {
   );
 
   const handleSyncPrices = () => {
-    toast.promise(syncPricesAsync(), {
-      loading: "Sincronizando preços com a ANP...",
-      success: "Preços sincronizados com a ANP!",
-      error: (err) =>
-        err instanceof Error ? err.message : "Erro ao sincronizar preços.",
-    });
+    toast.promise(
+      syncPricesAsync().then((result) => {
+        setUnlockedFuelRows(new Set());
+        return result;
+      }),
+      {
+        loading: "Sincronizando preços com a ANP...",
+        success: "Preços sincronizados com a ANP!",
+        error: (err) =>
+          err instanceof Error ? err.message : "Erro ao sincronizar preços.",
+      },
+    );
   };
 
   const handleSyncMcti = () => {
-    toast.promise(syncMctiAsync(), {
-      loading: "Sincronizando fatores MCTI...",
-      success: "Fatores MCTI atualizados!",
-      error: (err) =>
-        err instanceof Error ? err.message : "Erro ao sincronizar fatores MCTI.",
-    });
+    toast.promise(
+      syncMctiAsync().then((result) => {
+        setUnlockedSpecs(new Set());
+        return result;
+      }),
+      {
+        loading: "Sincronizando fatores MCTI...",
+        success: "Fatores MCTI atualizados!",
+        error: (err) =>
+          err instanceof Error ? err.message : "Erro ao sincronizar fatores MCTI.",
+      },
+    );
   };
 
   const handleSaveSpecs = () => {
@@ -149,7 +160,20 @@ export const OperationalCalibrationSection = () => {
       }
       payload[field.key] = num;
     }
-    updateSpecs(payload);
+    toast.promise(
+      updateSpecsAsync(payload).then((result) => {
+        setUnlockedSpecs(new Set());
+        return result;
+      }),
+      {
+        loading: "Salvando especificações...",
+        success: "Especificações técnicas atualizadas!",
+        error: (err) =>
+          err instanceof Error
+            ? err.message
+            : "Erro ao salvar especificações.",
+      },
+    );
   };
 
   const handleFuelChange = (
@@ -170,17 +194,37 @@ export const OperationalCalibrationSection = () => {
     }));
   };
 
-  const handleSaveFuelRow = (uf: string) => {
-    const row = localFuelPrices[uf];
-    if (!row) return;
-    updateFuelPrice({
-      uf,
-      payload: {
-        price_diesel_s10: row.price_diesel_s10,
-        price_gasolina_c: row.price_gasolina_c,
-        price_etanol: row.price_etanol,
+  const handleSaveFuelPrices = () => {
+    toast.promise(
+      (async () => {
+        setIsSavingFuelPrices(true);
+        try {
+          await Promise.all(
+            ufs.map((uf) => {
+              const row = localFuelPrices[uf];
+              if (!row) return Promise.resolve();
+              return updateFuelPriceAsync({
+                uf,
+                payload: {
+                  price_diesel_s10: row.price_diesel_s10,
+                  price_gasolina_c: row.price_gasolina_c,
+                  price_etanol: row.price_etanol,
+                },
+              });
+            }),
+          );
+          setUnlockedFuelRows(new Set());
+        } finally {
+          setIsSavingFuelPrices(false);
+        }
+      })(),
+      {
+        loading: "Salvando preços de combustível...",
+        success: "Preços de combustível atualizados!",
+        error: (err) =>
+          err instanceof Error ? err.message : "Erro ao atualizar preços.",
       },
-    });
+    );
   };
 
   if (isLoading) {
@@ -212,11 +256,13 @@ export const OperationalCalibrationSection = () => {
           <Button
             type="button"
             variant="outline"
-            disabled={isSyncingMcti}
+            disabled={isSyncingMcti || isSavingSpecs}
             onClick={handleSyncMcti}
           >
-            <RefreshCw className={cn("h-4 w-4", isSyncingMcti && "animate-spin")} />
-            Sincronizar MCTI
+            <RefreshCw
+              className={cn("h-4 w-4", isSyncingMcti && "animate-spin")}
+            />
+            {isSyncingMcti ? "Sincronizando..." : "Sincronizar MCTI"}
           </Button>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -268,9 +314,13 @@ export const OperationalCalibrationSection = () => {
           <Button
             type="button"
             onClick={handleSaveSpecs}
-            disabled={isSavingSpecs}
+            disabled={isSavingSpecs || isSyncingMcti}
+            className="gap-2"
           >
-            Salvar especificações técnicas
+            <RefreshCw
+              className={cn("h-4 w-4", isSavingSpecs && "animate-spin")}
+            />
+            {isSavingSpecs ? "Salvando..." : "Salvar especificações técnicas"}
           </Button>
         </CardContent>
       </Card>
@@ -290,16 +340,10 @@ export const OperationalCalibrationSection = () => {
             onClick={handleSyncPrices}
           >
             <RefreshCw className={cn("h-4 w-4", isSyncing && "animate-spin")} />
-            Sincronizar ANP
+            {isSyncing ? "Sincronizando..." : "Sincronizar ANP"}
           </Button>
         </CardHeader>
         <CardContent className="overflow-x-auto">
-          <div className="relative">
-            {(isSyncing || isFuelFetching) && (
-              <div className="absolute inset-0 z-10 flex items-center justify-center rounded bg-background/60">
-                <RefreshCw className="h-5 w-5 animate-spin text-muted-foreground" />
-              </div>
-            )}
           <table className="w-full min-w-[640px] text-sm">
             <thead>
               <tr className="border-b text-left">
@@ -308,7 +352,6 @@ export const OperationalCalibrationSection = () => {
                 <th className="py-2 pr-4">Diesel S10</th>
                 <th className="py-2 pr-4">Gasolina C</th>
                 <th className="py-2 pr-4">Etanol</th>
-                <th className="py-2">Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -385,23 +428,24 @@ export const OperationalCalibrationSection = () => {
                         }
                       />
                     </td>
-                    <td className="py-2">
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        disabled={!isRowUnlocked}
-                        onClick={() => handleSaveFuelRow(uf)}
-                      >
-                        Salvar
-                      </Button>
-                    </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
-          </div>
+          <Button
+            type="button"
+            onClick={handleSaveFuelPrices}
+            disabled={isSavingFuelPrices || isSyncing}
+            className="mt-4 gap-2"
+          >
+            <RefreshCw
+              className={cn("h-4 w-4", isSavingFuelPrices && "animate-spin")}
+            />
+            {isSavingFuelPrices
+              ? "Salvando..."
+              : "Salvar preços de combustível"}
+          </Button>
         </CardContent>
       </Card>
     </div>
