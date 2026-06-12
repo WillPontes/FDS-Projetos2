@@ -9,6 +9,19 @@ O _Taggy_ é uma solução de pagamento automático (Tag) que vai além da conve
 | Front-end | [taggy-ecoscore.vercel.app](https://taggy-ecoscore.vercel.app/) |
 | Back-end (API) | [taggy-ecoscore-api.onrender.com](https://taggy-ecoscore-api.onrender.com/) |
 
+### Credenciais de teste
+
+Usuários de demonstração para validar fluxos por perfil no ambiente de deploy:
+
+| Email | Senha | Role |
+| :---- | :---- | :--- |
+| `admin@taggy.com.br` | `senha@123` | admin |
+| `carlos@taggy.com.br` | `senha@123` | gestor_frota |
+| `fernanda@taggy.com.br` | `senha@123` | gestor_frota |
+| `joao@taggy.com.br` | `senha@123` | motorista |
+| `ana@taggy.com.br` | `senha@123` | motorista |
+| `pedro@taggy.com.br` | `senha@123` | motorista |
+
 ---
 
 ## Visão Geral
