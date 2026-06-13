@@ -24,6 +24,77 @@ Usuários de demonstração para validar fluxos por perfil no ambiente de deploy
 
 ---
 
+## Executando localmente
+
+### Requisitos
+
+| Componente | Versão |
+| :--------- | :----- |
+| Node.js    | 20+    |
+| pnpm       | latest |
+| Python     | 3.12+  |
+| [uv](https://docs.astral.sh/uv/) | latest |
+| Docker     | opcional (recomendado para Postgres + API) |
+
+### Passo a passo
+
+**1. Back-end (API + Postgres)**
+
+```bash
+cd app/back
+cp .env.example .env
+docker compose up --build
+```
+
+A API sobe em [http://localhost:8000](http://localhost:8000) e o Swagger em [http://localhost:8000/docs](http://localhost:8000/docs). As migrações Alembic rodam automaticamente no arranque.
+
+Alternativa sem Docker na API: subir só o Postgres com `docker compose up db` e executar `uv sync && uv run uvicorn src.main:app --reload --host 0.0.0.0 --port 8000`.
+
+**2. Front-end**
+
+Em outro terminal:
+
+```bash
+cd app/front
+cp .env.example .env
+pnpm install
+pnpm dev
+```
+
+App em [http://localhost:5173](http://localhost:5173). Requisições para `/api` são redirecionadas via proxy para a API local.
+
+Documentação detalhada: [app/back/README.md](app/back/README.md) · [app/front/README.md](app/front/README.md)
+
+### Variáveis de ambiente
+
+Copie `.env.example` para `.env` em cada pasta (`app/back` e `app/front`) e ajuste conforme necessário.
+
+#### Back-end (`app/back/.env`)
+
+| Variável | Obrigatória | Descrição |
+| :------- | :---------- | :-------- |
+| `DATABASE_URL` | Sim | URL PostgreSQL (`postgresql+asyncpg://...`). URLs `postgresql://` do Render são normalizadas automaticamente. |
+| `JWT_SECRET` | Sim | Segredo HS256 para emissão e validação de tokens JWT. |
+| `API_PORT` | Não | Porta exposta da API no Docker (padrão: `8000`). |
+| `POSTGRES_USER` | Docker | Utilizador do Postgres no `docker compose` (ex.: `postgres`). |
+| `POSTGRES_PASSWORD` | Docker | Password do Postgres no `docker compose`. |
+| `POSTGRES_DB` | Docker | Nome da base de dados (ex.: `taggy`). |
+| `POSTGRES_PORT` | Não | Porta mapeada do Postgres (padrão: `5432`). |
+| `GOOGLE_CREDENTIALS_JSON` | Não | JSON da service account Google Cloud (uma linha) para sync ANP via BigQuery. Sem ela, use `gcloud auth application-default login`. |
+| `MCTI_EMISSION_FACTORS_URL` | Não | Fonte dos fatores de emissão MCTI — ficheiro local (`file://...`) ou URL HTTP. |
+| `APIBRASIL_TOKEN` | Não | Token Bearer da [apibrasil.io](https://app.apibrasil.io) para lookup placa → veículo (DETRAN + FIPE). |
+| `MAPBOX_ACCESS_TOKEN` | Não | Token Mapbox para rotas e geocoding no back-end. |
+
+#### Front-end (`app/front/.env`)
+
+| Variável | Obrigatória | Descrição |
+| :------- | :---------- | :-------- |
+| `VITE_API_URL` | Não | URL base da API (padrão: `http://localhost:8000`). Usada pelo proxy de dev e pelo cliente HTTP. |
+| `VITE_MAPBOX_ACCESS_TOKEN` | Não | Token Mapbox para mapas, geocoding e sugestões de endereço. Sem ele, componentes de mapa exibem aviso. |
+| `VITE_STORAGE_SECRET` | Não | Segredo para criptografar dados sensíveis no `localStorage`. Sem ele, o storage funciona sem criptografia. |
+
+---
+
 ## Visão Geral
 
 O sistema utiliza a inteligência de dados para calcular o impacto ambiental positivo gerado pela fluidez no trânsito. Focamos em três pilares:

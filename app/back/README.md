@@ -6,31 +6,31 @@ API **FastAPI** com **SQLModel**, **asyncpg** e **Alembic** (para migrações fo
 
 - Python 3.12+
 - [uv](https://docs.astral.sh/uv/) (recomendado) ou outro gestor à sua escolha
+- Docker e Docker Compose (recomendado para Postgres + API)
 
-## Variáveis de ambiente
+## Como executar
 
-Copie o exemplo e ajuste:
+### 1. Configurar variáveis de ambiente
 
 ```bash
 cd app/back
 cp .env.example .env
 ```
 
-- **`DATABASE_URL`**: URL PostgreSQL (ex.: `postgresql+asyncpg://postgres:postgres@localhost:5432/taggy`). URLs `postgresql://` ou `postgres://` (como as do Render) são convertidas automaticamente para `postgresql+asyncpg://`. No Render, liga a base ao Web Service para injetar a URL correta e usa o utilizador com permissão de login — não um role só de grupo (erro `is not permitted to log in`).
-- **`JWT_SECRET`**: segredo HS256 para validar tokens nas rotas que usem `Depends(get_current_user)` (substituir o Supabase por JWT emitido pela vossa camada de autenticação).
-- **`CORS_ORIGINS`**: opcional; lista separada por vírgulas (predefinido: `http://localhost:5173`).
+Edite o `.env` conforme a tabela abaixo. Para Docker Compose, inclua também `POSTGRES_USER`, `POSTGRES_PASSWORD` e `POSTGRES_DB` (ex.: `postgres`, `postgres`, `taggy`).
 
-## Postgres e API com Docker Compose
+### 2. Docker Compose (recomendado)
 
-Na pasta `app/back`:
+Sobe **Postgres** (`db`) e **API** (`api`):
 
 ```bash
 docker compose up --build
 ```
 
-Isto sobe o **Postgres** (`db`) e a **API** (`api`). O compose define `DATABASE_URL` com host `db` na rede interna; o ficheiro `.env` pode conter outras chaves (ex.: `JWT_SECRET`).
+- API: [http://localhost:8000](http://localhost:8000)
+- Swagger: [http://localhost:8000/docs](http://localhost:8000/docs)
 
-No arranque do serviço `api`, as migrações Alembic correm automaticamente (`uv run alembic upgrade head`). As dependências Python são instaladas no **build** da imagem (`uv sync` no Dockerfile), não em cada `exec`.
+O compose define `DATABASE_URL` com host `db` na rede interna; o `.env` fornece as restantes chaves (ex.: `JWT_SECRET`). No arranque, as migrações Alembic correm automaticamente (`uv run alembic upgrade head`).
 
 Para popular `technical_specs` id=1 (após Postgres e API saudáveis):
 
@@ -38,25 +38,45 @@ Para popular `technical_specs` id=1 (após Postgres e API saudáveis):
 docker compose exec api uv run python scripts/seed_technical_specs.py
 ```
 
-Dentro do container use sempre `uv run` (como no Dockerfile e no compose). `python` ou `pip` soltos não veem o `.venv` do projeto.
+Dentro do container use sempre `uv run`. `python` ou `pip` soltos não veem o `.venv` do projeto.
 
-Para só levantar a base (e correr a API na máquina com `uv run`):
+### 3. Só Postgres no Docker, API local
 
 ```bash
 docker compose up db
 ```
 
-Depois use no `.env` uma `DATABASE_URL` com `localhost` e a porta mapeada (predefinida `5432`, ou `POSTGRES_PORT` se alterar no compose).
-
-## Desenvolvimento local (sem Docker na API)
+No `.env`, defina `DATABASE_URL` com `localhost` e a porta mapeada (padrão `5432`, ou `POSTGRES_PORT` se alterar no compose):
 
 ```bash
-cd app/back
 uv sync
 uv run uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-Garanta que `DATABASE_URL` aponta para um Postgres acessível.
+### 4. Tudo local (sem Docker)
+
+Garanta um Postgres acessível e configure `DATABASE_URL` no `.env`:
+
+```bash
+uv sync
+uv run uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+## Variáveis de ambiente
+
+| Variável | Obrigatória | Descrição |
+| :------- | :---------- | :-------- |
+| `DATABASE_URL` | Sim | URL PostgreSQL (ex.: `postgresql+asyncpg://postgres:postgres@localhost:5432/taggy`). URLs `postgresql://` ou `postgres://` (como as do Render) são convertidas automaticamente para `postgresql+asyncpg://`. No Render, liga a base ao Web Service e usa um utilizador com permissão de login — não um role só de grupo (erro `is not permitted to log in`). |
+| `JWT_SECRET` | Sim | Segredo HS256 para emissão e validação de tokens JWT nas rotas com `Depends(get_current_user)`. |
+| `API_PORT` | Não | Porta exposta da API no Docker (padrão: `8000`). |
+| `POSTGRES_USER` | Docker | Utilizador do Postgres no `docker compose`. |
+| `POSTGRES_PASSWORD` | Docker | Password do Postgres no `docker compose`. |
+| `POSTGRES_DB` | Docker | Nome da base de dados (ex.: `taggy`). |
+| `POSTGRES_PORT` | Não | Porta mapeada do Postgres (padrão: `5432`). |
+| `GOOGLE_CREDENTIALS_JSON` | Não | JSON da service account Google Cloud (uma linha) para sync ANP via BigQuery. Em dev local, pode omitir e usar `gcloud auth application-default login`. |
+| `MCTI_EMISSION_FACTORS_URL` | Não | Fonte dos fatores de emissão MCTI — ficheiro local (`file:///app/data/ghg_protocol.xlsx`) ou URL HTTP. |
+| `APIBRASIL_TOKEN` | Não | Token Bearer da [apibrasil.io](https://app.apibrasil.io) para lookup placa → veículo (DETRAN + FIPE). |
+| `MAPBOX_ACCESS_TOKEN` | Não | Token Mapbox para cálculo de rotas e geocoding no back-end. |
 
 ## Swagger e OpenAPI
 

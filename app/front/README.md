@@ -6,19 +6,37 @@ Stack: **React 19**, **Vite 6**, **TanStack Router** (file-based routing), **Tan
 
 - Node.js 20+
 - `pnpm` (ou `npm` / `yarn`)
+- API back-end a correr em [http://localhost:8000](http://localhost:8000) (ver [app/back/README.md](../back/README.md))
 
-## Setup
+## Como executar
 
 ```bash
 cd app/front
-cp .env.example .env   # opcional
+cp .env.example .env
 pnpm install
 pnpm dev
 ```
 
-App disponível em `http://localhost:5173`.
+App disponível em [http://localhost:5173](http://localhost:5173).
 
-Durante o desenvolvimento, requisições para `/api` são redirecionadas via proxy para `http://localhost:8000` (configurado em `vite.config.ts`).
+Durante o desenvolvimento, requisições para `/api` são redirecionadas via proxy para `VITE_API_URL` (padrão `http://localhost:8000`, configurado em `vite.config.ts`).
+
+Build de produção:
+
+```bash
+pnpm build
+pnpm preview   # serve o build localmente
+```
+
+## Variáveis de ambiente
+
+Copie `.env.example` para `.env` e ajuste:
+
+| Variável | Obrigatória | Descrição |
+| :------- | :---------- | :-------- |
+| `VITE_API_URL` | Não | URL base da API (padrão: `http://localhost:8000`). Usada pelo proxy de dev e pelo cliente HTTP. |
+| `VITE_MAPBOX_ACCESS_TOKEN` | Não | Token Mapbox para mapas, geocoding e sugestões de endereço. Obtenha em [mapbox.com](https://account.mapbox.com/access-tokens/). Sem ele, componentes de mapa exibem aviso. |
+| `VITE_STORAGE_SECRET` | Não | Segredo para criptografar dados sensíveis no `localStorage`. Sem ele, o storage funciona sem criptografia (aviso no console). |
 
 ## Scripts
 
